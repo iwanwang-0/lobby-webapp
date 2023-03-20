@@ -1,6 +1,6 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
-import mapValues from 'lodash.mapvalues';
+import { mapValues } from 'lodash';
 
 // 异步枚举获取配置
 const enumsConfig = {

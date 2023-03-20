@@ -55,8 +55,6 @@ const user = {
   actions: {
     async handleAccountsChanged({ commit, dispatch, state }, accounts) {
       const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-
-      console.log('loaded')
       if (accounts.length === 0) {
         commit('UPDATE_STATE', {
           address: '',

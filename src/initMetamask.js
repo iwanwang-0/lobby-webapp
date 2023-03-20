@@ -44,16 +44,16 @@ import store from './store';
     // connected.
     window.ethereum.on('accountsChanged', (accounts) => {
 
-      if (accounts?.length) {
-        store.dispatch('handleAccountsChanged', accounts);
+      // if (accounts?.length) {
+      store.dispatch('handleAccountsChanged', accounts);
         // __user__.isMetamask = true;
         // __user__.isWalletConnect = false;
         // __user__.handleAccountsChanged(accounts);
         // __user__.syncStorage();
-      } else {
-        store.dispatch('resetUser', accounts);
-        // store.reset();
-      }
+      // } else {
+      //   store.dispatch('resetUser', accounts);
+      //   // store.reset();
+      // }
     });
   }
 })();
