@@ -33,9 +33,6 @@ window.__g_router__ = router;
 // eslint-disable-next-line
 window.__g_i18n__ = i18n;
 
-store.dispatch('getDogePrice');
-store.dispatch('getRange');
-
 const lang = getLang();
 if (['zh', 'en'].includes(lang)) {
   i18n.locale = lang;

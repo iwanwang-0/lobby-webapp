@@ -20,7 +20,7 @@
           <b-nav-item :active="$route.path.startsWith('/dashboard')" @click="$router.push('/dashboard')">Dashboard</b-nav-item>
           <b-nav-item :active="$route.path.startsWith('/vote')" @click="$router.push('/vote')">Vote</b-nav-item>
           <b-nav-item :active="$route.path.startsWith('/bribe')" @click="$router.push('/bribe')">Bribe</b-nav-item>
-          <b-nav-item @click="$router.push('/')">FAQ</b-nav-item>
+          <b-nav-item :active="$route.path.startsWith('/lob')" @click="$router.push('/lob')">Lob</b-nav-item>
         </b-navbar-nav>
 
       <div class="divider divider-middle"></div>
@@ -28,7 +28,16 @@
         <b-navbar-nav >
           <!-- <b-button variant="link"  class="history-btn"  @click.stop.prevent="$emit('history')">History</b-button> -->
           <!-- <b-button class="lang-switch" variant="link">English</b-button> -->
-            <span
+          <b-button
+            v-if="user.address"
+            class="reward-btn"
+            size="sm"
+            variant="link"
+            @click="$router.push('/reward')"
+          >
+            Reward
+          </b-button>
+          <span
               v-if="user.address"
               class="address-btn"
             >
@@ -57,7 +66,7 @@ import { setLang, getLang } from '@/common/lang';
 export default {
   filters: {
     ellipsis(address) {
-      return address.replace(/^(.{6}).*(.{8})$/, '$1...$2');
+      return address.replace(/^(.{6}).*(.{6})$/, '$1...$2');
     },
   },
   data() {
@@ -192,7 +201,7 @@ export default {
   justify-content: space-between;
 }
 
-.sign-btn {
+.sign-btn{
   height: 40px;
   font-weight: bold;
   margin-left: 46px;
@@ -200,6 +209,13 @@ export default {
   font-size: 18px;
   letter-spacing: 1px;
   // width: 100%
+}
+
+.reward-btn {
+  height: 32px;
+  padding: 0;
+  font-size: 18px;
+  margin-right: 30px;
 }
 
 </style>

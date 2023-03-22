@@ -2,7 +2,8 @@ import { ethers } from 'ethers';
 import config from '@/config';
 
 import ERC20 from '@/eth/abi/ERC20.json';
-import martinDepositAbi from '@/eth/abi/MartinDeposit.json';
+import MultiMerkleStashAbi from '@/eth/abi/MultiMerkleStash.json';
+import VotiumVeCRVAbi from '@/eth/abi/VotiumVeCRV.json';
 
 // A Web3Provider wraps a standard Web3 provider, which is
 // what Metamask injects as window.ethereum into each page
@@ -10,34 +11,40 @@ import martinDepositAbi from '@/eth/abi/MartinDeposit.json';
 // const provider = new ethers.providers.Web3Provider(window.ethereum);
 const provider = new ethers.providers.JsonRpcProvider(config.gethServer);
 
-const martinDepositContract = new ethers.Contract(
-  config.MartinDepositAddress, martinDepositAbi.abi, provider,
+const MultiMerkleStashContract = new ethers.Contract(
+  config.MultiMerkleStash, MultiMerkleStashAbi.abi, provider,
 );
-const dogeTokenContract = new ethers.Contract(config.DogeTokenAddress, ERC20.abi, provider);
-const USDTContract = new ethers.Contract(config.USDTAddress, ERC20.abi, provider);
 
-const martinDepositInterface = new ethers.utils.Interface(martinDepositAbi.abi);
-const dogeTokenInterface = new ethers.utils.Interface(ERC20.abi);
+const VotiumVeCRVContract = new ethers.Contract(
+  config.VotiumVeCRV, VotiumVeCRVAbi.abi, provider,
+);
+
+const USDTContract = new ethers.Contract(config.USDT, ERC20.abi, provider);
+const USDCContract = new ethers.Contract(config.USDC, ERC20.abi, provider);
+
+const MultiMerkleStashInterface = new ethers.utils.Interface(MultiMerkleStashAbi.abi);
+const VotiumVeCRVInterface = new ethers.utils.Interface(VotiumVeCRVAbi.abi);
 const USDTInterface = new ethers.utils.Interface(ERC20.abi);
+const USDCInterface = new ethers.utils.Interface(ERC20.abi);
 // const USDTInterface= new ethers.utils.Interface(ERC20.abi);
 
 // Doge token address: 0x629b490cFA58cB53A5646d49B2fFFf1576b5c8aa
 // Oracle address: 0x963D5e7f285Cc84ed566C486c3c1bC911291be38
-// MartinDeposit address: 0x70e26a9124Fb76Af2228E9e17D7a75E32EBc66a8
+// MultiMerkleStash address: 0x70e26a9124Fb76Af2228E9e17D7a75E32EBc66a8
 
-(async () => {
-  const res = await provider.getGasPrice();
-  console.log(res.toString())
-  console.log(res.toHexString())
-  // const txCount = await provider.getTransactionCount(ethereum.selectedAddress, 'pending');
-  // console.log(txCount.toString())
+// (async () => {
+//   const res = await provider.getGasPrice();
+//   console.log(res.toString())
+//   console.log(res.toHexString())
+//   // const txCount = await provider.getTransactionCount(ethereum.selectedAddress, 'pending');
+//   // console.log(txCount.toString())
 
-  // const buyData = canvasAuctionInterface.encodeFunctionData('buy', [
-  //   1
-  // ]);
+//   // const buyData = canvasAuctionInterface.encodeFunctionData('buy', [
+//   //   1
+//   // ]);
 
-  // console.log(buyData)
-})();
+//   // console.log(buyData)
+// })();
 
 // NFTAuction: '0x0b464262603071A935a760ada21057d8266Ac7c4',
 // NFTFactory: '0xbF85C6C600E8c8b59825B47dA1f0Fa365E0C5088',
@@ -47,13 +54,28 @@ const USDTInterface = new ethers.utils.Interface(ERC20.abi);
 // mining: '0x795D67F07C2470c7adEC38549E93FD2032b65c8e',
 // canvasAuction: '
 
+const getERC20Contract = (address) => {
+  const ERC20Contract = new ethers.Contract(address, ERC20.abi, provider);
+  return ERC20Contract;
+};
+
+const getERC20Interface = () => {
+  const ERC20Interface = new ethers.utils.Interface(ERC20.abi);
+  return ERC20Interface;
+};
+
 export {
   provider,
-  dogeTokenContract,
+  MultiMerkleStashContract,
+  VotiumVeCRVContract,
   USDTContract,
-  martinDepositContract,
+  USDCContract,
 
-  dogeTokenInterface,
+  MultiMerkleStashInterface,
+  VotiumVeCRVInterface,
   USDTInterface,
-  martinDepositInterface,
+  USDCInterface,
+
+  getERC20Contract,
+  getERC20Interface,
 };

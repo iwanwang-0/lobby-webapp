@@ -34,40 +34,17 @@ const routes = [
         name: 'vote',
         component: () => import('@/views/Vote'),
       },
-      // {
-      //   path: '/faq',
-      //   name: 'faq',
-      //   component: () => import('@/views/Faq'),
-      // },
 
-      // {
-      //   path: '/cavas/detail',
-      //   name: 'CanvasDetail',
-      //   component: () => import('@/views/CanvasDetail'),
-      // },
-
-      // {
-      //   path: '/mine',
-      //   name: 'Mine',
-      //   component: () => import('@/views/Mine'),
-      // },
-      // {
-      //   path: '/mine/work/detail',
-      //   name: 'MineWorkDetail',
-      //   component: () => import('@/views/MineWorkDetail'),
-      // },
-
-      // {
-      //   path: '/swap/detail',
-      //   name: 'MineWorkDetail',
-      //   component: () => import('@/views/SwapDetail'),
-      // },
-
-      // {
-      //   path: '/collection/create',
-      //   name: 'CollectionCreate',
-      //   component: () => import('@/views/CollectionCreate'),
-      // },
+      {
+        path: '/lob',
+        name: 'lob',
+        component: () => import('@/views/Lob'),
+      },
+      {
+        path: '/reward',
+        name: 'reward',
+        component: () => import('@/views/Reward'),
+      },
     ],
   },
   // ...login,

@@ -1,26 +1,18 @@
 <template>
   <div class="select" v-click-outside="onClickOutside">
+   <span class="label"> Round:</span>
     <div class="selected" @click="isOpen = !isOpen" >
-      <template v-if="$scopedSlots.selected">
-        <slot name="selected" :option="selectedOption" ></slot>
-      </template>
-      <template v-else>
-        <div class="value">{{ selectedOption && selectedOption.label }}</div>
-      </template>
-
-      <div class="arrow">{{ isOpen ? '▲' : '▼' }}</div>
+      <div class="value">{{ value }}</div>
+      <img class="arrow"
+        :style="`width: 18px; transform: ${isOpen ? 'rotate(180deg)' : 'rotate(0)'}`"
+        src="~@/assets/img/arrow-down@2x.png" alt="">
     </div>
     <div class="options" v-show="isOpen">
       <div class="option"
         v-for="option in options"
         :key="option.value"
         @click="selectOption(option)">
-        <template v-if="$scopedSlots.option">
-          <slot name="option" :option="option" ></slot>
-        </template>
-        <template v-else>
           {{ renderOption ? renderOption(option) : option.label }}
-        </template>
       </div>
     </div>
   </div>
@@ -36,9 +28,9 @@ export default {
       type: Array,
       required: true,
     },
-    // value: {
-    //   type: [String, Number],
-    // },
+    value: {
+      type: [String, Number],
+    },
 
     renderOption: {
       type: Function,
@@ -55,7 +47,7 @@ export default {
     };
   },
   created() {
-    console.log(this);
+    this.selectedOption = this.value
   },
   computed: {
     selectedText() {
@@ -71,8 +63,8 @@ export default {
     },
     selectOption(option) {
       this.selectedOption = option;
-      this.$emit('change', option);
-      this.$emit('input', option);
+      this.$emit('change', option.value);
+      this.$emit('input', option.value);
       this.isOpen = false;
     },
   },
@@ -84,16 +76,23 @@ export default {
 .select {
   position: relative;
   width: 200px;
-  font-size: 16px;
+  font-size: 24px;
+  display: inline-flex;
+  align-items: center;
 }
 .selected {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 16px;
-  border: 1px solid #4C4C4C;
+  // padding: 8px 24px;
   cursor: pointer;
-  height: 100%;
+  color: #1DD186;
+}
+.label {
+  margin-right: 4px;
+}
+.value {
+  margin-right: 20px;
 }
 
 .options {

@@ -53,14 +53,14 @@ export default {
           pool: 'ETH-alETH',
           token: 'ETH',
           quantity: '100',
-          time: '2022/22/22',
+          time: '2022/02/22',
         },
         {
           round: '2',
           pool: 'ETH-alETH',
           token: 'ETH',
           quantity: '100',
-          time: '2022/22/22',
+          time: '2022/02/22',
         },
       ]
     }

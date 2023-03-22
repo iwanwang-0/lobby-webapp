@@ -15,16 +15,30 @@
               <CuSelect
                 class="cu-select"
                 :options="options1"
+                v-model="guage"
               />
             <!-- </div> -->
           </div>
         </div>
         <div class="first-row-right">
           <div class="form-field">
-            <label class="field-label" for="">Select Reward Token:</label>
-            <CuSelect
+            <label class="field-label"  style="width: 180px" for="">Reward Token:</label>
+
+            <div class="input-wrapper">
+              <!-- <span class="input-helper">Total Rewards</span> -->
+
+              <!-- <span v-if="selectedToken" class="icon-wrapper">
+                <img :src="selectedToken.icon" alt="">
+              </span> -->
+              <input type="text"
+                v-model="tokenAddress"
+              >
+            </div>
+
+            <!-- <CuSelect
               class="cu-select"
               :options="options1"
+              @change="onTokenChange"
             >
               <template v-slot:selected="{ option }">
                 <span v-if="option">
@@ -39,7 +53,7 @@
                 <img style="width: 28px; margin-right: 15px" :src="option.icon">
                 {{ option.label }}
               </template>
-            </CuSelect>
+            </CuSelect> -->
           </div>
         </div>
       </div>
@@ -49,10 +63,15 @@
           <div class="input-wrapper">
             <span class="input-helper">Total Rewards</span>
 
-            <span class="icon-wrapper">
-              <img src="~@/assets/img/token/ETH@2x.png" alt="">
+            <span v-if="symbol" class="icon-wrapper">
+              {{ symbol }}
             </span>
-            <input type="text">
+            <!-- <span v-if="selectedToken" class="icon-wrapper">
+              <img :src="selectedToken.icon" alt="">
+            </span> -->
+            <input type="text"
+              v-model="totalRewards"
+            >
           </div>
         </div>
       </div>
@@ -60,10 +79,15 @@
         <div class="form-field">
           <label class="field-label" for="">The maximum reward is available:</label>
           <div class="input-wrapper">
-            <span class="icon-wrapper">
-              <img src="~@/assets/img/token/ETH@2x.png" alt="">
+            <!-- <span  v-if="selectedToken" class="icon-wrapper">
+              <img :src="selectedToken.icon" alt="">
+            </span> -->
+            <span  v-if="symbol" class="icon-wrapper">
+              {{ symbol }}
             </span>
-            <input type="text">
+            <input type="text"
+              v-model="maxReward"
+            >
           </div>
         </div>
       </div>
@@ -72,6 +96,26 @@
           <label class="field-label" for=""></label>
           <!-- <div class="input-wrapper"> -->
             <b-button
+              v-if="user.address && !isApproved"
+              size="sm"
+              class="form-btn"
+              variant="link"
+              :disabled="!symbol || submitting"
+              @click="onApprove"
+            >
+            Approve Token</b-button>
+
+            <b-button
+              v-if="user.address && isApproved"
+              size="sm"
+              class="form-btn"
+              variant="link"
+              :disabled="!symbol || submitting"
+              @click="onBribe"
+            >
+            Bribe</b-button>
+            <b-button
+              v-if="!user.address"
               size="sm"
               class="form-btn"
               variant="link"
@@ -85,36 +129,269 @@
 </template>
 
 <script>
-import CuSelect from '@/components/CuSelect';
+import { mapState } from 'vuex';
+import { debounce } from 'lodash';
+import config from '@/config';
+import { BigNumber, utils } from 'ethers';
+import sendTransaction from '@/common/sendTransaction';
+import {
+  getERC20Contract, getERC20Interface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
+} from '@/eth/ethereum';
+
+import CuSelect from '@/components/CuSelect.vue';
 import bnbIcon from '@/assets/img/token/BNB@2x.png';
 import ethIcon from '@/assets/img/token/ETH@2x.png';
 import usdtIcon from '@/assets/img/token/USDT@2x.png';
 
+import { getAllGauges } from '@/api/curve';
+
 export default {
+  props: {
+    selectedRound: {
+      type: Object,
+    },
+  },
   components: {
     CuSelect,
   },
 
   data() {
     return {
-      options1: [
-        {
-          label: 'ETH',
-          value: 'ETH',
-          icon: ethIcon,
-        },
-        {
-          label: 'USDT',
-          value: 'USDT',
-          icon: usdtIcon,
-        },
-        {
-          label: 'BNB',
-          value: 'BNB',
-          icon: bnbIcon,
-        },
-      ],
+      selectedToken: null,
+      options1: [],
+      allGauges: {},
+
+      submitting: false,
+
+      guage: '',
+      tokenAddress: '',
+      totalRewards: '',
+      maxReward: '',
+
+      symbol: '',
+      decimals: '',
+      balance: '',
+      allowance: '',
+      isApproved: false,
     };
+  },
+  computed: {
+    ...mapState(['user']),
+  },
+
+  watch: {
+    tokenAddress() {
+      this.getTokenInfoDebounce();
+    },
+  },
+
+  created() {
+    this.getAllGauges();
+  },
+
+  methods: {
+    onTokenChange(option) {
+      this.selectedToken = option;
+    },
+
+    async getAllGauges() {
+      const { success, data } = await getAllGauges();
+
+      if (success) {
+        this.allGauges = data;
+        this.options1 = Object.keys(data).map((key) => ({
+          value: key,
+          label: key,
+        }));
+      }
+    },
+
+    async getTokenInfo() {
+      // console.log(this)
+      try {
+        if (!this.tokenAddress || !utils.isAddress(this.tokenAddress)) {
+          // this.showError('Token address invalid');
+          return;
+        }
+
+        const erc20Contract = getERC20Contract(this.tokenAddress);
+
+        const [symbol, decimals, balance] = await Promise.all([
+          erc20Contract.symbol(),
+          erc20Contract.decimals(),
+          erc20Contract.balanceOf(this.user.address),
+          // erc20Contract.allowance(
+          //   this.user.address,
+          //   config.MultiMerkleStash,
+          // ),
+        ]);
+
+        if (symbol) {
+          this.symbol = symbol;
+          this.decimals = decimals;
+          this.balance = balance;
+          // this.allowance = allowance;
+          // this.isApproved = allowance.gt(100);
+        } else {
+          this.symbol = '';
+          this.decimals = '';
+          this.balance = '';
+          // this.allowance = '';
+          // this.isApproved = false;
+        }
+      } catch (error) {
+        this.symbol = '';
+        this.decimals = '';
+        this.balance = '';
+        // this.allowance = '';
+        // this.isApproved = false;
+      }
+    },
+
+    async getApproveInfo() {
+      try {
+        if (!this.tokenAddress || !utils.isAddress(this.tokenAddress)) {
+          // this.showError('Token address invalid');
+          return;
+        }
+
+        const erc20Contract = getERC20Contract(this.tokenAddress);
+
+        const allowance = await erc20Contract.allowance(
+          this.user.address,
+          config.MultiMerkleStash,
+        );
+
+        if (allowance) {
+          this.allowance = allowance;
+          this.isApproved = allowance.gt(100);
+        } else {
+          this.allowance = '';
+          this.isApproved = false;
+        }
+      } catch (error) {
+        this.allowance = '';
+        this.isApproved = false;
+      }
+    },
+    // eslint-disable-next-line func-names
+    getTokenInfoDebounce: debounce(function () {
+      this.getTokenInfo();
+      this.getApproveInfo();
+    }, 500),
+
+    async onApprove() {
+      this.submitting = true;
+
+      if (!this.tokenAddress || !utils.isAddress(this.tokenAddress)) {
+        // this.showError('Token address invalid');
+        return;
+      }
+
+      const erc20Interface = getERC20Interface(this.tokenAddress);
+
+      try {
+        const approveTxHash = await sendTransaction({
+          to: this.tokenAddress,
+          gas: 80000,
+          data: erc20Interface.encodeFunctionData('approve', [
+            config.MultiMerkleStash,
+            BigNumber.from(1 + '0'.repeat(30)).toHexString(),
+          ]),
+        });
+        this.showPending('Success', {
+          tx: approveTxHash,
+        });
+        const approveTx = await provider.waitForTransaction(approveTxHash);
+
+        if (approveTx.status !== 1) {
+          this.showError('Approve fail，please retry');
+          this.submitting = false;
+        } else {
+          // this.showSuccess('Approve success');
+          this.showSuccess('Success', {
+            tx: approveTxHash,
+          });
+          this.getApproveInfo();
+        }
+      } finally {
+        this.submitting = false;
+      }
+    },
+
+    async onBribe() {
+      // guage: '',
+      // tokenAddress: '',
+      // totalRewards: '',
+      // maxReward: '',
+
+      if (!this.selectedRound) {
+        this.showError('Please select round');
+        return false;
+      }
+      if (!this.user.address) {
+        this.showError('Please connect metamask');
+        return false;
+      }
+
+      const {
+        guage, tokenAddress, totalRewards, maxReward,
+      } = this;
+
+      if (!guage || !tokenAddress || !totalRewards || !maxReward) {
+        this.showError('The form field is error');
+        return;
+      }
+
+      // console.log(this.selectedRound.time)
+
+      // console.log();
+      this.submitting = true;
+
+      const erc20Contract = getERC20Contract(this.tokenAddress);
+
+      const tokenBalance = await erc20Contract.balanceOf(this.user.address);
+
+      if (tokenBalance.lt(totalRewards + '0'.repeat(this.decimals))) {
+        this.showError('You balance is not enough');
+        this.submitting = false;
+        return false;
+      }
+
+      try {
+        const buyTxHash = await sendTransaction({
+          to: config.VotiumVeCRV,
+          gas: 640000,
+          data: VotiumVeCRVInterface.encodeFunctionData('depositReward', [
+            this.tokenAddress,
+            BigNumber.from(totalRewards + '0'.repeat(this.decimals)).toHexString(),
+            BigNumber.from(this.selectedRound.time.valueOf() / (7 * 24 * 60 * 60 * 1000)).toHexString(),
+            this.allGauges[this.guage],
+          ]),
+        });
+        this.showPending('Pending', {
+          tx: buyTxHash,
+        });
+
+        const buyTx = await provider.waitForTransaction(buyTxHash);
+
+        if (buyTx.status === 1) {
+          this.showSuccess('Success', {
+            tx: buyTxHash,
+          });
+          this.amount = '';
+
+          // await this.$store.dispatch('getPosition');
+        } else {
+          this.showError('Faild', {
+            tx: buyTxHash,
+          });
+        }
+      } finally {
+        this.submitting = false;
+      }
+    },
+
   },
 };
 </script>
@@ -196,6 +473,7 @@ export default {
 
     & .icon-wrapper {
       margin-right: 8px;
+      color: #999;
       & img {
         width: 28px;
         height: 28px;

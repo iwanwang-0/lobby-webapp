@@ -10,34 +10,32 @@ const isMetamask = !!window.ethereum;
 const user = {
   // namespaced: true,
   state: {
+    isMetamask,
+    loaded: !isMetamask,
     address: '',
     chainId: '',
     ethBalance: 0,
     usdtBalance: 0,
-    dogeBalance: 0,
-    dogePrice: 0,
 
-    depositAmount: 0,
-    period: 0,
-    reinvestAmount: 0,
-    withdrawAmount: 0,
-    events: [],
-    withdrawable: 0,
-    jsonAmount: 0,
-    proofTarget: [],
-    amount365: 0,
+    // depositAmount: 0,
+    // period: 0,
+    // reinvestAmount: 0,
+    // withdrawAmount: 0,
+    // events: [],
+    // withdrawable: 0,
+    // jsonAmount: 0,
+    // proofTarget: [],
+    // amount365: 0,
 
-    usdDecimals: 8,
-    dogeDecimals: 18,
+    // usdDecimals: 8,
+    // dogeDecimals: 18,
 
-    min: 0,
-    max: 0,
+    // min: 0,
+    // max: 0,
 
-    positionOpened: false,
-    isMetamask,
-    loaded: !isMetamask,
+    // positionOpened: false,
 
-    invitees: [],
+    // invitees: [],
   },
 
   mutations: {
@@ -67,10 +65,7 @@ const user = {
           chainId,
           loaded: true,
         });
-        dispatch('getPosition');
-        dispatch('getWithdrawable');
         dispatch('getBalances');
-        dispatch('getDecimals');
       }
     },
 
@@ -96,109 +91,15 @@ const user = {
     },
 
     async getBalances({ commit, state }) {
-      const [ethBalance, usdtBalance, dogeBalance] = await Promise.all([
+      const [ethBalance, usdtBalance] = await Promise.all([
         provider.getBalance(state.address),
         USDTContract.balanceOf(state.address),
-        dogeTokenContract.balanceOf(state.address),
-
       ]);
 
       commit('UPDATE_STATE', {
         ethBalance,
         usdtBalance,
-        dogeBalance,
       });
-    },
-
-    async getDogePrice({ commit }) {
-      const [price, decimal] = await martinDepositContract.getLatestPrice();
-      commit('UPDATE_STATE', {
-        // dogePrice: price / 10 ** decimal,
-        dogePrice: price,
-      });
-    },
-
-    async getPosition({ commit, state }) {
-      const opened = await martinDepositContract.checkPositionOpened(state.address);
-      commit('UPDATE_STATE', {
-        positionOpened: opened,
-      });
-
-      if (opened) {
-        const position = await martinDepositContract.getPosition(state.address);
-        commit('UPDATE_STATE', {
-          // positionOpened: true,
-          depositAmount: position.depositAmount,
-          period: position.period,
-          events: position.events,
-          reinvestAmount: position.reinvestAmount,
-          withdrawAmount: position.withdrawAmount,
-        });
-
-        if (position.period === 1) {
-          commit('UPDATE_STATE', {
-            amount365: position.events.reduce((prev, item) => {
-              if (moment(item.time * 1000).isAfter(moment().subtract(365, 'days'))) {
-                return item.changedAmount.add(prev);
-              }
-            }, 0),
-          });
-        }
-      }
-    },
-
-    async getDecimals({ commit }) {
-      const [usdDecimals, dogeDecimals] = await Promise.all([
-        martinDepositContract.usdDecimals(),
-        martinDepositContract.dogeTokenDecimals(),
-      ]);
-
-      commit('UPDATE_STATE', {
-        usdDecimals,
-        dogeDecimals,
-      });
-    },
-
-    async getRange({ commit }) {
-      const [min, max] = await Promise.all([
-        martinDepositContract.min(),
-        martinDepositContract.max(),
-      ]);
-
-      commit('UPDATE_STATE', {
-        min,
-        max,
-      });
-    },
-
-    async getWithdrawable({ state, commit }) {
-      const tree = await getTree();
-
-      if (tree) {
-        const target = tree.values.find((item) => item.value[0].toLowerCase() === state.address.toLowerCase());
-        if (target) {
-          const jsonAmount = target.value[1];
-          const withdrawable = await martinDepositContract.withdrawableAmount(state.address, jsonAmount);
-          commit('UPDATE_STATE', {
-            withdrawable,
-            jsonAmount,
-            proofTarget: target,
-          });
-        }
-      }
-    },
-
-    async getInvitees({ state, commit }) {
-      const invitees = await martinDepositContract.getMyInvitees(state.address);
-
-      console.log(invitees);
-      commit('UPDATE_STATE', {
-        invitees
-      })
-      // commit('UPDATE_STATE', {
-      //   min,
-      //   max,
-      // });
     },
 
 

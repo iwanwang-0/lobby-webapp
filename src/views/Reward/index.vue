@@ -1,39 +1,21 @@
 <template>
   <div class="page-container">
-    <TopSection
-      :selected="selected && selected.idx"
-      @change="val => selected = val"
-    ></TopSection>
-    <FormSection
-      :selected-round="selected"
-    ></FormSection>
+    <TopSection></TopSection>
     <ListSection></ListSection>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import { mapState } from 'vuex';
 import TopSection from './TopSection.vue';
 import ListSection from './ListSection.vue';
-import FormSection from './FormSection.vue';
 
 export default {
   name: 'Home',
   components: {
-    TopSection,
-    FormSection,
     ListSection,
+    TopSection,
   },
-
-  data() {
-    return {
-      selected: null,
-    }
-  },
-  computed: {
-    ...mapState(['user']),
-  }
 };
 </script>
 

@@ -10,55 +10,145 @@
       <div class="left"
         :class="{active: selected === 0}"
         v-if="list && list[0]"
-        @click="$emit('change', 0)"
+        @click="onClick(list[0])"
       >
         <h5 class="title">{{ list[0].title }}</h5>
         <div class="desc">{{ list[0].desc }}</div>
         <div class="time">Time Remaining to Vote:
-          <em>{{list[0].time | formatTime('DD')}}</em>d
-          <em>{{list[0].time | formatTime('hh')}}</em>h
-          <em>20</em>min <em>36</em>s
+          <em>{{currentDur.date}}</em>d
+          <em>{{currentDur.hour}}</em>h
+          <em>{{currentDur.minute}}</em>min
+          <em>{{currentDur.second}}</em>s
         </div>
       </div>
       <div class="right">
         <div class="right-top" :class="{active: selected === 1}"  v-if="list && list[1]"
-        @click="$emit('change', 1)"
+        @click="onClick(list[1])"
         >
           <h5 class="title">{{ list[1].title }}</h5>
           <div class="time">Bribe deadline:
-            <em>{{list[0].time | formatTime('DD')}}</em>d
-            <em>{{list[0].time | formatTime('hh')}}</em>h
-            <em>20</em>min
-            <em>36</em>s
+            <em>{{nextDur.date}}</em>d
+            <em>{{nextDur.hour}}</em>h
+            <em>{{nextDur.minute}}</em>min
+            <em>{{nextDur.second}}</em>s
           </div>
         </div>
         <div class="right-bottom" :class="{active: selected === 2}"  v-if="list && list[2]"
-        @click="$emit('change', 2)"
+        @click="onClick(list[2])"
         >
           <h5 class="title">{{ list[2].title }}</h5>
           <div class="time">Bribe deadline:
-            <em>{{list[0].time | formatTime('DD')}}</em>d
-            <em>{{list[0].time | formatTime('hh')}}</em>h
-            <em>20</em>min
-            <em>36</em>s
+            <em>{{nextNextDur.date}}</em>d
+            <em>{{nextNextDur.hour}}</em>h
+            <em>{{nextNextDur.minute}}</em>min
+            <em>{{nextNextDur.second}}</em>s
           </div>
         </div>
       </div>
     </div>
   </b-container>
 </template>
-
+<!-- 对世界标准时间是：
+这轮贿赂：3.16～3.22
+下一轮贿赂：3.23～3.29
+下下轮贿赂：3.30～4.5 -->
 <script>
+import moment from 'moment';
+
 export default {
   props: {
     selected: {
       type: Number,
     },
-    list: {
-      type: Array,
+    // list: {
+    //   type: Array,
+    // },
+  },
+  data() {
+    const today = moment.utc();
+    // const thursday = moment.utc()
+    const thursday = moment.utc().day(4).startOf('day');
+    let current;
+    let next;
+    let nextNext;
+    if (today.isBefore(thursday)) {
+      current = thursday.clone();
+      next = thursday.clone().add(7, 'day');
+      nextNext = thursday.clone().add(14, 'day');
+    } else {
+      current = thursday.clone().add(7, 'day');
+      next = thursday.clone().add(14, 'day');
+      nextNext = thursday.clone().add(21, 'day');
     }
-  }
-}
+
+    return {
+      now: Date.now(),
+      current,
+      next,
+      nextNext,
+      list: [
+        {
+          idx: 0,
+          title: `Current Bribe (${current.format('MMMM D')})`,
+          desc: `The veCRV Gauge voting award for the week of ${current.local().format('MMMM D HH:mm a')} GMT${current.local().format('ZZ')}`,
+          time: current,
+          // time: 'Time Remaining to Vote: <em>03</em>d <em>13</em>h <em>20</em>min <em>36</em>',
+        },
+        {
+          idx: 1,
+          title: `Next round of Bribe (${next.format('MMMM D')})`,
+          time: next,
+        },
+        {
+          idx: 2,
+          title: `The third round of Bribe (${nextNext.format('MMMM D')})`,
+          time: nextNext,
+        },
+      ],
+    };
+  },
+  computed: {
+    currentDur() {
+      return this.getRemainTime(this.current);
+    },
+    nextDur() {
+      return this.getRemainTime(this.next);
+    },
+    nextNextDur() {
+      return this.getRemainTime(this.nextNext);
+    },
+  },
+  created() {
+    this.loopSetNow();
+    this.$emit('change', this.list[0]);
+  },
+
+  methods: {
+    onClick(item) {
+      this.$emit('change', item);
+    },
+
+    getRemainTime(targetTime) {
+      const duration = targetTime.diff(this.now, 'seconds');
+      const second = duration % 60;
+      const minute = Math.floor(duration / 60) % 60;
+      const hour = Math.floor(duration / 60 / 60) % 24;
+      const date = Math.floor(duration / 60 / 60 / 24);
+      return {
+        second,
+        minute,
+        hour,
+        date,
+      };
+    },
+    loopSetNow() {
+      setTimeout(() => {
+        this.now = Date.now();
+        this.loopSetNow();
+      }, 1000);
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

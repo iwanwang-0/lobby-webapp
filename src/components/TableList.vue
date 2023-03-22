@@ -6,8 +6,26 @@
       </tr>
     </thead>
     <tbody class="table-body">
+      <template v-if="!list || !list.length">
+        <tr>
+          <td :colspan="cols.length" >
+            <div class="empty-content" >
+              <img style="height: 145px;" src="~@/assets/img/no-data@2x.png" alt="">
+              <div class="empty-text">No data here...</div>
+            </div>
+          </td>
+        </tr>
+      </template>
       <tr v-for="row in list">
-        <td v-for="head in cols">{{ row[head.prop] }}</td>
+        <td v-for="head in cols">
+
+          <template v-if="head.prop === 'operation' && $scopedSlots.operation">
+            <slot name="operation" :row="row" ></slot>
+          </template>
+          <template v-else>
+            {{ row[head.prop]  }}
+          </template>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -62,6 +80,16 @@ export default {
     }
   }
 
+  .empty-content {
+    text-align: center;
+    // font-size: 0;
+    margin: 128px;
+  }
 
+  .empty-text {
+    margin-top: 16px;
+    color: #CCCCCC;
+    margin-left: 24px;
+  }
 }
 </style>
