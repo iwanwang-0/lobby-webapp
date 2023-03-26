@@ -13,6 +13,7 @@ $theme-colors: (
 @import '~bootstrap';
 @import '~bootstrap-vue';
 
+
 body {
   // color: #CCCCCC;
   font-family: "ChillPixels Mono", "ChillPixels Maximal", Helvetica, Arial, sans-serif;
@@ -21,6 +22,7 @@ body {
 }
 
 #app {
+  min-width: 1200px;
   // background: url(~@/assets/img/bottom-bg@2x.png) center 100% / auto 1400px no-repeat;
 }
 

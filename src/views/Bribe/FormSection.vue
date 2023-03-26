@@ -222,7 +222,7 @@ export default {
           erc20Contract.balanceOf(this.user.address),
           // erc20Contract.allowance(
           //   this.user.address,
-          //   config.MultiMerkleStash,
+          //   config.VotiumVeCRV,
           // ),
         ]);
 
@@ -259,12 +259,12 @@ export default {
 
         const allowance = await erc20Contract.allowance(
           this.user.address,
-          config.MultiMerkleStash,
+          config.VotiumVeCRV,
         );
 
         if (allowance) {
           this.allowance = allowance;
-          this.isApproved = allowance.gt(100);
+          this.isApproved = allowance.gt(1 + '0'.repeat(20));
         } else {
           this.allowance = '';
           this.isApproved = false;
@@ -295,11 +295,11 @@ export default {
           to: this.tokenAddress,
           gas: 80000,
           data: erc20Interface.encodeFunctionData('approve', [
-            config.MultiMerkleStash,
+            config.VotiumVeCRV,
             BigNumber.from(1 + '0'.repeat(30)).toHexString(),
           ]),
         });
-        this.showPending('Success', {
+        this.showPending('Pending', {
           tx: approveTxHash,
         });
         const approveTx = await provider.waitForTransaction(approveTxHash);
@@ -358,6 +358,9 @@ export default {
         return false;
       }
 
+      console.log(this.allGauges)
+      console.log(this.guage)
+
       try {
         const buyTxHash = await sendTransaction({
           to: config.VotiumVeCRV,
@@ -366,7 +369,7 @@ export default {
             this.tokenAddress,
             BigNumber.from(totalRewards + '0'.repeat(this.decimals)).toHexString(),
             BigNumber.from(this.selectedRound.time.valueOf() / (7 * 24 * 60 * 60 * 1000)).toHexString(),
-            this.allGauges[this.guage],
+            this.allGauges[this.guage].gauge,
           ]),
         });
         this.showPending('Pending', {

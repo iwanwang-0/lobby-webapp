@@ -1,4 +1,5 @@
 <template>
+<b-overlay :show="loading" :opacity="0.4" bg-color="#000">
   <table class="table-list">
     <thead class="table-head">
       <tr>
@@ -6,13 +7,20 @@
       </tr>
     </thead>
     <tbody class="table-body">
-      <template v-if="!list || !list.length">
+      <template v-if="!loading && (!list || !list.length)">
         <tr>
           <td :colspan="cols.length" >
             <div class="empty-content" >
               <img style="height: 145px;" src="~@/assets/img/no-data@2x.png" alt="">
               <div class="empty-text">No data here...</div>
             </div>
+          </td>
+        </tr>
+      </template>
+      <template v-if="loading">
+        <tr>
+          <td :colspan="cols.length" >
+            <div class="empty-content" ></div>
           </td>
         </tr>
       </template>
@@ -29,6 +37,8 @@
       </tr>
     </tbody>
   </table>
+</b-overlay>
+
 </template>
 
 <script>
@@ -39,6 +49,10 @@ export default {
     },
     list: {
       type: Array,
+    },
+    loading: {
+      type: Boolean,
+      default: false,
     },
   },
 };

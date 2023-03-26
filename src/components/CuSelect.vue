@@ -1,25 +1,38 @@
 <template>
-  <div class="select" v-click-outside="onClickOutside">
+  <div
+    class="select"
+    :class="{
+      'simple': type === 'simple'
+    }"
+    v-click-outside="onClickOutside"
+  >
     <div class="selected" @click="isOpen = !isOpen" >
       <template v-if="$scopedSlots.selected">
         <slot name="selected" :option="selectedOption" ></slot>
       </template>
-      <template v-else>
-        <div class="value">{{ selectedOption && selectedOption.label }}</div>
+      <template v-if="!$scopedSlots.selected">
+        <div class="value">{{ selectedText }}</div>
       </template>
 
-      <div class="arrow">{{ isOpen ? '▲' : '▼' }}</div>
+      <div v-if="type === 'simple'" class="arrow" :class="{'is-open': isOpen}">
+        <img src="~@/assets/img//arrow-down@2x.png" alt="">
+      </div>
+      <div v-if="type === 'default'" class="arrow">
+        {{ isOpen ? '▲' : '▼' }}
+      </div>
     </div>
     <div class="options" v-show="isOpen">
       <div class="option"
         v-for="option in options"
         :key="option.value"
         @click="selectOption(option)">
+
         <template v-if="$scopedSlots.option">
           <slot name="option" :option="option" ></slot>
         </template>
+
         <template v-else>
-          {{ renderOption ? renderOption(option) : option.label }}
+          {{ option.label }}
         </template>
       </div>
     </div>
@@ -36,17 +49,23 @@ export default {
       type: Array,
       required: true,
     },
-    // value: {
-    //   type: [String, Number],
+
+    value: {
+      type: [String, Number],
+    },
+
+    type: {
+      type: String,
+      default: 'default', // simple
+    },
+
+    // renderOption: {
+    //   type: Function,
     // },
 
-    renderOption: {
-      type: Function,
-    },
-
-    renderSelected: {
-      type: Function,
-    },
+    // renderSelected: {
+    //   type: Function,
+    // },
   },
   data() {
     return {
@@ -55,14 +74,21 @@ export default {
     };
   },
   created() {
-    console.log(this);
   },
   computed: {
     selectedText() {
-      if (this.renderOption) {
-        return this.renderOption(this.selectOption);
+      if (this.value) {
+        const target = this.options.find((item) => item.value === this.value);
+        // if (this.renderOption) {
+        //   return this.renderOption(target);
+        // }
+        return target?.label;
       }
-      return this.selectedOption && this.selectedOption.label;
+
+      // if (this.renderOption) {
+      //   return this.renderOption(this.selectOption);
+      // }
+      return this.selectedOption?.label;
     },
   },
   methods: {
@@ -71,8 +97,8 @@ export default {
     },
     selectOption(option) {
       this.selectedOption = option;
-      this.$emit('change', option);
-      this.$emit('input', option);
+      this.$emit('change', option.value);
+      this.$emit('input', option.value);
       this.isOpen = false;
     },
   },
@@ -85,15 +111,41 @@ export default {
   position: relative;
   width: 200px;
   font-size: 16px;
+  border: 1px solid #4C4C4C;
 }
 .selected {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
-  border: 1px solid #4C4C4C;
   cursor: pointer;
   height: 100%;
+}
+
+.simple {
+  &.select {
+    position: relative;
+    min-width: 200px;
+    width: auto;
+    font-size: 24px;
+    border: none;
+  }
+
+  & .arrow {
+      margin-left: 20px;
+    }
+}
+
+.arrow {
+  & img {
+    width: 24px;
+  }
+
+  &.is-open {
+    & img {
+      transform: rotate(180deg);
+    }
+  }
 }
 
 .options {

@@ -66,26 +66,7 @@ export default {
 </script>
 
 <style lang="scss">
-  .history-modal {
-    font-family: ArialRoundedMTBold;
 
-    & .modal-dialog {
-      margin-top: 240px;
-    }
-    & .modal-header {
-      padding: 1rem 30px;
-      border-bottom: none;
-      // color: red;
-    }
-    & .modal-title {
-      font-size: 36px;
-
-    }
-
-    & .modal-body {
-      padding: 1rem 30px;
-    }
-  }
 </style>
 <style lang="scss" scoped>
   // @import "~@/styles/mixin.scss";

@@ -13,6 +13,7 @@ import store from './store';
 import '@/mixin';
 import '@/filters';
 
+import '@/styles/font.scss';
 import '@/styles/theme-overrides/index.scss';
 
 import './initMetamask';

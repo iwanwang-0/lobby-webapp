@@ -16,9 +16,12 @@
         </div>
       </div>
       <div class="btn-group">
-        <div class="btn" @click="onVote">Vote</div>
-        <div class="btn" @click="onBribe">
-          <img class="bribe-btn" src="@/assets/img/bribe-btn@2x.png" alt="">
+        <div class="btn-wrapper">
+         <CuButton
+           @click="onVote">Vote</CuButton>
+        </div>
+        <div class="btn-wrapper">
+          <CuButton  @click="onBribe">Bribe</CuButton>
         </div>
       </div>
     </div>
@@ -55,7 +58,12 @@
 </template>
 
 <script>
+import CuButton from '@/components/CuButton';
+
 export default {
+  components: {
+    CuButton,
+  },
   data() {
     return {
 
@@ -129,16 +137,19 @@ export default {
       display: grid;
       grid-template-columns: 1fr 1fr;
       border-top: 1px solid $border-color;
-      & .btn:first-child {
+      & .btn-wrapper:first-child {
         border-right: 1px solid $border-color;
       }
 
-      & .btn {
+      & .btn-wrapper {
         display: flex;
         justify-content: center;
         align-items: center;
         font-size: 18px;
-        color: #1DD186;
+      }
+
+      & .btn {
+        font-size: 18px;
       }
       & .bribe-btn {
         height: 24px;

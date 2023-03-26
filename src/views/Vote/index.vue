@@ -1,16 +1,19 @@
 <template>
   <div class="page-container">
     <TopSection></TopSection>
+    <ListSection></ListSection>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import TopSection from './TopSection.vue';
+import ListSection from './ListSection.vue';
 
 export default {
   name: 'Home',
   components: {
+    ListSection,
     TopSection,
   },
 };
