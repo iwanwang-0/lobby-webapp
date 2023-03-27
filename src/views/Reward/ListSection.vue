@@ -185,14 +185,12 @@ export default {
 
     getProof(tAddr, round) {
       const content = this.rewardTree[tAddr];
+      console.log('root', JSON.stringify(content, null, 2));
       const tree = StandardMerkleTree.load(content);
       // eslint-disable-next-line no-restricted-syntax
       for (const [i, v] of tree.entries()) {
-        console.log(v);
-        console.log(v[0] === round);
         if (v[0] === round && v[1].toLowerCase() === this.user.address.toLowerCase()) {
           const proof = tree.getProof(i);
-          console.log('proof', proof);
           return proof;
         }
       }
@@ -206,6 +204,13 @@ export default {
         const proof = await this.getProof(tAddr, round);
 
         console.log('proof', proof);
+        console.log([
+            tAddr,
+            round,
+            this.user.address,
+            amount,
+            proof,
+          ])
         const txHash = await sendTransaction({
           to: config.MultiMerkleStash,
           gas: 640000,
@@ -213,7 +218,7 @@ export default {
             tAddr,
             round,
             this.user.address,
-            amount,
+            BigNumber.from(amount).toHexString(),
             proof,
           ]),
         });
