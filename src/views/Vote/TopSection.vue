@@ -54,15 +54,20 @@
 
 <script>
 export default {
+  props: {
+    voteType: {
+      type: String
+    }
+  },
   data() {
     return {
-      voteType: 'VeCRV',
+      // voteT/ype: 'VeCRV',
     }
   },
 
   methods: {
     changeVoteType(type) {
-      this.voteType = type;
+      this.$emit('changeType', type)
     },
   }
 }
@@ -88,6 +93,8 @@ export default {
     font-family: "ChillPixels Maximal";
     font-size: 48px;
     padding-left: 10px;
+    padding-right: 10px;
+    width: 100%;
     .header-text {
       background: linear-gradient(218deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
       -webkit-background-clip: text;
@@ -99,7 +106,7 @@ export default {
       align-items: center;
 
       .link-btn {
-        margin-right: 30px;
+        margin-left: 30px;
         width: 130px;
         height: 50px;
       }
@@ -119,7 +126,7 @@ export default {
 .content {
 
   display: grid;
-  grid-template-columns: 669px 529px;
+  grid-template-columns: 670px 530px;
 
   .left {
     display: flex;

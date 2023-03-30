@@ -207,12 +207,13 @@ export default {
       align-items: center;
 
       .link-btn {
-        margin-right: 30px;
+        margin-left: 30px;
         width: 130px;
         height: 50px;
       }
     }
   }
+
   .content {
     display: grid;
     grid-template-columns: 670px 530px;

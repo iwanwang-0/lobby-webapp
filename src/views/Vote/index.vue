@@ -1,9 +1,19 @@
 <template>
   <div class="page-container">
-    <TopSection></TopSection>
-    <DelegateSection></DelegateSection>
-    <VoteListSection></VoteListSection>
-    <HistoryListSection></HistoryListSection>
+    <TopSection
+      :voteType="voteType"
+      @changeType="changeVoteType"
+    ></TopSection>
+    <DelegateSection
+      v-if="voteType !== 'VeCRV'"
+
+    ></DelegateSection>
+    <VoteListSection
+    :voteType="voteType"
+    ></VoteListSection>
+    <HistoryListSection
+    :voteType="voteType"
+    ></HistoryListSection>
   </div>
 </template>
 
@@ -22,6 +32,17 @@ export default {
     DelegateSection,
     HistoryListSection,
   },
+  data() {
+    return {
+      voteType: 'VeCRV',
+    }
+  },
+
+  methods: {
+    changeVoteType(type) {
+      this.voteType = type;
+    },
+  }
 };
 </script>
 

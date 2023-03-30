@@ -19,6 +19,13 @@
         <CuButton
           class="link-btn"
           variant="link"
+          @click="() => {
+              onClaimAll({
+                amount: row.amount,
+                tAddr: row.tAddr,
+                round: row.round
+              })
+            }"
         >
           Claim all
         </CuButton>
@@ -196,20 +203,23 @@ export default {
       return '';
     },
 
-    async onClaim({ amount, tAddr, round }) {
+    onClaimAll() {
 
+    },
+
+    async onClaim({ amount, tAddr, round }) {
       this.submitting = true;
       try {
         const proof = await this.getProof(tAddr, round);
 
-        console.log('proof', proof);
-        console.log([
-            tAddr,
-            round,
-            this.user.address,
-            amount,
-            proof,
-          ])
+        // console.log('proof', proof);
+        // console.log([
+        //   tAddr,
+        //   round,
+        //   this.user.address,
+        //   amount,
+        //   proof,
+        // ]);
         const txHash = await sendTransaction({
           to: config.MultiMerkleStash,
           gas: 640000,
