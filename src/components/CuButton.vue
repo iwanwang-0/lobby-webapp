@@ -63,6 +63,8 @@ export default {
 <style scoped lang="scss">
 .cu-button {
   color: #64D98A;
+  outline: none;
+  box-shadow: none;
   &:hover {
     color: #64D98A;
     background: linear-gradient(218deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
@@ -72,7 +74,6 @@ export default {
 
   &:disabled {
     color: #eee;
-    // background: linear-gradient(218deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
     -webkit-background-clip: none;
     -webkit-text-fill-color: #eee;
   }

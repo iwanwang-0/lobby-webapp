@@ -4,6 +4,25 @@
       <span class="header-text">
         Current Votes
       </span>
+      <div class="header-right">
+        <b-button
+          class="link-btn"
+          :variant="voteType === 'VeCRV' ? 'primary' : 'outline-primary'"
+          size="lg"
+          @click="changeVoteType('VeCRV')"
+
+        >
+          VeCRV
+        </b-button>
+        <b-button
+          class="link-btn"
+          :variant="voteType === 'VlCVX' ? 'primary' : 'outline-primary'"
+          size="lg"
+          @click="changeVoteType('VlCVX')"
+        >
+          VlCVX
+        </b-button>
+      </div>
     </div>
     <div class="content">
       <div class="left">
@@ -33,6 +52,23 @@
   </b-container>
 </template>
 
+<script>
+export default {
+  data() {
+    return {
+      voteType: 'VeCRV',
+    }
+  },
+
+  methods: {
+    changeVoteType(type) {
+      this.voteType = type;
+    },
+  }
+}
+
+</script>
+
 <style lang="scss" scoped>
 @import "@/styles/vars.scss";
 
@@ -56,6 +92,17 @@
       background: linear-gradient(218deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+
+      .link-btn {
+        margin-right: 30px;
+        width: 130px;
+        height: 50px;
+      }
     }
 
     // .header-right {

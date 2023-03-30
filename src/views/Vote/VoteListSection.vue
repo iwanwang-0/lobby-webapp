@@ -5,8 +5,7 @@
         List
       </span>
       <div class="header-right">
-
-        <b-button
+        <!-- <b-button
           class="link-btn"
           :variant="voteType === 'VeCRV' ? 'primary' : 'outline-primary'"
           size="lg"
@@ -22,7 +21,7 @@
           @click="changeVoteType('VlCVX')"
         >
           VlCVX
-        </b-button>
+        </b-button> -->
 
         <CuSelect
           type="simple"
@@ -39,25 +38,91 @@
         :cols="cols"
         :list="list"
         :loading="loading"
+        :is-expand="true"
       >
         <template v-slot:operation="{ row }">
           <!-- {{ row }} -->
           <CuButton
             variant="link"
             :disabled="submitting"
-            @click="() => {
-              onClaim({
-                amount: row.amount,
-                tAddr: row.tAddr,
-                round: row.round
-              })
-            }"
+            @click.stop="onVote"
           >
             Vote
           </CuButton>
         </template>
+
+        <template v-slot:expandPanel="{ row }">
+          <div class="row1">
+            <div>
+              You vote weight:
+              <em>0.1%</em>
+            </div>
+            <div>
+              You reward :
+              <em>123,235 veCRV</em>
+            </div>
+            <div>
+              <CuButton
+                variant="link"
+                class="claim-btn"
+                :disabled="submitting"
+                size="min"
+              >
+                claim
+              </CuButton>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="expand-item">
+              <div class="label">Max reward per veCRV</div>
+              <div class="content">0.12 CRV</div>
+            </div>
+            <div class="expand-item">
+              <div class="label">Remaining claimable rewards</div>
+              <div class="content">122,345.33 CRV</div>
+            </div>
+            <div></div>
+            <div></div>
+
+            <div class="expand-item">
+              <div class="label">First voting period</div>
+              <div class="content">February 9, 2023 8:00 am</div>
+            </div>
+            <div class="expand-item">
+              <div class="label">Last voting period</div>
+              <div class="content">March 30, 2023 8:00 am</div>
+            </div>
+            <div class="expand-item">
+              <div class="label">First week of claim</div>
+              <div class="content">February 16, 2023 8:00 am</div>
+            </div>
+            <div class="expand-item">
+              <div class="label">Last week of claim</div>
+              <div class="content">February 16, 2023 8:00 am</div>
+            </div>
+            <div class="expand-item">
+              <div class="label">Contracts</div>
+              <div class="content">0.12 CRV</div>
+            </div>
+            <div class="expand-item">
+              <div class="label">&nbsp;</div>
+              <div class="content">0.12 CRV</div>
+            </div>
+            <div class="expand-item">
+              <div class="label">&nbsp;</div>
+              <div class="content">0.12 CRV</div>
+            </div>
+          </div>
+        </template>
       </TableList>
     </div>
+    <!-- <div class="footer">
+      <CuPagination
+        :page="1"
+        :pageSize="10"
+        :total="999"
+      ></CuPagination>
+    </div> -->
   </b-container>
 </template>
 
@@ -65,8 +130,8 @@
 import { mapState } from 'vuex';
 import { BigNumber, utils } from 'ethers';
 import TableList from '@/components/TableList';
-import RoundSelect from '@/components/RoundSelect';
 import CuButton from '@/components/CuButton';
+import CuPagination from '@/components/CuPagination';
 import CuSelect from '@/components/CuSelect';
 
 import { getRewardTree } from '@/api/common';
@@ -81,9 +146,9 @@ import {
 export default {
   components: {
     TableList,
-    RoundSelect,
     CuButton,
     CuSelect,
+    CuPagination,
   },
 
   data() {
@@ -138,6 +203,14 @@ export default {
           VoteNumber: '22',
           operation: '',
         },
+        {
+          Sort: '3',
+          Pool: 'ETH-alETH',
+          Apr: '30%',
+          Rewards: '158.87 $CRV',
+          VoteNumber: '22',
+          operation: '',
+        },
       ],
       voteType: 'VeCRV',
 
@@ -176,6 +249,9 @@ export default {
   },
 
   methods: {
+    onVote() {
+      this.$router.push('/vote-edit');
+    },
     selectChange() {
       this.getReward();
     },
@@ -211,19 +287,9 @@ export default {
       console.log(amount, tAddr, round);
       this.submitting = true;
       try {
-        // const tree = StandardMerkleTree.load(content);
 
         const proof = await this.getProof(tAddr, round);
 
-        // let proof = '';
-        // // eslint-disable-next-line no-restricted-syntax
-        // for (const [i, v] of tree.entries()) {
-        //   if (v[0].toLowerCase() === this.user.address.toLowerCase()) {
-        //     proof = tree.getProof(i);
-        //   }
-        // }
-
-        console.log(proof);
         const txHash = await sendTransaction({
           to: config.MultiMerkleStash,
           gas: 640000,
@@ -246,7 +312,6 @@ export default {
           this.showSuccess('Succeeded', {
             tx: txHash,
           });
-          // this.amount = '';
           this.getReward();
           // this.$store.dispatch('getPosition');
           // this.$store.dispatch('getWithdrawable');
@@ -283,11 +348,6 @@ export default {
         return null;
       } catch (error) {
         return null;
-        // this.symbol = '';
-        // this.decimals = '';
-        // this.balance = '';
-        // this.allowance = '';
-        // this.isApproved = false;
       }
     },
 
@@ -345,6 +405,7 @@ export default {
   border-right: 1px solid $border-color;
   display: grid;
   grid-template-rows: 130px auto;
+  // grid-template-rows: 130px auto 100px;
   .header {
     border-bottom: 1px solid $border-color;
     display: flex;
@@ -363,9 +424,6 @@ export default {
       display: flex;
       align-items: center;
 
-      // .cu-select {
-      //   border: none;
-      // }
       .link-btn {
         margin-right: 30px;
         width: 130px;
@@ -374,10 +432,53 @@ export default {
     }
 
   }
+
+  .footer {
+    border-top: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 10px;
+  }
   .content {
-    // display: grid;
-    // grid-template-columns: 670px 530px;
-    // height: 317px;
+    font-family: "ChillPixels Maximal";
+    & .row1 {
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      padding-left: 9px;
+      height: 28px;
+      color: #ccc;
+      & > div {
+        margin-right: 40px;
+      }
+      em {
+        color: #1DD186;
+        font-style: normal;
+      }
+      & .claim-btn {
+        font-size: 18px;
+      }
+    }
+    & .row2 {
+      font-size: 14px;
+      display: grid;
+      grid-template-columns: 230px 230px 230px 230px;
+      row-gap: 20px;
+      background: rgba(27, 25, 31, 0.45);
+      border: 1px dashed #787878;
+      padding: 8px;
+      margin: 18px 0;
+      width: 912px;
+      & .label {
+        color: #666666;
+      }
+
+      & .content {
+        color: #CCCCCC;
+      }
+    }
+
   }
 }
 

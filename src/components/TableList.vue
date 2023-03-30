@@ -3,7 +3,20 @@
   <table class="table-list">
     <thead class="table-head">
       <tr>
-        <th v-for="head in cols">{{ head.title }}</th>
+        <th
+          v-for="head in cols"
+          :width="head.width"
+        >
+          {{ head.title }}
+          <b-button
+            style="margin-left: 8px"
+            variant="outline-primary"
+            v-if="head.opBtn"
+            @click="head.opClick"
+          >
+            {{ head.opBtn }}
+          </b-button>
+        </th>
       </tr>
     </thead>
     <tbody class="table-body">
@@ -24,17 +37,34 @@
           </td>
         </tr>
       </template>
-      <tr v-for="row in list">
-        <td v-for="head in cols">
-
-          <template v-if="head.prop === 'operation' && $scopedSlots.operation">
-            <slot name="operation" :row="row" ></slot>
-          </template>
-          <template v-else>
-            {{ row[head.prop]  }}
-          </template>
-        </td>
-      </tr>
+      <template v-for="(row, idx) in list">
+        <tr
+          :class="{'expanded-row1': active === idx}"
+          @click="expand(idx)"
+        >
+          <td v-for="head in cols">
+            <template v-if="head.prop === 'operation' && $scopedSlots.operation">
+              <slot name="operation" :row="row"></slot>
+            </template>
+            <template v-if="head.isEdit && $scopedSlots.operation">
+              <div class="edit-wrapper">
+                <input class="edit-input" type="text" v-model="row['head.prop']" />
+                <span class="suffix">%</span>
+              </div>
+            </template>
+            <template v-else>
+              {{ row[head.prop]  }}
+            </template>
+          </td>
+        </tr>
+        <tr class="expanded-row2" v-if="active === idx">
+          <td>
+          </td>
+          <td :colspan="cols.length - 1">
+            <slot name="expandPanel" :row="row"></slot>
+          </td>
+        </tr>
+      </template>
     </tbody>
   </table>
 </b-overlay>
@@ -42,7 +72,12 @@
 </template>
 
 <script>
+import CuButton from './CuButton.vue';
+
 export default {
+  components: {
+    CuButton,
+  },
   props: {
     cols: {
       type: Array,
@@ -53,6 +88,27 @@ export default {
     loading: {
       type: Boolean,
       default: false,
+    },
+    isExpand: {
+      type: Boolean,
+      default: false,
+    }
+  },
+
+  data() {
+    return {
+      active: '',
+    };
+  },
+
+  methods: {
+    expand(idx) {
+      if (!this.isExpand) return;
+      if (idx === this.active) {
+        this.active = '';
+      } else {
+        this.active = idx;
+      }
     },
   },
 };
@@ -92,6 +148,42 @@ export default {
     &:first-child {
       color: #1DD186;
     }
+  }
+  .edit-wrapper {
+    display: inline-flex;
+    width: 300px;
+  }
+  .edit-input {
+    background: #1B191F;
+    border: 1px solid #4C4C4C;
+    height: 40px;
+    color: #ccc;
+    outline: none;
+    padding-left: 8px;
+  }
+  .suffix {
+      display: inline-block;
+      text-align: center;
+      line-height: 36px;
+      width: 40px;
+      height: 40px;
+      background: #4C4C4C;
+      flex-shrink: 0;
+    }
+
+  & .expanded-row1 {
+    background: #363537;
+  }
+
+  & .expanded-row2 {
+    background: #363537;
+    border-top: none;
+      & td {
+        padding: 0;
+        &:first-child {
+          color: #ccc;
+        }
+      }
   }
 
   .empty-content {

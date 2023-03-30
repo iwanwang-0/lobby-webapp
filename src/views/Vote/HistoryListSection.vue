@@ -2,34 +2,9 @@
    <b-container class="top-section" fluid="lg">
     <div class="header">
       <span class="header-text">
-        Details
+        Vote history
       </span>
-
       <div class="header-right">
-
-        <b-button
-          class="link-btn"
-          variant="link"
-          style="color: #fff;  box-shadow: none;"
-          @click="openForward"
-        >
-          Forward rewards
-        </b-button>
-
-        <CuButton
-          class="link-btn"
-          variant="link"
-        >
-          Claim all
-        </CuButton>
-
-        <!-- <b-button
-          class="link-btn"
-          variant="link"
-        >
-          Claim all <img style="width: 18px;" src="~@/assets/img/right-arrow@2x.png" alt="">
-        </b-button> -->
-
         <RoundSelect
           :options="roundOptions"
           @change="selectChange"
@@ -43,41 +18,22 @@
         :cols="cols"
         :list="list"
         :loading="loading"
+        :is-expand="false"
       >
         <template v-slot:operation="{ row }">
           <!-- {{ row }} -->
           <CuButton
             variant="link"
             :disabled="submitting"
-            @click="() => {
-              onClaim({
-                amount: row.amount,
-                tAddr: row.tAddr,
-                round: row.round
-              })
+            @click.stop="() => {
+              this.$router.push('/vote-edit')
             }"
           >
-            Claim
+            Vote
           </CuButton>
         </template>
       </TableList>
     </div>
-    <b-modal size="lg" ref="my-modal" modal-class="forword-modal" hide-footer title="Forward rewards">
-      <div class="input-wrapper">
-        <input
-          type="text"
-          v-modal="forwardAddress"
-          placeholder="Receive reward address…"
-        >
-      </div>
-      <div class="button-wrapper">
-        <CuButton
-          variant="link"
-        >
-          Submit
-        </CuButton>
-      </div>
-    </b-modal>
   </b-container>
 </template>
 
@@ -87,6 +43,7 @@ import { BigNumber, utils } from 'ethers';
 import TableList from '@/components/TableList';
 import RoundSelect from '@/components/RoundSelect';
 import CuButton from '@/components/CuButton';
+
 import { getRewardTree } from '@/api/common';
 import sendTransaction from '@/common/sendTransaction';
 import config from '@/config';
@@ -105,45 +62,7 @@ export default {
 
   data() {
     return {
-      forwardAddress: '',
-      cols: [
-        {
-          title: 'Round',
-          prop: 'round',
-        },
-        {
-          title: 'Token',
-          prop: 'symbol',
-        },
-        // {
-        //   title: 'Contract',
-        //   prop: 'contract',
-        // },
-        {
-          title: 'Rewards',
-          prop: 'rewards',
-        },
-        {
-          title: 'Operation',
-          prop: 'operation',
-        },
-      ],
-      list: [
-        // {
-        //   round: '1',
-        //   pool: 'ETH-alETH',
-        //   contract: '0xa76…Eg6FG',
-        //   rewards: '158.87 $CRV',
-        //   operation: '',
-        // },
-        // {
-        //   round: '2',
-        //   pool: 'ETH-alETH',
-        //   contract: '0xa76…Eg6FG',
-        //   rewards: '158.87 $CRV',
-        //   operation: '',
-        // },
-      ],
+
       round: 0,
       roundOptions: [
         {
@@ -162,6 +81,63 @@ export default {
         },
       ],
 
+      forwardAddress: '',
+      cols: [
+        {
+          title: 'Round',
+          prop: 'Round',
+        },
+        {
+          title: 'Pool',
+          prop: 'Pool',
+        },
+        {
+          title: 'Quantity veCRV',
+          prop: 'Quantity veCRV',
+        },
+        {
+          title: 'Time',
+          prop: 'Time',
+        },
+      ],
+      list: [
+        {
+          Round: '1',
+          Pool: 'ETH-alETH',
+          Apr: '30%',
+          'Quantity veCRV': '158.87 $CRV',
+          Time: '2023/1/2',
+        },
+        {
+          Round: '2',
+          Pool: 'ETH-alETH',
+          Apr: '30%',
+          'Quantity veCRV': '158.87 $CRV',
+          Time: '2023/1/2',
+        },
+      ],
+
+      voteType: 'VeCRV',
+
+      market: 'All',
+      marketOption: [
+        {
+          label: 'All',
+          value: 'All',
+        },
+        {
+          label: 'Votium',
+          value: 'Votium',
+        },
+        {
+          label: 'yBribe',
+          value: 'yBribe',
+        }, {
+          label: 'VoteMarket',
+          value: 'VoteMarket',
+        },
+      ],
+
       submitting: false,
       loading: false,
 
@@ -174,7 +150,7 @@ export default {
   },
 
   created() {
-    this.getReward();
+    // this.getReward();
   },
 
   methods: {
@@ -182,34 +158,50 @@ export default {
       this.getReward();
     },
 
+    changeVoteType(type) {
+      this.voteType = type;
+    },
+
     getProof(tAddr, round) {
       const content = this.rewardTree[tAddr];
-      console.log('root', JSON.stringify(content, null, 2));
       const tree = StandardMerkleTree.load(content);
       // eslint-disable-next-line no-restricted-syntax
       for (const [i, v] of tree.entries()) {
+        console.log([i, v]);
         if (v[0] === round && v[1].toLowerCase() === this.user.address.toLowerCase()) {
           const proof = tree.getProof(i);
+          console.log(proof);
           return proof;
+          // return tree.getProof(i);
         }
       }
       return '';
     },
 
     async onClaim({ amount, tAddr, round }) {
+      // const { tokenId } = this.$route.query;
+      // const { amount } = this;
+      // if (amount < this.min) {
+      //   this.showError(`The minimum claim is ${this.min} DOGE`);
+      //   return;
+      // }
 
+      console.log(amount, tAddr, round);
       this.submitting = true;
       try {
+        // const tree = StandardMerkleTree.load(content);
+
         const proof = await this.getProof(tAddr, round);
 
-        console.log('proof', proof);
-        console.log([
-            tAddr,
-            round,
-            this.user.address,
-            amount,
-            proof,
-          ])
+        // let proof = '';
+        // // eslint-disable-next-line no-restricted-syntax
+        // for (const [i, v] of tree.entries()) {
+        //   if (v[0].toLowerCase() === this.user.address.toLowerCase()) {
+        //     proof = tree.getProof(i);
+        //   }
+        // }
+
+        console.log(proof);
         const txHash = await sendTransaction({
           to: config.MultiMerkleStash,
           gas: 640000,
@@ -217,7 +209,7 @@ export default {
             tAddr,
             round,
             this.user.address,
-            BigNumber.from(amount).toHexString(),
+            amount,
             proof,
           ]),
         });
@@ -232,7 +224,11 @@ export default {
           this.showSuccess('Succeeded', {
             tx: txHash,
           });
+          // this.amount = '';
           this.getReward();
+          // this.$store.dispatch('getPosition');
+          // this.$store.dispatch('getWithdrawable');
+          // this.$store.dispatch('getBalances');
         } else {
           this.showError('Failed', {
             tx: txHash,
@@ -318,83 +314,12 @@ export default {
 };
 </script>
 
-<style lang="scss">
-
-.forword-modal {
-
-  & .modal-dialog {
-    margin-top: 240px;
-  }
-  & .modal-header {
-    padding: 16px 24px 16px 10px;
-    border-bottom: none;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    // color: red;
-  }
-  & .modal-title {
-    font-size: 36px;
-    color: #64D98A;
-    background: linear-gradient(200deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-family: ChillPixels Maximal;
-  }
-
-  .close {
-    color: #ccc;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 24px;
-  }
-
-  & .modal-content {
-    padding: 0;
-    background: #1D1D1D;
-    border: 1px solid #666666;
-  }
-
-  & .modal-body {
-    padding: 1rem 0;
-  }
-
-  & .input-wrapper {
-    border-top: 1px solid #666666;
-    border-bottom: 1px solid #666666;
-    height: 79px;
-    & input {
-      border: 0;
-      width: 100%;
-      background: transparent;
-      box-shadow: none;
-      outline: none;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      color: #CCCCCC;
-      padding: 0 10px;
-      font-size: 18px;
-    }
-  }
-
-  & .button-wrapper {
-    display: flex;
-    justify-content: center;
-    text-align: center;
-    margin-top: 24px;
-    margin-bottom: 24px;
-
-    & .btn {
-      font-size: 24px;
-    }
-  }
-}
-</style>
 
 <style lang="scss" scoped>
 @import "@/styles/vars.scss";
 
 .top-section {
+  border-top: 1px solid $border-color;
   border-left: 1px solid $border-color;
   border-right: 1px solid $border-color;
   display: grid;
@@ -408,7 +333,6 @@ export default {
     font-size: 48px;
     padding-left: 10px;
     padding-right: 10px;
-
     .header-text {
       background: linear-gradient(218deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
       -webkit-background-clip: text;
@@ -418,18 +342,57 @@ export default {
     .header-right {
       display: flex;
       align-items: center;
+
+      .link-btn {
+        margin-right: 30px;
+        width: 130px;
+        height: 50px;
+      }
     }
 
-    .link-btn {
-      font-size: 18px;
-      margin-right: 24px;
-      font-family: ChillPixels Mono;
-    }
   }
   .content {
+    font-family: "ChillPixels Maximal";
+    & .row1 {
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      padding-left: 9px;
+      height: 28px;
+      color: #ccc;
+      & > div {
+        margin-right: 40px;
+      }
+      em {
+        color: #1DD186;
+        font-style: normal;
+      }
+      & .claim-btn {
+        font-size: 18px;
+      }
+    }
+    & .row2 {
+      font-size: 14px;
+      display: grid;
+      grid-template-columns: 230px 230px 230px 230px;
+      row-gap: 20px;
+      background: rgba(27, 25, 31, 0.45);
+      border: 1px dashed #787878;
+      padding: 8px;
+      margin: 18px 0;
+      width: 912px;
+      & .label {
+        color: #666666;
+      }
+
+      & .content {
+        color: #CCCCCC;
+      }
+    }
     // display: grid;
     // grid-template-columns: 670px 530px;
     // height: 317px;
   }
 }
+
 </style>

@@ -45,6 +45,11 @@ const routes = [
         name: 'reward',
         component: () => import('@/views/Reward'),
       },
+      {
+        path: '/vote-edit',
+        name: 'vote-edit',
+        component: () => import('@/views/VoteEdit'),
+      },
     ],
   },
   // ...login,

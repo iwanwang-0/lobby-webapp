@@ -4,6 +4,26 @@
       <span class="header-text">
         Current Bribe
       </span>
+
+      <div class="header-right">
+        <b-button
+          class="link-btn"
+          :variant="voteType === 'VeCRV' ? 'primary' : 'outline-primary'"
+          size="lg"
+          @click="changeVoteType('VeCRV')"
+
+        >
+          VeCRV
+        </b-button>
+        <b-button
+          class="link-btn"
+          :variant="voteType === 'VlCVX' ? 'primary' : 'outline-primary'"
+          size="lg"
+          @click="changeVoteType('VlCVX')"
+        >
+          VlCVX
+        </b-button>
+      </div>
     </div>
 
     <div class="content">
@@ -65,6 +85,7 @@ export default {
     // },
   },
   data() {
+
     const today = moment.utc();
     // const thursday = moment.utc()
     const thursday = moment.utc().day(4).startOf('day');
@@ -82,6 +103,9 @@ export default {
     }
 
     return {
+      voteType: 'VeCRV',
+
+
       now: Date.now(),
       current,
       next,
@@ -128,6 +152,10 @@ export default {
       this.$emit('change', item);
     },
 
+    changeVoteType(type) {
+      this.voteType = type;
+    },
+
     getRemainTime(targetTime) {
       const duration = targetTime.diff(this.now, 'seconds');
       const second = duration % 60;
@@ -163,13 +191,26 @@ export default {
     border-bottom: 1px solid $border-color;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     font-family: "ChillPixels Maximal";
     font-size: 48px;
     padding-left: 10px;
+    padding-right: 10px;
     .header-text {
       background: linear-gradient(218deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+
+      .link-btn {
+        margin-right: 30px;
+        width: 130px;
+        height: 50px;
+      }
     }
   }
   .content {

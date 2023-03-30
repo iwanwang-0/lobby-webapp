@@ -1,26 +1,20 @@
 <template>
   <div class="page-container">
     <TopSection></TopSection>
-    <DelegateSection></DelegateSection>
-    <VoteListSection></VoteListSection>
-    <HistoryListSection></HistoryListSection>
+    <VoteEditListSection></VoteEditListSection>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import TopSection from './TopSection.vue';
-import DelegateSection from './DelegateSection.vue';
-import VoteListSection from './VoteListSection.vue';
-import HistoryListSection from './HistoryListSection.vue';
+import TopSection from '../Vote/TopSection.vue';
+import VoteEditListSection from './VoteEditListSection.vue';
 
 export default {
   name: 'Home',
   components: {
-    VoteListSection,
+    VoteEditListSection,
     TopSection,
-    DelegateSection,
-    HistoryListSection,
   },
 };
 </script>

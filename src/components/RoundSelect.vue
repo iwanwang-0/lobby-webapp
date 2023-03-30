@@ -75,7 +75,7 @@ export default {
 <style scoped lang="scss">
 .select {
   position: relative;
-  width: 200px;
+  // width: 200px;
   font-size: 24px;
   display: inline-flex;
   align-items: center;
