@@ -3,11 +3,16 @@
     <TopSection
       :selected="selected && selected.idx"
       @change="val => selected = val"
+      :voteType="voteType"
+      @changeVoteType="changeVoteType"
     ></TopSection>
     <FormSection
       :selected-round="selected"
+      :voteType="voteType"
     ></FormSection>
-    <ListSection></ListSection>
+    <ListSection
+      :voteType="voteType"
+    ></ListSection>
   </div>
 </template>
 
@@ -29,10 +34,17 @@ export default {
   data() {
     return {
       selected: null,
+      voteType: 'VeCRV',
     }
   },
   computed: {
     ...mapState(['user']),
+  },
+
+  methods: {
+    changeVoteType(type) {
+      this.voteType = type;
+    },
   }
 };
 </script>

@@ -10,7 +10,7 @@
           class="link-btn"
           :variant="voteType === 'VeCRV' ? 'primary' : 'outline-primary'"
           size="lg"
-          @click="changeVoteType('VeCRV')"
+          @click="$emit('changeVoteType', 'VeCRV')"
 
         >
           VeCRV
@@ -19,7 +19,7 @@
           class="link-btn"
           :variant="voteType === 'VlCVX' ? 'primary' : 'outline-primary'"
           size="lg"
-          @click="changeVoteType('VlCVX')"
+          @click="$emit('changeVoteType', 'VlCVX')"
         >
           VlCVX
         </b-button>
@@ -80,6 +80,13 @@ export default {
     selected: {
       type: Number,
     },
+    changeVoteType: {
+      type: Function,
+
+    },
+    voteType: {
+      type: String,
+    },
     // list: {
     //   type: Array,
     // },
@@ -103,8 +110,7 @@ export default {
     }
 
     return {
-      voteType: 'VeCRV',
-
+      // voteType: 'VeCRV',
 
       now: Date.now(),
       current,
@@ -152,9 +158,9 @@ export default {
       this.$emit('change', item);
     },
 
-    changeVoteType(type) {
-      this.voteType = type;
-    },
+    // changeVoteType(type) {
+    //   this.voteType = type;
+    // },
 
     getRemainTime(targetTime) {
       const duration = targetTime.diff(this.now, 'seconds');

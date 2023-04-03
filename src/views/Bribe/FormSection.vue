@@ -5,7 +5,7 @@
         Deposit A New Incentive
       </span>
     </div>
-
+    <!-- {{ cvxChoices }} -->
     <div class="content">
       <div class="content-row first-row">
         <div class="first-row-left">
@@ -14,7 +14,7 @@
             <!-- <div class="input-wrapper"> -->
               <CuSelect
                 class="cu-select"
-                :options="options1"
+                :options="choices"
                 v-model="guage"
               />
             <!-- </div> -->
@@ -37,7 +37,7 @@
 
             <!-- <CuSelect
               class="cu-select"
-              :options="options1"
+              :options="veCRVOptions"
               @change="onTokenChange"
             >
               <template v-slot:selected="{ option }">
@@ -96,7 +96,7 @@
           <label class="field-label" for=""></label>
           <!-- <div class="input-wrapper"> -->
             <b-button
-              v-if="user.address && !isApproved"
+              v-if="user.address && (voteType === 'VeCRV' && !isCrvApproved) || (voteType === 'VlCVX' && !isCvxApproved)"
               size="sm"
               class="form-btn"
               variant="link"
@@ -106,7 +106,7 @@
             Approve Token</b-button>
 
             <b-button
-              v-if="user.address && isApproved"
+              v-if="user.address && (voteType === 'VeCRV' && isCrvApproved) || (voteType === 'VlCVX' && isCvxApproved)"
               size="sm"
               class="form-btn"
               variant="link"
@@ -136,12 +136,14 @@ import { BigNumber, utils } from 'ethers';
 import sendTransaction from '@/common/sendTransaction';
 import {
   getERC20Contract, getERC20Interface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
+  VotiumBribeCVXContract,
+  VotiumBribeCVXInterface,
 } from '@/eth/ethereum';
 
 import CuSelect from '@/components/CuSelect.vue';
-import bnbIcon from '@/assets/img/token/BNB@2x.png';
-import ethIcon from '@/assets/img/token/ETH@2x.png';
-import usdtIcon from '@/assets/img/token/USDT@2x.png';
+// import bnbIcon from '@/assets/img/token/BNB@2x.png';
+// import ethIcon from '@/assets/img/token/ETH@2x.png';
+// import usdtIcon from '@/assets/img/token/USDT@2x.png';
 
 import { getAllGauges } from '@/api/curve';
 
@@ -149,6 +151,9 @@ export default {
   props: {
     selectedRound: {
       type: Object,
+    },
+    voteType: {
+      type: String,
     },
   },
   components: {
@@ -158,7 +163,7 @@ export default {
   data() {
     return {
       selectedToken: null,
-      options1: [],
+      veCRVOptions: [],
       allGauges: {},
 
       submitting: false,
@@ -171,17 +176,35 @@ export default {
       symbol: '',
       decimals: '',
       balance: '',
-      allowance: '',
-      isApproved: false,
+
+      crvAllowance: '',
+      isCrvApproved: false,
+      cvxAllowance: '',
+      isCvxApproved: false,
     };
   },
   computed: {
     ...mapState(['user']),
+    ...mapState(['cvxChoices']),
+
+    choices() {
+      if (this.voteType === 'VeCRV') {
+        return this.veCRVOptions;
+      }
+      return this.cvxChoices.map((item, idx) => ({
+        value: idx,
+        label: item,
+      }));
+    },
+
   },
 
   watch: {
     tokenAddress() {
       this.getTokenInfoDebounce();
+    },
+    voteType() {
+      this.gauge = '';
     },
   },
 
@@ -199,7 +222,7 @@ export default {
 
       if (success) {
         this.allGauges = data;
-        this.options1 = Object.keys(data).map((key) => ({
+        this.veCRVOptions = Object.keys(data).map((key) => ({
           value: key,
           label: key,
         }));
@@ -207,7 +230,6 @@ export default {
     },
 
     async getTokenInfo() {
-      // console.log(this)
       try {
         if (!this.tokenAddress || !utils.isAddress(this.tokenAddress)) {
           // this.showError('Token address invalid');
@@ -220,31 +242,21 @@ export default {
           erc20Contract.symbol(),
           erc20Contract.decimals(),
           erc20Contract.balanceOf(this.user.address),
-          // erc20Contract.allowance(
-          //   this.user.address,
-          //   config.VotiumVeCRV,
-          // ),
         ]);
 
         if (symbol) {
           this.symbol = symbol;
           this.decimals = decimals;
           this.balance = balance;
-          // this.allowance = allowance;
-          // this.isApproved = allowance.gt(100);
         } else {
           this.symbol = '';
           this.decimals = '';
           this.balance = '';
-          // this.allowance = '';
-          // this.isApproved = false;
         }
       } catch (error) {
         this.symbol = '';
         this.decimals = '';
         this.balance = '';
-        // this.allowance = '';
-        // this.isApproved = false;
       }
     },
 
@@ -257,21 +269,37 @@ export default {
 
         const erc20Contract = getERC20Contract(this.tokenAddress);
 
-        const allowance = await erc20Contract.allowance(
-          this.user.address,
-          config.VotiumVeCRV,
-        );
-
-        if (allowance) {
-          this.allowance = allowance;
-          this.isApproved = allowance.gt(1 + '0'.repeat(20));
+        if (this.voteType === 'VeCRV') {
+          const crvAllowance = await erc20Contract.allowance(
+            this.user.address,
+            config.VotiumVeCRV,
+          );
+          if (crvAllowance.gt(1 + '0'.repeat(20))) {
+            this.crvAllowance = crvAllowance;
+            this.isCrvApproved = crvAllowance.gt(1 + '0'.repeat(20));
+          } else {
+            this.crvAllowance = '';
+            this.isCrvApproved = false;
+          }
         } else {
-          this.allowance = '';
-          this.isApproved = false;
+          const cvxAllowance = await erc20Contract.allowance(
+            this.user.address,
+            config.VotiumBribeCVX,
+          );
+          console.log(cvxAllowance);
+          if (cvxAllowance.gt(1 + '0'.repeat(20))) {
+            this.cvxAllowance = cvxAllowance;
+            this.isCvxApproved = cvxAllowance.gt(1 + '0'.repeat(20));
+          } else {
+            this.cvxAllowance = '';
+            this.isCvxApproved = false;
+          }
         }
       } catch (error) {
-        this.allowance = '';
-        this.isApproved = false;
+        this.crvAllowance = '';
+        this.isCrvApproved = false;
+        this.cvxAllowance = '';
+        this.isCvxApproved = false;
       }
     },
     // eslint-disable-next-line func-names
@@ -291,14 +319,27 @@ export default {
       const erc20Interface = getERC20Interface(this.tokenAddress);
 
       try {
-        const approveTxHash = await sendTransaction({
-          to: this.tokenAddress,
-          gas: 80000,
-          data: erc20Interface.encodeFunctionData('approve', [
-            config.VotiumVeCRV,
-            BigNumber.from(1 + '0'.repeat(30)).toHexString(),
-          ]),
-        });
+        let approveTxHash;
+        if (this.voteType === 'VeCRV') {
+          approveTxHash = await sendTransaction({
+            to: this.tokenAddress,
+            gas: 80000,
+            data: erc20Interface.encodeFunctionData('approve', [
+              config.VotiumVeCRV,
+              BigNumber.from(1 + '0'.repeat(30)).toHexString(),
+            ]),
+          });
+        } else {
+          approveTxHash = await sendTransaction({
+            to: this.tokenAddress,
+            gas: 80000,
+            data: erc20Interface.encodeFunctionData('approve', [
+              config.VotiumBribeCVX,
+              BigNumber.from(1 + '0'.repeat(30)).toHexString(),
+            ]),
+          });
+        }
+
         this.showPending('Pending', {
           tx: approveTxHash,
         });
@@ -358,20 +399,36 @@ export default {
         return false;
       }
 
-      console.log(this.allGauges)
-      console.log(this.guage)
+      // console.log(this.allGauges);
+      // console.log(this.guage);
 
       try {
-        const buyTxHash = await sendTransaction({
-          to: config.VotiumVeCRV,
-          gas: 640000,
-          data: VotiumVeCRVInterface.encodeFunctionData('depositReward', [
-            this.tokenAddress,
-            BigNumber.from(totalRewards + '0'.repeat(this.decimals)).toHexString(),
-            BigNumber.from(this.selectedRound.time.valueOf() / (7 * 24 * 60 * 60 * 1000)).toHexString(),
-            this.allGauges[this.guage].gauge,
-          ]),
-        });
+        let buyTxHash
+        if (this.voteType === 'VeCRV') {
+          buyTxHash = await sendTransaction({
+            to: config.VotiumVeCRV,
+            gas: 640000,
+            data: VotiumVeCRVInterface.encodeFunctionData('depositReward', [
+              this.tokenAddress,
+              BigNumber.from(totalRewards + '0'.repeat(this.decimals)).toHexString(),
+              BigNumber.from(this.selectedRound.time.valueOf() / (7 * 24 * 60 * 60 * 1000)).toHexString(),
+              this.allGauges[this.guage].gauge,
+            ]),
+          });
+        } else {
+          // function depositBribe(address _token, uint256 _amount, bytes32 _proposal, uint256 _choiceIndex) public
+          buyTxHash = await sendTransaction({
+            to: config.VotiumBribeCVX,
+            gas: 640000,
+            data: VotiumBribeCVXInterface.encodeFunctionData('depositBribe', [
+              this.tokenAddress,
+              BigNumber.from(totalRewards + '0'.repeat(this.decimals)).toHexString(),
+              '0x468f191c6c2e35ef6fdddbb1b05d691c29ca9a98730964de1e84b110164cddf9',
+              // BigNumber.from(this.selectedRound.time.valueOf() / (7 * 24 * 60 * 60 * 1000)).toHexString(),
+              this.gauge,
+            ]),
+          });
+        }
         this.showPending('Pending', {
           tx: buyTxHash,
         });

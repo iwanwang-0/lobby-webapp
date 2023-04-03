@@ -18,7 +18,6 @@ import '@/styles/theme-overrides/index.scss';
 
 import './initMetamask';
 
-
 Vue.use(vClickOutside)
 Vue.use(BootstrapVue);
 

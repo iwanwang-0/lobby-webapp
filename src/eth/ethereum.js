@@ -5,6 +5,9 @@ import ERC20 from '@/eth/abi/ERC20.json';
 import MultiMerkleStashAbi from '@/eth/abi/MultiMerkleStash.json';
 import VotiumVeCRVAbi from '@/eth/abi/VotiumVeCRV.json';
 
+import MultiMerkleStashForCVXAbi from '@/eth/abi/MultiMerkleStashForCVX.json';
+import VotiumBribeCVXAbi from '@/eth/abi/VotiumBribeCVX.json';
+
 // A Web3Provider wraps a standard Web3 provider, which is
 // what Metamask injects as window.ethereum into each page
 // https://kovan.infura.io/v3/492234a5fc4a458191731b8d68be70ec
@@ -19,13 +22,26 @@ const VotiumVeCRVContract = new ethers.Contract(
   config.VotiumVeCRV, VotiumVeCRVAbi.abi, provider,
 );
 
+const MultiMerkleStashForCVXContract = new ethers.Contract(
+  config.MultiMerkleStashForCVX, MultiMerkleStashForCVXAbi.abi, provider,
+);
+
+const VotiumBribeCVXContract = new ethers.Contract(
+  config.VotiumBribeCVX, VotiumBribeCVXAbi.abi, provider,
+);
+
 const USDTContract = new ethers.Contract(config.USDT, ERC20.abi, provider);
 const USDCContract = new ethers.Contract(config.USDC, ERC20.abi, provider);
 
 const MultiMerkleStashInterface = new ethers.utils.Interface(MultiMerkleStashAbi.abi);
 const VotiumVeCRVInterface = new ethers.utils.Interface(VotiumVeCRVAbi.abi);
+
+const MultiMerkleStashForCVXInterface = new ethers.utils.Interface(MultiMerkleStashForCVXAbi.abi);
+const VotiumBribeCVXInterface = new ethers.utils.Interface(VotiumBribeCVXAbi.abi);
+
 const USDTInterface = new ethers.utils.Interface(ERC20.abi);
 const USDCInterface = new ethers.utils.Interface(ERC20.abi);
+
 // const USDTInterface= new ethers.utils.Interface(ERC20.abi);
 
 // Doge token address: 0x629b490cFA58cB53A5646d49B2fFFf1576b5c8aa
@@ -68,11 +84,17 @@ export {
   provider,
   MultiMerkleStashContract,
   VotiumVeCRVContract,
+  MultiMerkleStashForCVXContract,
+  VotiumBribeCVXContract,
+
   USDTContract,
   USDCContract,
 
   MultiMerkleStashInterface,
   VotiumVeCRVInterface,
+  MultiMerkleStashForCVXInterface,
+  VotiumBribeCVXInterface,
+
   USDTInterface,
   USDCInterface,
 
