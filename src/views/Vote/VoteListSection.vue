@@ -36,7 +36,7 @@
     <div class="content">
       <TableList
         :cols="cols"
-        :list="list"
+        :list="voteList"
         :loading="loading"
         :is-expand="true"
       >
@@ -144,6 +144,11 @@ import {
 } from '@/eth/ethereum';
 
 export default {
+  props: {
+    voteType: {
+      type: String,
+    }
+  },
   components: {
     TableList,
     CuButton,
@@ -157,11 +162,11 @@ export default {
       cols: [
         {
           title: 'Sort',
-          prop: 'Sort',
+          prop: 'sort',
         },
         {
           title: 'Pool',
-          prop: 'Pool',
+          prop: 'pool',
         },
         {
           title: 'Apr',
@@ -242,6 +247,19 @@ export default {
 
   computed: {
     ...mapState(['user']),
+    ...mapState(['cvxChoices', 'proposal']),
+
+    voteList() {
+      if (this.voteType === 'VeCRV') {
+        return [];
+      }
+      return this.cvxChoices.map((item, idx) => {
+        return {
+          sort: idx,
+          pool: item.replace(/\(.*\)/, ''),
+        }
+      });
+    },
   },
 
   created() {
@@ -250,7 +268,10 @@ export default {
 
   methods: {
     onVote() {
-      this.$router.push('/vote-edit');
+      // this.$router.push('/vote-edit');
+      // this.$router.push('/vote-edit');
+      const lint = `https://snapshot.org/#/iwan.eth/proposal/${this.proposal.id}`
+      window.open(lint);
     },
     selectChange() {
       this.getReward();

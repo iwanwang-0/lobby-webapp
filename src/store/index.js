@@ -5,7 +5,7 @@ import config from '@/config';
 import user from './user';
 import enums from './enums';
 import getters from './getters';
-import { getChoices } from '@/api/snapshot'
+import { getProposal } from '@/api/snapshot'
 
 Vue.use(Vuex);
 
@@ -23,6 +23,7 @@ export default new Vuex.Store({
   },
   state: {
     cvxChoices: [],
+    cvxProposal: {}
   },
   getters,
   mutations: {
@@ -37,10 +38,11 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    async getChoices({ commit, state }) {
-      const choices = await getChoices();
+    async getProposal({ commit, state }) {
+      const proposal = await getProposal();
       commit('UPDATE_STATE', {
-        cvxChoices: choices,
+        proposal,
+        cvxChoices: proposal.choices,
       });
     },
   },

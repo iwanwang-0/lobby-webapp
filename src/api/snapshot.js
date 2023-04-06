@@ -19,12 +19,12 @@ const hub = 'https://hub.snapshot.org';
 
 const query = `
   query {
-    proposals (
+    proposals(
       first: 1,
       skip: 0,
       where: {
         space_in: ["iwan.eth"],
-        title_contains: "Gauge Weight for Week of"
+        title_contains: "Gauge Weight for Week of",
         state: "active"
       },
       orderBy: "created",
@@ -33,15 +33,12 @@ const query = `
       id
       title
       body
+      type
       choices
       start
       end
       snapshot
       state
-      scores
-      scores_by_strategy
-      scores_total
-      scores_updated
       author
       space {
         id
@@ -51,7 +48,8 @@ const query = `
   }
 `;
 
-export function getChoices() {
+// eslint-disable-next-line import/prefer-default-export
+export function getProposal() {
   return fetch(`${hub}/graphql?`, {
     method: 'POST',
     headers: {
@@ -64,16 +62,12 @@ export function getChoices() {
     .then((res) => {
       if (res?.data?.proposals) {
         const keyword = 'Gauge Weight for Week of';
-        const target = res?.data?.proposals.find(item => {
-          return item.title.match(keyword);
-        })
+        const target = res?.data?.proposals.find((item) => item.title.match(keyword));
         if (target) {
-          return target.choices
+          return target;
         }
-        return [];
       }
-      return [];
-
+      return {};
     })
     .catch((error) => console.error(error));
 }

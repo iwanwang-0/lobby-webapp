@@ -69,8 +69,6 @@ export async function getRewardTree() {
   return data;
 }
 
-
-
 /**
  * 获取持仓
  * @param {*}

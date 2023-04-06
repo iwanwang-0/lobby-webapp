@@ -191,7 +191,6 @@ export default {
 
     getProof(tAddr, round) {
       const content = this.rewardTree[tAddr];
-      console.log('root', JSON.stringify(content, null, 2));
       const tree = StandardMerkleTree.load(content);
       // eslint-disable-next-line no-restricted-syntax
       for (const [i, v] of tree.entries()) {
@@ -212,14 +211,6 @@ export default {
       try {
         const proof = await this.getProof(tAddr, round);
 
-        // console.log('proof', proof);
-        // console.log([
-        //   tAddr,
-        //   round,
-        //   this.user.address,
-        //   amount,
-        //   proof,
-        // ]);
         const txHash = await sendTransaction({
           to: config.MultiMerkleStash,
           gas: 640000,

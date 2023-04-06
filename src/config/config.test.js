@@ -17,6 +17,8 @@ export default {
   // chainId: 1,
   // gethServer: 'https://mainnet.infura.io/v3/6ef437a0bfc743d0bbfe73f72c90afd4', 主网
   // chainId: 1,
+  githubToken: 'token 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',
+
   curveUrl: 'https://api.curve.fi',
   browser: 'https://goerli.etherscan.io/',
   gethServer: 'https://goerli.infura.io/v3/800d17c94bfb46c8b0296a5770703215',
@@ -38,7 +40,9 @@ export default {
   USDT: '0x811B9dB74373878f7f05C66C24Ff28c0bCD61c8C',
   USDC: '0xdBEB7e5cacfA3B7754651ccC67F4e98bF23fb9BC',
 
-  MultiMerkleStash: '0xc4e1444aD27b77B6226C85C295Bd881Bf220bBB6',
-  StashController: '0x55411D5c8b9689eeF134630991D79b87129E9CD4',
-  VotiumVeCRV: '0xe6047e562b2407bEef55305EF5658F37900B61D9',
+  MultiMerkleStash: '0x10289a4d39E4CE2A5196993DF7822fCCe8102761',
+  StashController: '0xe42Be8f5b7B898C9F693BD4E33fE8Fa9F9629EFF',
+  VotiumVeCRV: '0x1e871FC95103f9247c970c056251381057033A3d',
+  MultiMerkleStashForCVX: '0xd4BdB91E957f25eCB44004342C00EB487349381D',
+  VotiumBribeCVX: '0xA5B6F4ce90645FEF01c1BF507a87BB02484c98b0',
 };

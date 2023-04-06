@@ -15,7 +15,7 @@
               <CuSelect
                 class="cu-select"
                 :options="choices"
-                v-model="guage"
+                v-model="gauge"
               />
             <!-- </div> -->
           </div>
@@ -168,7 +168,7 @@ export default {
 
       submitting: false,
 
-      guage: '',
+      gauge: '',
       tokenAddress: '',
       totalRewards: '',
       maxReward: '',
@@ -185,7 +185,7 @@ export default {
   },
   computed: {
     ...mapState(['user']),
-    ...mapState(['cvxChoices']),
+    ...mapState(['cvxChoices', 'proposal']),
 
     choices() {
       if (this.voteType === 'VeCRV') {
@@ -361,7 +361,7 @@ export default {
     },
 
     async onBribe() {
-      // guage: '',
+      // gauge: '',
       // tokenAddress: '',
       // totalRewards: '',
       // maxReward: '',
@@ -376,10 +376,12 @@ export default {
       }
 
       const {
-        guage, tokenAddress, totalRewards, maxReward,
+        gauge, tokenAddress, totalRewards, maxReward,
       } = this;
 
-      if (!guage || !tokenAddress || !totalRewards || !maxReward) {
+      console.log(gauge, tokenAddress, totalRewards, maxReward)
+
+      if (gauge == null || !tokenAddress || !totalRewards || !maxReward) {
         this.showError('The form field is error');
         return;
       }
@@ -400,10 +402,10 @@ export default {
       }
 
       // console.log(this.allGauges);
-      // console.log(this.guage);
-
+      console.log(gauge);
+      console.log(this.gauge)
       try {
-        let buyTxHash
+        let buyTxHash;
         if (this.voteType === 'VeCRV') {
           buyTxHash = await sendTransaction({
             to: config.VotiumVeCRV,
@@ -412,10 +414,16 @@ export default {
               this.tokenAddress,
               BigNumber.from(totalRewards + '0'.repeat(this.decimals)).toHexString(),
               BigNumber.from(this.selectedRound.time.valueOf() / (7 * 24 * 60 * 60 * 1000)).toHexString(),
-              this.allGauges[this.guage].gauge,
+              this.allGauges[this.gauge].gauge,
             ]),
           });
         } else {
+          // console.log([
+          //   this.tokenAddress,
+          //   BigNumber.from(totalRewards + '0'.repeat(this.decimals)).toHexString(),
+          //   this.proposal.id,
+          //   this.gauge,
+          // ]);
           // function depositBribe(address _token, uint256 _amount, bytes32 _proposal, uint256 _choiceIndex) public
           buyTxHash = await sendTransaction({
             to: config.VotiumBribeCVX,
@@ -423,8 +431,7 @@ export default {
             data: VotiumBribeCVXInterface.encodeFunctionData('depositBribe', [
               this.tokenAddress,
               BigNumber.from(totalRewards + '0'.repeat(this.decimals)).toHexString(),
-              '0x468f191c6c2e35ef6fdddbb1b05d691c29ca9a98730964de1e84b110164cddf9',
-              // BigNumber.from(this.selectedRound.time.valueOf() / (7 * 24 * 60 * 60 * 1000)).toHexString(),
+              this.proposal.id,
               this.gauge,
             ]),
           });
