@@ -1,4 +1,5 @@
 import axios from '@/common/axios';
+import config from '@/config';
 
 /**
  * 登录
@@ -49,7 +50,7 @@ export async function getRewardTree() {
     'https://api.github.com/repos/iwanwang-0/lobby-merkledata/contents/vecrv/amount.json',
     {
       headers: {
-        Authorization: 'token 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',
+        Authorization: config.githubToken,
       },
     },
   )
@@ -58,7 +59,37 @@ export async function getRewardTree() {
       `https://api.github.com/repos/iwanwang-0/lobby-merkledata/git/blobs/${d.sha}`,
       {
         headers: {
-          Authorization: 'token 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',
+          Authorization: config.githubToken,
+        },
+      },
+    ))
+    .then((d) => d.json())
+    .then((d) => JSON.parse(atob(d.content)));
+
+  return data;
+}
+
+
+
+/**
+ * 获取持仓
+ * @param {*}
+ */
+export async function getCvxRewardTree() {
+  const data = await fetch(
+    'https://api.github.com/repos/iwanwang-0/lobby-merkledata/contents/vlcvx/amount.json',
+    {
+      headers: {
+        Authorization: config.githubToken,
+      },
+    },
+  )
+    .then((d) => d.json())
+    .then((d) => fetch(
+      `https://api.github.com/repos/iwanwang-0/lobby-merkledata/git/blobs/${d.sha}`,
+      {
+        headers: {
+          Authorization: config.githubToken,
         },
       },
     ))

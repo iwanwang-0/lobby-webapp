@@ -17,6 +17,8 @@ export default {
   // chainId: 1,
   // gethServer: 'https://mainnet.infura.io/v3/6ef437a0bfc743d0bbfe73f72c90afd4', 主网
   // chainId: 1,
+  githubToken: 'token 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',
+
   curveUrl: 'https://api.curve.fi',
   browser: 'https://goerli.etherscan.io/',
   gethServer: 'https://goerli.infura.io/v3/800d17c94bfb46c8b0296a5770703215',

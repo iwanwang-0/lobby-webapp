@@ -20,10 +20,11 @@ const hub = 'https://hub.snapshot.org';
 const query = `
   query {
     proposals (
-      first: 20,
+      first: 1,
       skip: 0,
       where: {
-        space_in: ["cvx.eth"],
+        space_in: ["iwan.eth"],
+        title_contains: "Gauge Weight for Week of"
         state: "active"
       },
       orderBy: "created",
