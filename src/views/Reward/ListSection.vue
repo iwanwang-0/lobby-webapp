@@ -7,6 +7,14 @@
 
       <div class="header-right">
 
+        <CuSelect
+          class="type-select"
+          type="simple"
+          :options="typeOptions"
+          v-model="type"
+        >
+
+        </CuSelect>
         <b-button
           class="link-btn"
           variant="link"
@@ -19,12 +27,9 @@
         <CuButton
           class="link-btn"
           variant="link"
+          :disabled="submitting"
           @click="() => {
-              onClaimAll({
-                amount: row.amount,
-                tAddr: row.tAddr,
-                round: row.round
-              })
+              onClaimAll()
             }"
         >
           Claim all
@@ -89,12 +94,13 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import { BigNumber, utils } from 'ethers';
 import TableList from '@/components/TableList';
 import RoundSelect from '@/components/RoundSelect';
+import CuSelect from '@/components/CuSelect';
 import CuButton from '@/components/CuButton';
-import { getRewardTree } from '@/api/common';
+import { getCvxRewardTree, getCrvRewardTree } from '@/api/common';
 import sendTransaction from '@/common/sendTransaction';
 import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
@@ -108,10 +114,24 @@ export default {
     TableList,
     RoundSelect,
     CuButton,
+    CuSelect,
   },
 
   data() {
     return {
+      typeOptions: [
+        {
+          label: 'VeCRV',
+          value: 'VeCRV',
+        },
+        {
+          label: 'VlCVX',
+          value: 'VlCVX',
+        },
+      ],
+
+      type: 'VeCRV',
+
       forwardAddress: '',
       cols: [
         {
@@ -122,10 +142,6 @@ export default {
           title: 'Token',
           prop: 'symbol',
         },
-        // {
-        //   title: 'Contract',
-        //   prop: 'contract',
-        // },
         {
           title: 'Rewards',
           prop: 'rewards',
@@ -135,39 +151,8 @@ export default {
           prop: 'operation',
         },
       ],
-      list: [
-        // {
-        //   round: '1',
-        //   pool: 'ETH-alETH',
-        //   contract: '0xa76…Eg6FG',
-        //   rewards: '158.87 $CRV',
-        //   operation: '',
-        // },
-        // {
-        //   round: '2',
-        //   pool: 'ETH-alETH',
-        //   contract: '0xa76…Eg6FG',
-        //   rewards: '158.87 $CRV',
-        //   operation: '',
-        // },
-      ],
+      list: [],
       round: 0,
-      roundOptions: [
-        {
-          label: 0,
-          value: 0,
-        },
-        {
-          label: 1,
-          value: 1,
-        }, {
-          label: 2,
-          value: 2,
-        }, {
-          label: 3,
-          value: 3,
-        },
-      ],
 
       submitting: false,
       loading: false,
@@ -178,10 +163,31 @@ export default {
 
   computed: {
     ...mapState(['user']),
+    ...mapGetters(['roundOptions']),
+  },
+
+  watch: {
+    roundOptions: {
+      handler() {
+        if (this.roundOptions && this.roundOptions[0]) {
+          this.round = this.roundOptions[0].value
+        }
+      },
+      immediate: true,
+    },
+    type: {
+      handler() {
+        this.getReward();
+        // if (this.roundOptions && this.roundOptions[0]) {
+        //   this.round = this.roundOptions[0].value
+        // }
+      },
+    }
   },
 
   created() {
     this.getReward();
+    // console.log(this.roundOptions[0])
   },
 
   methods: {
@@ -202,8 +208,49 @@ export default {
       return '';
     },
 
-    onClaimAll() {
+    async onClaimAll() {
+      this.submitting = true;
+      // const tAddr = this.user.address;
+      try {
 
+        const params = this.list.map((item) => {
+          const proof = this.getProof(item.tAddr, item.round);
+          return {
+            token: item.tAddr,
+            index: item.round,
+            amount: item.amount,
+            merkleProof: proof,
+          }
+        });
+        const txHash = await sendTransaction({
+          to: config.MultiMerkleStash,
+          gas: 640000,
+          data: MultiMerkleStashInterface.encodeFunctionData('claimMulti', [
+            this.user.address,
+            params,
+          ]),
+        });
+
+        this.showPending('Pending', {
+          tx: txHash,
+        });
+
+        const buyTx = await provider.waitForTransaction(txHash);
+
+        if (buyTx.status === 1) {
+          this.showSuccess('Succeeded', {
+            tx: txHash,
+          });
+          this.getReward();
+        } else {
+          this.showError('Failed', {
+            tx: txHash,
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+      this.submitting = false;
     },
 
     async onClaim({ amount, tAddr, round }) {
@@ -282,8 +329,17 @@ export default {
       this.loading = true;
       this.list = [];
       const tempList = [];
-      const tree = await getRewardTree();
+      let tree = {};
+
+      if (this.type === 'VeCRV') {
+        tree = await getCrvRewardTree();
+      } else {
+        tree = await getCvxRewardTree();
+      }
+
+      console.log(tree)
       this.rewardTree = Object.freeze(tree);
+
       if (tree) {
         Object.keys(tree).forEach((tAddr) => {
           const tokenDetail = tree[tAddr];
@@ -419,6 +475,10 @@ export default {
     .header-right {
       display: flex;
       align-items: center;
+    }
+
+    .type-select {
+      // width: 80px !important;
     }
 
     .link-btn {

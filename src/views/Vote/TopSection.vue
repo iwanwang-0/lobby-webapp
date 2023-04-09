@@ -26,14 +26,14 @@
     </div>
     <div class="content">
       <div class="left">
-        <div class="row1">The veCRV Gauge voting award for the week of February 9, 8:00 am GMT+8</div>
+        <div class="row1">{{desc}}</div>
 
         <div class="row2">Time Remaining to Vote:
           <span class="remain-text">
-            <em>03</em>d
-            <em>13</em>h
-            <em>03</em>min
-            <em>03</em>s
+            <em>{{currentDur.date}}</em>d
+            <em>{{currentDur.hour}}</em>h
+            <em>{{currentDur.minute}}</em>min
+            <em>{{currentDur.second}}</em>s
           </span>
         </div>
         <div class="row3">Deadline for the next round of voting：13d13h20min36s</div>
@@ -53,24 +53,67 @@
 </template>
 
 <script>
+import moment from 'moment';
+
 export default {
   props: {
     voteType: {
-      type: String
-    }
+      type: String,
+    },
   },
   data() {
-    return {
-      // voteT/ype: 'VeCRV',
+    const today = moment.utc();
+    const thursday = moment.utc().day(4).startOf('day');
+    let current;
+    if (today.isBefore(thursday)) {
+      current = thursday.clone();
+    } else {
+      current = thursday.clone().add(7, 'day');
     }
+
+    return {
+      now: Date.now(),
+      current,
+      desc: `The veCRV Gauge voting award for the week of ${current.local().format('MMMM D HH:mm a')} GMT${current.local().format('ZZ')}`
+    };
+  },
+
+  computed: {
+    currentDur() {
+      return this.getRemainTime(this.current);
+    },
+  },
+
+  created() {
+    this.loopSetNow();
   },
 
   methods: {
     changeVoteType(type) {
-      this.$emit('changeType', type)
+      this.$emit('changeType', type);
     },
-  }
-}
+
+    getRemainTime(targetTime) {
+      const duration = targetTime.diff(this.now, 'seconds');
+      const second = duration % 60;
+      const minute = Math.floor(duration / 60) % 60;
+      const hour = Math.floor(duration / 60 / 60) % 24;
+      const date = Math.floor(duration / 60 / 60 / 24);
+      return {
+        second,
+        minute,
+        hour,
+        date,
+      };
+    },
+    loopSetNow() {
+      setTimeout(() => {
+        this.now = Date.now();
+        this.loopSetNow();
+      }, 1000);
+    },
+  },
+};
 
 </script>
 

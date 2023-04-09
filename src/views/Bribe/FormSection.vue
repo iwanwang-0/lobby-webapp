@@ -196,7 +196,6 @@ export default {
         label: item,
       }));
     },
-
   },
 
   watch: {

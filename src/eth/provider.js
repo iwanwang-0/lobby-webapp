@@ -3,7 +3,7 @@ import config from '@/config';
 
 const provider = new providers.JsonRpcProvider(
   config.gethServer,
-  config.chainId,
+  parseInt(config.chainId, 10),
 );
 
 export default provider;

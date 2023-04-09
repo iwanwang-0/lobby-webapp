@@ -17,7 +17,8 @@ export default {
   // chainId: 1,
   // gethServer: 'https://mainnet.infura.io/v3/6ef437a0bfc743d0bbfe73f72c90afd4', 主网
   // chainId: 1,
-  githubToken: 'token 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',
+  githubToken: 'token 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',
+  space: 'iwan.eth',
 
   curveUrl: 'https://api.curve.fi',
   browser: 'https://goerli.etherscan.io/',

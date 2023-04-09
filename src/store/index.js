@@ -22,8 +22,27 @@ export default new Vuex.Store({
     enums,
   },
   state: {
+    totalRound: 100,
     cvxChoices: [],
-    cvxProposal: {}
+    cvxProposal: {},
+
+    marketOption: [
+      {
+        label: 'All',
+        value: 'All',
+      },
+      {
+        label: 'Votium',
+        value: 'Votium',
+      },
+      {
+        label: 'yBribe',
+        value: 'yBribe',
+      }, {
+        label: 'VoteMarket',
+        value: 'VoteMarket',
+      },
+    ]
   },
   getters,
   mutations: {

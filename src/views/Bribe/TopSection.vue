@@ -92,9 +92,7 @@ export default {
     // },
   },
   data() {
-
     const today = moment.utc();
-    // const thursday = moment.utc()
     const thursday = moment.utc().day(4).startOf('day');
     let current;
     let next;

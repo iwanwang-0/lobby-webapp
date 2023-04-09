@@ -1,0 +1,25 @@
+{
+  "domain": { "name": "snapshot", "version": "0.1.4" },
+  "types": {
+    "Vote": [
+      { "name": "from", "type": "address" },
+      { "name": "space", "type": "string" },
+      { "name": "timestamp", "type": "uint64" },
+      { "name": "proposal", "type": "bytes32" },
+      { "name": "choice", "type": "string" },
+      { "name": "reason", "type": "string" },
+      { "name": "app", "type": "string" },
+      { "name": "metadata", "type": "string" }
+    ]
+  },
+  "value": {
+    "from": "0x2c523B453C38240181A9a653B8e435e655E50EB7",
+    "space": "pistachiodao.eth",
+    "timestamp": 1680869954,
+    "proposal": "0xf93f1ac80e22cc930b1eef1d20bd34671ccc33b88b04695479c9de364451d77f",
+    "choice": "{\"1\":1,\"2\":1}",
+    "reason": "",
+    "app": "snapshot",
+    "metadata": "{}"
+  }
+}

@@ -1,21 +1,30 @@
 <template>
   <div class="page-container">
-    <TopSection></TopSection>
-    <VoteEditListSection></VoteEditListSection>
+    <!-- <TopSection></TopSection> -->
+    <VoteEditListSection
+      :voteType="type"
+    ></VoteEditListSection>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import TopSection from '../Vote/TopSection.vue';
+// import TopSection from '../Vote/TopSection.vue';
 import VoteEditListSection from './VoteEditListSection.vue';
 
 export default {
   name: 'Home',
   components: {
     VoteEditListSection,
-    TopSection,
+    // TopSection,
   },
+
+  data() {
+    const { type } = this.$route.params;
+    return {
+      type,
+    }
+  }
 };
 </script>
 

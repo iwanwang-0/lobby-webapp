@@ -44,7 +44,7 @@ import TableList from '@/components/TableList';
 import RoundSelect from '@/components/RoundSelect';
 import CuButton from '@/components/CuButton';
 
-import { getRewardTree } from '@/api/common';
+import { getCrvRewardTree } from '@/api/common';
 import sendTransaction from '@/common/sendTransaction';
 import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
@@ -277,7 +277,7 @@ export default {
       this.loading = true;
       this.list = [];
       const tempList = [];
-      const tree = await getRewardTree();
+      const tree = await getCrvRewardTree();
       this.rewardTree = Object.freeze(tree);
       if (tree) {
         Object.keys(tree).forEach((tAddr) => {

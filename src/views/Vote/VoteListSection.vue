@@ -134,7 +134,7 @@ import CuButton from '@/components/CuButton';
 import CuPagination from '@/components/CuPagination';
 import CuSelect from '@/components/CuSelect';
 
-import { getRewardTree } from '@/api/common';
+import { getCrvRewardTree } from '@/api/common';
 import sendTransaction from '@/common/sendTransaction';
 import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
@@ -147,7 +147,7 @@ export default {
   props: {
     voteType: {
       type: String,
-    }
+    },
   },
   components: {
     TableList,
@@ -253,12 +253,10 @@ export default {
       if (this.voteType === 'VeCRV') {
         return [];
       }
-      return this.cvxChoices.map((item, idx) => {
-        return {
-          sort: idx,
-          pool: item.replace(/\(.*\)/, ''),
-        }
-      });
+      return this.cvxChoices.map((item, idx) => ({
+        sort: idx,
+        pool: item.replace(/\(.*\)/, ''),
+      }));
     },
   },
 
@@ -269,9 +267,13 @@ export default {
   methods: {
     onVote() {
       // this.$router.push('/vote-edit');
-      // this.$router.push('/vote-edit');
-      const lint = `https://snapshot.org/#/iwan.eth/proposal/${this.proposal.id}`
-      window.open(lint);
+      if (this.voteType === 'VeCRV') {
+        this.$router.push('/vote/VeCRV');
+      } else {
+        this.$router.push('/vote/VlCVX');
+      }
+      // const lint = `https://snapshot.org/#/iwan.eth/proposal/${this.proposal.id}`
+      // window.open(lint);
     },
     selectChange() {
       this.getReward();
@@ -308,7 +310,6 @@ export default {
       console.log(amount, tAddr, round);
       this.submitting = true;
       try {
-
         const proof = await this.getProof(tAddr, round);
 
         const txHash = await sendTransaction({
@@ -380,7 +381,7 @@ export default {
       this.loading = true;
       this.list = [];
       const tempList = [];
-      const tree = await getRewardTree();
+      const tree = await getCrvRewardTree();
       this.rewardTree = Object.freeze(tree);
       if (tree) {
         Object.keys(tree).forEach((tAddr) => {
@@ -416,7 +417,6 @@ export default {
   },
 };
 </script>
-
 
 <style lang="scss" scoped>
 @import "@/styles/vars.scss";

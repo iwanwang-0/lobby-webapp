@@ -15,7 +15,7 @@
       </template>
 
       <div v-if="type === 'simple'" class="arrow" :class="{'is-open': isOpen}">
-        <img src="~@/assets/img//arrow-down@2x.png" alt="">
+        <img style="width: 18px" src="~@/assets/img//arrow-down@2x.png" alt="">
       </div>
       <div v-if="type === 'default'" class="arrow">
         {{ isOpen ? '▲' : '▼' }}
@@ -125,7 +125,7 @@ export default {
 .simple {
   &.select {
     position: relative;
-    min-width: 200px;
+    // min-width: 200px;
     width: auto;
     font-size: 24px;
     border: none;
@@ -153,11 +153,12 @@ export default {
   top: 100%;
   left: 0;
   z-index: 1;
-  width: 100%;
+  // width: 100%;
   max-height: 200px;
   overflow-y: auto;
   background: #363537;
   border: 1px solid #4C4C4C;
+  z-index: 999;
 }
 
 .option {

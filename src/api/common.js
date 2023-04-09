@@ -45,7 +45,7 @@ export function logout() {
  * 获取持仓
  * @param {*}
  */
-export async function getRewardTree() {
+export async function getCrvRewardTree() {
   const data = await fetch(
     'https://api.github.com/repos/iwanwang-0/lobby-merkledata/contents/vecrv/amount.json',
     {

@@ -33,37 +33,47 @@
       <template v-if="loading">
         <tr>
           <td :colspan="cols.length" >
-            <div class="empty-content" ></div>
+            <div class="empty-content"></div>
           </td>
         </tr>
       </template>
       <template
         v-for="(row, idx) in list"
       >
-        <tr
-          :class="{'expanded-row1': active === idx}"
-          @click="expand(idx)"
-        >
+        <tr>
           <td v-for="head in cols">
             <template v-if="head.prop === 'operation' && $scopedSlots.operation">
               <slot name="operation" :row="row"></slot>
             </template>
             <template v-if="head.isEdit && $scopedSlots.operation">
-              <div class="edit-wrapper">
-                <input class="edit-input" type="text" v-model="row['head.prop']" />
-                <span class="suffix">%</span>
-              </div>
+              <template v-if="voteType === 'VeCRV'">
+                <!-- <div class="edit-wrapper">
+                  <input class="edit-input" type="number" min="0" :value="row['head.prop']" />
+                  <span class="suffix">%</span>
+                </div> -->
+              </template>
+
+              <template v-if="voteType === 'VlCVX'">
+                <div class="edit-wrapper">
+                  <span class="edit-sub" @click="onSub($event, row, head.prop)">-</span>
+                  <input
+                    class="edit-input vlcvx"
+                    type="text"
+                    v-model="row[head.prop]"
+                    @input=" onInput($event, row, head.prop)"
+                  />
+                  <span class="edit-plus" @click="onPlus($event, row, head.prop)">+</span>
+                  <span
+                   class="percent-input vlcvx" type="text" disabled="true">
+                   {{ row.percent }}
+                   </span>
+                  <span class="suffix">%</span>
+                </div>
+              </template>
             </template>
             <template v-else>
               {{ row[head.prop]  }}
             </template>
-          </td>
-        </tr>
-        <tr class="expanded-row2" v-if="active === idx">
-          <td>
-          </td>
-          <td :colspan="cols.length - 1">
-            <slot name="expandPanel" :row="row"></slot>
           </td>
         </tr>
       </template>
@@ -74,7 +84,7 @@
 </template>
 
 <script>
-import CuButton from './CuButton.vue';
+import CuButton from '@/components/CuButton.vue';
 
 export default {
   components: {
@@ -91,9 +101,8 @@ export default {
       type: Boolean,
       default: false,
     },
-    isExpand: {
-      type: Boolean,
-      default: false,
+    voteType: {
+      type: String,
     },
   },
 
@@ -103,14 +112,47 @@ export default {
     };
   },
 
+  created() {
+
+  },
+
   methods: {
-    expand(idx) {
-      if (!this.isExpand) return;
-      if (idx === this.active) {
-        this.active = '';
+    onInput(e, row, prop) {
+      const val = e.target.value;
+      row[prop] = val.replace(/[^\d]/g, '');
+      this.changeList();
+    },
+    onSub(e, row, prop) {
+      if (!Number.isNaN(Number.parseInt(row[prop], 10)) && row[prop] >= 1) {
+        row[prop] -= 1;
       } else {
-        this.active = idx;
+        row[prop] = 0;
       }
+      this.changeList();
+    },
+
+    onPlus(e, row, prop) {
+      const val = Number.parseInt(row[prop], 10);
+      if (!Number.isNaN(val)) {
+        row[prop] = val + 1;
+      } else {
+        row[prop] = 0;
+      }
+      this.changeList();
+    },
+
+    changeList() {
+      const total = this.list.reduce((sum, item) => sum + (parseInt(item.newWeight, 10) || 0), 0);
+
+      this.list.forEach((item) => {
+        if (!total) {
+          item.percent = 0;
+        } else {
+          item.percent = (((parseInt(item.newWeight, 10) || 0) / total) * 100).toFixed(2);
+        }
+      });
+
+      this.$emit('change', this.list);
     },
   },
 };
@@ -163,6 +205,36 @@ export default {
     outline: none;
     padding-left: 8px;
   }
+
+  .edit-input.vlcvx {
+    width: 100px;
+    text-align: center;
+  }
+
+  .edit-sub,
+  .edit-plus {
+    flex-shrink: 0;
+    display: inline-flex;
+    // align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    background: #1B191F;
+    font-size: 24px;
+    text-align: center;
+    border: 1px solid #4C4C4C;
+    user-select: none;
+  }
+
+  .percent-input {
+    margin-left: 12px;
+    width: 80px;
+    line-height: 40px;
+    background: #1B191F;
+    border: 1px solid #4C4C4C;
+    text-align: center;
+  }
   .suffix {
       display: inline-block;
       text-align: center;
@@ -172,21 +244,6 @@ export default {
       background: #4C4C4C;
       flex-shrink: 0;
     }
-
-  & .expanded-row1 {
-    background: #363537;
-  }
-
-  & .expanded-row2 {
-    background: #363537;
-    border-top: none;
-      & td {
-        padding: 0;
-        &:first-child {
-          color: #ccc;
-        }
-      }
-  }
 
   .empty-content {
     text-align: center;

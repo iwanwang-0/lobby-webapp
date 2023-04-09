@@ -46,7 +46,7 @@ const routes = [
         component: () => import('@/views/Reward'),
       },
       {
-        path: '/vote-edit',
+        path: '/vote/:type',
         name: 'vote-edit',
         component: () => import('@/views/VoteEdit'),
       },
