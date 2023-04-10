@@ -4,16 +4,16 @@
       <div class="banner">
         <!-- <div class="banner-row-1">Professional one-stop</div> -->
         <div class="banner-row-2">Lobby DAO</div>
-        <div class="banner-row-3">the all-in-one solution for the modern DeFi enthusiast!</div>
+        <div class="banner-row-3">The all-in-one solution for the modern DeFi enthusiast!</div>
         <div class="banner-desc">
           <!-- Support token pledge, bribery voting, -->
-          Empower your vote,
-          <br>
+          Empower your vote, compound your yeilds, and ignite liquidity.
+          <!-- <br> -->
           <!-- Vetokne voting, -->
-          compound your yeilds,
-          <br>
+          <!-- compound your yeilds, -->
+          <!-- <br> -->
           <!-- reward forwarding, -->
-          and ignite liquidity.
+          <!-- and ignite liquidity. -->
           <!-- <br>
           and will support more POS mechanism project staking voting -->
         </div>
