@@ -101,7 +101,7 @@ export default {
 
     .banner {
       padding-left: 10px;
-      background: url('~@/assets/img/home-bg@2x.png') center / 100% auto no-repeat;
+      background: url('~@/assets/img/banner-bg@2x.png') center / 100% auto no-repeat;
     }
     .banner-row-1 {
       margin-top: 80px;
