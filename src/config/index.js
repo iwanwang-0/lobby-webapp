@@ -17,4 +17,6 @@ if (process.env.NODE_ENV === 'development') {
   config = prodConfig;
 }
 
+
+console.log(config)
 export default config;
