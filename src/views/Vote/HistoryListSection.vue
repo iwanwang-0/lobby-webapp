@@ -78,19 +78,19 @@ export default {
       cols: [
         {
           title: 'Round',
-          prop: 'Round',
+          prop: 'round',
         },
         {
           title: 'Pool',
-          prop: 'Pool',
+          prop: 'pool',
         },
         {
           title: 'Quantity veCRV',
-          prop: 'Quantity veCRV',
+          prop: 'quantity',
         },
         {
           title: 'Time',
-          prop: 'Time',
+          prop: 'time',
         },
       ],
       list: [
@@ -150,7 +150,7 @@ export default {
 
   methods: {
     selectChange() {
-      this.getReward();
+      // this.getReward();
     },
 
     changeVoteType(type) {
@@ -163,63 +163,73 @@ export default {
         voter: this.user.address,
       });
 
+      let list = [];
+
       if (res?.data?.votes) {
-        this.list = res?.data?.votes.map(item => {
-          return {
-            Time: moment(item.created * 1000).format('YYYY-MM-DD HH:mm:ss'),
-          }
+        res?.data?.votes.forEach(item => {
+          const { choice, proposal} = item;
+
+          const choiceItemKey = Object.keys(choice);
+
+          choiceItemKey.forEach(keyItem => {
+            list.push({
+              round: 108,
+              pool: proposal.choices[keyItem - 1],
+              quantity: choice[keyItem],
+              time: moment(item.created * 1000).format('YYYY-MM-DD HH:mm:ss'),
+            })
+          })
         })
         // Round: '1',
         //   Pool: 'ETH-alETH',
         //   Apr: '30%',
         //   'Quantity veCRV': '158.87 $CRV',
         //   Time: '2023/1/2',
-
-
       }
+      this.list = list;
     },
 
     openForward() {
       this.$refs['my-modal'].show();
     },
 
-    async getReward() {
-      this.loading = true;
-      this.list = [];
-      const tempList = [];
-      const tree = await getCrvRewardTree();
-      this.rewardTree = Object.freeze(tree);
-      if (tree) {
-        Object.keys(tree).forEach((tAddr) => {
-          const tokenDetail = tree[tAddr];
-          tokenDetail.values.forEach((item) => {
-            const { treeIndex, value: [round, uAddr, amount] } = item;
-            if (parseInt(round, 10) === this.round && uAddr.toLowerCase() === this.user.address) {
-              tempList.push({
-                treeIndex,
-                round,
-                uAddr,
-                tAddr,
-                amount,
-              });
-            }
-          });
-        });
-        // console.log(tree);
-        // console.log(this.list);
-        const infoList = await Promise.all(tempList.map((item) => this.getTokenInfo(item.tAddr)));
+    // async getReward() {
+    //   this.loading = true;
+    //   this.list = [];
+    //   const tempList = [];
+    //   const tree = await getCrvRewardTree();
+    //   this.rewardTree = Object.freeze(tree);
+    //   if (tree) {
+    //     Object.keys(tree).forEach((tAddr) => {
+    //       const tokenDetail = tree[tAddr];
+    //       tokenDetail.values.forEach((item) => {
+    //         const { treeIndex, value: [round, uAddr, amount] } = item;
+    //         if (parseInt(round, 10) === this.round && uAddr.toLowerCase() === this.user.address) {
+    //           tempList.push({
+    //             treeIndex,
+    //             round,
+    //             uAddr,
+    //             tAddr,
+    //             amount,
+    //           });
+    //         }
+    //       });
+    //     });
+    //     // console.log(tree);
+    //     // console.log(this.list);
+    //     const infoList = await Promise.all(tempList.map((item) => this.getTokenInfo(item.tAddr)));
 
-        for (let i = 0; i < tempList.length; i++) {
-          tempList[i].symbol = infoList[i].symbol;
-          tempList[i].decimals = infoList[i].decimals;
-          tempList[i].rewards = tempList[i].amount / 10 ** infoList[i].decimals;
-        }
+    //     for (let i = 0; i < tempList.length; i++) {
+    //       tempList[i].symbol = infoList[i].symbol;
+    //       tempList[i].decimals = infoList[i].decimals;
+    //       tempList[i].rewards = tempList[i].amount / 10 ** infoList[i].decimals;
+    //     }
 
-        this.list = tempList;
-      }
+    //     this.list = tempList;
+    //   }
 
-      this.loading = false;
-    },
+    //   this.loading = false;
+    // },
   },
 };
 </script>

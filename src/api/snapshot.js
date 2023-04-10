@@ -116,6 +116,8 @@ export function getVotes({ proposal, voter }) {
   })
     .then((response) => response.json())
     // .then((res) => {
+    //   console.log(res)
+    //   let list = [];
     //   if (res?.data?.proposals) {
     //     const keyword = 'Gauge Weight for Week of';
     //     const target = res?.data?.proposals.find((item) => item.title.match(keyword));

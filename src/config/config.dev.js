@@ -17,7 +17,7 @@ export default {
   // chainId: 1,
   // gethServer: 'https://mainnet.infura.io/v3/6ef437a0bfc743d0bbfe73f72c90afd4', 主网
   // chainId: 1,
-  githubToken: 'token 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',
+  githubToken: process.env.VUE_APP_GITHUB_TOKEN,
 
   space: 'iwan.eth',
 
