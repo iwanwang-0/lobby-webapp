@@ -3,7 +3,7 @@ import VueCompositionAPI from '@vue/composition-api';
 
 import { BootstrapVue } from 'bootstrap-vue';
 import moment from 'moment';
-import vClickOutside from 'v-click-outside'
+import vClickOutside from 'v-click-outside';
 import i18n from '@/i18n';
 import { getLang } from '@/common/lang';
 
@@ -18,7 +18,7 @@ import '@/styles/theme-overrides/index.scss';
 
 import './initMetamask';
 
-Vue.use(vClickOutside)
+Vue.use(vClickOutside);
 Vue.use(BootstrapVue);
 
 // Vue.use(IconsPlugin);
