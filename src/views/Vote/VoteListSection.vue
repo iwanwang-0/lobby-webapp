@@ -217,7 +217,6 @@ export default {
           operation: '',
         },
       ],
-      voteType: 'VeCRV',
 
       market: 'All',
       marketOption: [

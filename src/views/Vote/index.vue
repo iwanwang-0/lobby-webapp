@@ -12,13 +12,16 @@
     :voteType="voteType"
     ></VoteListSection>
     <HistoryListSection
-    :voteType="voteType"
+      v-if="proposal.id"
+      :voteType="voteType"
+      :key="voteType"
     ></HistoryListSection>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
+import { mapState } from 'vuex';
 import TopSection from './TopSection.vue';
 import DelegateSection from './DelegateSection.vue';
 import VoteListSection from './VoteListSection.vue';
@@ -35,14 +38,18 @@ export default {
   data() {
     return {
       voteType: 'VeCRV',
-    }
+    };
+  },
+
+  computed: {
+    ...mapState(['cvxChoices', 'proposal']),
   },
 
   methods: {
     changeVoteType(type) {
       this.voteType = type;
     },
-  }
+  },
 };
 </script>
 

@@ -159,7 +159,6 @@ export default {
       submitting: false,
       loading: false,
 
-      rewardTree: null,
     };
   },
 
@@ -200,43 +199,29 @@ export default {
       this.getReward();
     },
 
-    getProof(tAddr, round) {
-      const content = this.rewardTree[tAddr];
-      const tree = StandardMerkleTree.load(content);
-      // eslint-disable-next-line no-restricted-syntax
-      for (const [i, v] of tree.entries()) {
-        console.log([i, v]);
-        if (v[0] === round && v[1].toLowerCase() === this.user.address.toLowerCase()) {
-          const proof = tree.getProof(i);
-          console.log(proof);
-          return proof;
-          // return tree.getProof(i);
-        }
-      }
-      return '';
-    },
-
     async onVoteAll() {
       this.submitting = true;
-
-      // console.log()
-
       const choiceMap = this.innerList.reduce((choices, item, idx) => {
-        choices[idx] = Number.parseInt(item.newWeight, 10) || 0;
+        const value = Number.parseInt(item.newWeight, 10) || 0;
+        if (value) {
+          choices[idx + 1] = value;
+        }
         return choices;
       }, {});
 
       try {
-        const txHash = await vote({
+        await vote({
           account: this.user.address,
           proposal: this.proposal.id,
           choice: choiceMap,
         });
 
+        this.showSuccess('Succeeded');
+
         // console.log(txHash);
-        this.showPending('Pending', {
-          tx: txHash,
-        });
+        // this.showPending('Pending', {
+        //   tx: txHash,
+        // });
 
         // const proof = await this.getProof(tAddr, round);
 
@@ -256,23 +241,24 @@ export default {
         //   tx: txHash,
         // });
 
-        const buyTx = await provider.waitForTransaction(txHash);
+        // const buyTx = await provider.waitForTransaction(txHash);
 
-        if (buyTx.status === 1) {
-          this.showSuccess('Succeeded', {
-            tx: txHash,
-          });
-          // this.getReward();
-          // this.$store.dispatch('getPosition');
-          // this.$store.dispatch('getWithdrawable');
-          // this.$store.dispatch('getBalances');
-        } else {
-          this.showError('Failed', {
-            tx: txHash,
-          });
-        }
+        // if (buyTx.status === 1) {
+        //   this.showSuccess('Succeeded', {
+        //     tx: txHash,
+        //   });
+        //   // this.getReward();
+        //   // this.$store.dispatch('getPosition');
+        //   // this.$store.dispatch('getWithdrawable');
+        //   // this.$store.dispatch('getBalances');
+        // } else {
+        //   this.showError('Failed', {
+        //     tx: txHash,
+        //   });
+        // }
       } catch (error) {
-        console.error(error);
+        // console.error(error);
+        this.showError(error.error_description || error.message);
       }
       this.submitting = false;
     },

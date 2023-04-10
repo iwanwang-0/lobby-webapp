@@ -38,7 +38,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
+import moment from 'moment';
 import { BigNumber, utils } from 'ethers';
 import TableList from '@/components/TableList';
 import RoundSelect from '@/components/RoundSelect';
@@ -48,6 +49,8 @@ import { getCrvRewardTree } from '@/api/common';
 import sendTransaction from '@/common/sendTransaction';
 import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
+
+import { getVotes } from '@/api/snapshot'
 
 import {
   getERC20Contract, MultiMerkleStashContract, MultiMerkleStashInterface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
@@ -60,26 +63,16 @@ export default {
     CuButton,
   },
 
+  props: {
+    voteType: {
+      type: String,
+    },
+  },
+
   data() {
     return {
 
       round: 0,
-      roundOptions: [
-        {
-          label: 0,
-          value: 0,
-        },
-        {
-          label: 1,
-          value: 1,
-        }, {
-          label: 2,
-          value: 2,
-        }, {
-          label: 3,
-          value: 3,
-        },
-      ],
 
       forwardAddress: '',
       cols: [
@@ -117,7 +110,6 @@ export default {
         },
       ],
 
-      voteType: 'VeCRV',
 
       market: 'All',
       marketOption: [
@@ -147,9 +139,12 @@ export default {
 
   computed: {
     ...mapState(['user']),
+    ...mapGetters(['roundOptions']),
+    ...mapState(['cvxChoices', 'proposal']),
   },
 
   created() {
+    this.getVotes();
     // this.getReward();
   },
 
@@ -162,110 +157,25 @@ export default {
       this.voteType = type;
     },
 
-    getProof(tAddr, round) {
-      const content = this.rewardTree[tAddr];
-      const tree = StandardMerkleTree.load(content);
-      // eslint-disable-next-line no-restricted-syntax
-      for (const [i, v] of tree.entries()) {
-        console.log([i, v]);
-        if (v[0] === round && v[1].toLowerCase() === this.user.address.toLowerCase()) {
-          const proof = tree.getProof(i);
-          console.log(proof);
-          return proof;
-          // return tree.getProof(i);
-        }
-      }
-      return '';
-    },
+    async getVotes() {
+      const res = await getVotes({
+        proposal: this.proposal.id,
+        voter: this.user.address,
+      });
 
-    async onClaim({ amount, tAddr, round }) {
-      // const { tokenId } = this.$route.query;
-      // const { amount } = this;
-      // if (amount < this.min) {
-      //   this.showError(`The minimum claim is ${this.min} DOGE`);
-      //   return;
-      // }
-
-      console.log(amount, tAddr, round);
-      this.submitting = true;
-      try {
-        // const tree = StandardMerkleTree.load(content);
-
-        const proof = await this.getProof(tAddr, round);
-
-        // let proof = '';
-        // // eslint-disable-next-line no-restricted-syntax
-        // for (const [i, v] of tree.entries()) {
-        //   if (v[0].toLowerCase() === this.user.address.toLowerCase()) {
-        //     proof = tree.getProof(i);
-        //   }
-        // }
-
-        console.log(proof);
-        const txHash = await sendTransaction({
-          to: config.MultiMerkleStash,
-          gas: 640000,
-          data: MultiMerkleStashInterface.encodeFunctionData('claim', [
-            tAddr,
-            round,
-            this.user.address,
-            amount,
-            proof,
-          ]),
-        });
-
-        this.showPending('Pending', {
-          tx: txHash,
-        });
-
-        const buyTx = await provider.waitForTransaction(txHash);
-
-        if (buyTx.status === 1) {
-          this.showSuccess('Succeeded', {
-            tx: txHash,
-          });
-          // this.amount = '';
-          this.getReward();
-          // this.$store.dispatch('getPosition');
-          // this.$store.dispatch('getWithdrawable');
-          // this.$store.dispatch('getBalances');
-        } else {
-          this.showError('Failed', {
-            tx: txHash,
-          });
-        }
-      } catch (error) {
-        console.error(error);
-      }
-      this.submitting = false;
-    },
-    async getTokenInfo(tokenAddress) {
-      try {
-        const erc20Contract = getERC20Contract(tokenAddress);
-
-        const [symbol, decimals] = await Promise.all([
-          erc20Contract.symbol(),
-          erc20Contract.decimals(),
-          // erc20Contract.balanceOf(this.user.address),
-          // erc20Contract.allowance(
-          //   this.user.address,
-          //   config.VotiumVeCRV,
-          // ),
-        ]);
-        if (symbol) {
+      if (res?.data?.votes) {
+        this.list = res?.data?.votes.map(item => {
           return {
-            symbol,
-            decimals,
-          };
-        }
-        return null;
-      } catch (error) {
-        return null;
-        // this.symbol = '';
-        // this.decimals = '';
-        // this.balance = '';
-        // this.allowance = '';
-        // this.isApproved = false;
+            Time: moment(item.created * 1000).format('YYYY-MM-DD HH:mm:ss'),
+          }
+        })
+        // Round: '1',
+        //   Pool: 'ETH-alETH',
+        //   Apr: '30%',
+        //   'Quantity veCRV': '158.87 $CRV',
+        //   Time: '2023/1/2',
+
+
       }
     },
 

@@ -34,9 +34,6 @@ export default {
       selectedOption: null,
     };
   },
-  created() {
-    console.log(this);
-  },
   computed: {
     selectedText() {
       if (this.renderOption) {

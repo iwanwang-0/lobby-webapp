@@ -24,7 +24,7 @@ export default new Vuex.Store({
   state: {
     totalRound: 100,
     cvxChoices: [],
-    cvxProposal: {},
+    proposal: {},
 
     marketOption: [
       {
