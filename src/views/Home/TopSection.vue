@@ -118,7 +118,8 @@ export default {
       width: 500px;
       // height: 80px;
       // line-height: 80px;
-      background: linear-gradient(192deg, #FFA42D 0%, #1DD186 100%);
+      background: linear-gradient(192deg, #FF6739 0%, #FFA42D 44%, #1DD186 100%);
+      // background: linear-gradient(192deg, #FFA42D 0%, #1DD186 100%);
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
