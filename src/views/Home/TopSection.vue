@@ -30,29 +30,29 @@
     </div>
     <div class="right">
       <div class="block right-title">
-        Operation steps
+        Our Features
       </div>
       <div class="block right-row">
         <div class="label">
           <span class="number">1</span>
-          <br>
-          Step
+          <!-- <br>
+          Step -->
         </div>
         The Comprehensive Bribery Voting Aggregation feature - An essential tool for anyone who wants to ensure that their vote counts.
       </div>
       <div class="block right-row">
         <div class="label">
           <span class="number">2</span>
-          <br>
-          Step
+          <!-- <br>
+          Step -->
         </div>
         With just a few clicks, you can convert your $CRV/$CVX tokens into other tokens and save on gas fees.
       </div>
       <div class="block right-row">
         <div class="label">
           <span class="number">3</span>
-          <br>
-          Step
+          <!-- <br>
+          Step -->
         </div>
         With Our liquidity catalyst, LOBBY could match your bribery, so bribery here!
       </div>
