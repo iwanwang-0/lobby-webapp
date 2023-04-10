@@ -50,7 +50,7 @@ export async function getCrvRewardTree() {
     'https://api.github.com/repos/iwanwang-0/lobby-merkledata/contents/vecrv/amount.json',
     {
       headers: {
-        Authorization: config.githubToken,
+        Authorization: `token ${config.githubToken}`,
       },
     },
   )
@@ -59,7 +59,7 @@ export async function getCrvRewardTree() {
       `https://api.github.com/repos/iwanwang-0/lobby-merkledata/git/blobs/${d.sha}`,
       {
         headers: {
-          Authorization: config.githubToken,
+          Authorization: `token ${config.githubToken}`,
         },
       },
     ))
@@ -78,7 +78,7 @@ export async function getCvxRewardTree() {
     'https://api.github.com/repos/iwanwang-0/lobby-merkledata/contents/vlcvx/amount.json',
     {
       headers: {
-        Authorization: config.githubToken,
+        Authorization: `token ${config.githubToken}`,
       },
     },
   )
@@ -87,7 +87,7 @@ export async function getCvxRewardTree() {
       `https://api.github.com/repos/iwanwang-0/lobby-merkledata/git/blobs/${d.sha}`,
       {
         headers: {
-          Authorization: config.githubToken,
+          Authorization: `token ${config.githubToken}`,
         },
       },
     ))
