@@ -17,10 +17,10 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="main-nav">
           <b-nav-item :active="$route.path === '/'" @click="$router.push('/')">Home</b-nav-item>
-          <b-nav-item :active="$route.path.startsWith('/dashboard')" @click="$router.push('/dashboard')">Dashboard</b-nav-item>
-          <b-nav-item :active="$route.path.startsWith('/vote')" @click="$router.push('/vote')">Vote</b-nav-item>
+          <b-nav-item :active="$route.path.startsWith('/vote')" @click="$router.push('/vote')">Vote Market</b-nav-item>
           <b-nav-item :active="$route.path.startsWith('/bribe')" @click="$router.push('/bribe')">Bribe</b-nav-item>
-          <b-nav-item :active="$route.path.startsWith('/lob')" @click="$router.push('/lob')">Lob</b-nav-item>
+          <b-nav-item :active="$route.path.startsWith('/lob')" @click="$router.push('/lob')">Earn</b-nav-item>
+          <b-nav-item :active="$route.path.startsWith('/dashboard')" @click="$router.push('/dashboard')">Dashboard</b-nav-item>
         </b-navbar-nav>
 
       <div class="divider divider-middle"></div>
@@ -50,7 +50,7 @@
               variant="link"
               @click="unlock"
             >
-            Wallet connect</b-button>
+            Connect Wallet</b-button>
         </b-navbar-nav>
 
         <div class="divider divider-right"></div>
@@ -160,10 +160,11 @@ export default {
   border-bottom: 1px solid $border-color;
 }
 .main-nav {
-  margin-left: 50px;
+  margin-left: 40px;
 
   & .nav-item {
-    margin-right: 50px;
+    // margin-right: 50px;
+    margin-right: 36px;
     font-size: 18px;
     line-height: 14px;
     .nav-link {

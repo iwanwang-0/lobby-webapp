@@ -2,17 +2,20 @@
    <b-container class="home" fluid="lg">
     <div class="left">
       <div class="banner">
-        <div class="banner-row-1">Professional one-stop</div>
-        <div class="banner-row-2">VeToken</div>
-        <div class="banner-row-3">Vote sponsorship platform</div>
+        <!-- <div class="banner-row-1">Professional one-stop</div> -->
+        <div class="banner-row-2">Lobby DAO</div>
+        <div class="banner-row-3">the all-in-one solution for the modern DeFi enthusiast!</div>
         <div class="banner-desc">
-          Support token pledge, bribery voting,
+          <!-- Support token pledge, bribery voting, -->
+          Empower your vote,
           <br>
-          Vetokne voting,
+          <!-- Vetokne voting, -->
+          compound your yeilds,
           <br>
-          reward forwarding,
-          <br>
-          and will support more POS mechanism project staking voting
+          <!-- reward forwarding, -->
+          and ignite liquidity.
+          <!-- <br>
+          and will support more POS mechanism project staking voting -->
         </div>
       </div>
       <div class="btn-group">
@@ -35,7 +38,7 @@
           <br>
           Step
         </div>
-        Link your wallet and make sure you own a vetoken, such as veVRV
+        The Comprehensive Bribery Voting Aggregation feature - An essential tool for anyone who wants to ensure that their vote counts.
       </div>
       <div class="block right-row">
         <div class="label">
@@ -43,7 +46,7 @@
           <br>
           Step
         </div>
-        In the ongoing voting, select the pool you want to vote and vote according to the prompts
+        With just a few clicks, you can convert your $CRV/$CVX tokens into other tokens and save on gas fees.
       </div>
       <div class="block right-row">
         <div class="label">
@@ -51,7 +54,7 @@
           <br>
           Step
         </div>
-        48h after the voting, check the rewards you can receive
+        With Our liquidity catalyst, LOBBY could match your bribery, so bribery here!
       </div>
     </div>
   </b-container>
@@ -98,6 +101,7 @@ export default {
 
     .banner {
       padding-left: 10px;
+      background: url('~@/assets/img/home-bg@2x.png') center / 100% auto no-repeat;
     }
     .banner-row-1 {
       margin-top: 80px;
@@ -109,10 +113,11 @@ export default {
       -webkit-text-fill-color: transparent;
     }
     .banner-row-2 {
-      margin-top: 12px;
+      margin-top: 80px;
       font-size: 80px;
-      height: 80px;
-      line-height: 80px;
+      width: 500px;
+      // height: 80px;
+      // line-height: 80px;
       background: linear-gradient(192deg, #FFA42D 0%, #1DD186 100%);
       background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -120,8 +125,8 @@ export default {
     .banner-row-3 {
       margin-top: 16px;
       font-size: 36px;
-      height: 40px;
-      line-height: 36px;
+      // height: 40px;
+      // line-height: 36px;
       font-weight: normal;
       background: linear-gradient(192deg, #FF6739 0%, #FFA42D 44%, #1DD186 100%);
       background-clip: text;
