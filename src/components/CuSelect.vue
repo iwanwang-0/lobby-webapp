@@ -73,11 +73,14 @@ export default {
       selectedOption: null,
     };
   },
+  watch: {
+
+  },
   created() {
   },
   computed: {
     selectedText() {
-      if (this.value) {
+      if (this.value != null) {
         const target = this.options.find((item) => item.value === this.value);
         // if (this.renderOption) {
         //   return this.renderOption(target);

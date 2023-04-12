@@ -163,9 +163,6 @@ export default {
   data() {
     return {
       selectedToken: null,
-      veCRVOptions: [],
-      allGauges: {},
-
       submitting: false,
 
       gauge: '',
@@ -185,16 +182,13 @@ export default {
   },
   computed: {
     ...mapState(['user']),
-    ...mapState(['cvxChoices', 'proposal']),
+    ...mapState(['cvxChoices', 'proposal', 'crvChoices', 'allGauges']),
 
     choices() {
       if (this.voteType === 'VeCRV') {
-        return this.veCRVOptions;
+        return this.crvChoices;
       }
-      return this.cvxChoices.map((item, idx) => ({
-        value: idx,
-        label: item,
-      }));
+      return this.cvxChoices;
     },
   },
 
@@ -208,24 +202,12 @@ export default {
   },
 
   created() {
-    this.getAllGauges();
+    // this.getAllGauges();
   },
 
   methods: {
     onTokenChange(option) {
       this.selectedToken = option;
-    },
-
-    async getAllGauges() {
-      const { success, data } = await getAllGauges();
-
-      if (success) {
-        this.allGauges = data;
-        this.veCRVOptions = Object.keys(data).map((key) => ({
-          value: key,
-          label: key,
-        }));
-      }
     },
 
     async getTokenInfo() {
@@ -285,7 +267,6 @@ export default {
             this.user.address,
             config.VotiumBribeCVX,
           );
-          console.log(cvxAllowance);
           if (cvxAllowance.gt(1 + '0'.repeat(20))) {
             this.cvxAllowance = cvxAllowance;
             this.isCvxApproved = cvxAllowance.gt(1 + '0'.repeat(20));
@@ -360,10 +341,6 @@ export default {
     },
 
     async onBribe() {
-      // gauge: '',
-      // tokenAddress: '',
-      // totalRewards: '',
-      // maxReward: '',
 
       if (!this.selectedRound) {
         this.showError('Please select round');
@@ -400,9 +377,6 @@ export default {
         return false;
       }
 
-      // console.log(this.allGauges);
-      console.log(gauge);
-      console.log(this.gauge)
       try {
         let buyTxHash;
         if (this.voteType === 'VeCRV') {
@@ -417,13 +391,6 @@ export default {
             ]),
           });
         } else {
-          // console.log([
-          //   this.tokenAddress,
-          //   BigNumber.from(totalRewards + '0'.repeat(this.decimals)).toHexString(),
-          //   this.proposal.id,
-          //   this.gauge,
-          // ]);
-          // function depositBribe(address _token, uint256 _amount, bytes32 _proposal, uint256 _choiceIndex) public
           buyTxHash = await sendTransaction({
             to: config.VotiumBribeCVX,
             gas: 640000,

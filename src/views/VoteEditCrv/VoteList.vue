@@ -46,27 +46,14 @@
               <slot name="operation" :row="row"></slot>
             </template>
             <template v-if="head.isEdit && $scopedSlots.operation">
-              <template v-if="voteType === 'VeCRV'">
-                <!-- <div class="edit-wrapper">
-                  <input class="edit-input" type="number" min="0" :value="row['head.prop']" />
-                  <span class="suffix">%</span>
-                </div> -->
-              </template>
-
-              <template v-if="voteType === 'VlCVX'">
+              <template>
                 <div class="edit-wrapper">
-                  <span class="edit-sub" @click="onSub($event, row, head.prop)">-</span>
                   <input
-                    class="edit-input vlcvx"
-                    type="text"
+                    class="edit-input"
+                    type="text" min="0"
                     v-model="row[head.prop]"
                     @input=" onInput($event, row, head.prop)"
-                  />
-                  <span class="edit-plus" @click="onPlus($event, row, head.prop)">+</span>
-                  <span
-                   class="percent-input vlcvx" type="text" disabled="true">
-                   {{ row.percent }}
-                   </span>
+                   />
                   <span class="suffix">%</span>
                 </div>
               </template>
@@ -119,24 +106,11 @@ export default {
   methods: {
     onInput(e, row, prop) {
       const val = e.target.value;
-      row[prop] = val.replace(/[^\d]/g, '');
-      this.changeList();
-    },
-    onSub(e, row, prop) {
-      if (!Number.isNaN(Number.parseInt(row[prop], 10)) && row[prop] >= 1) {
-        row[prop] -= 1;
-      } else {
-        row[prop] = 0;
+      if (!/^[1-9]\d*(\.\d+)?$/.test(val)) {
+        row[prop] = val.replace(/[^\d.]/g, ''); // 非数字和小数点替换为空字符串
       }
-      this.changeList();
-    },
-
-    onPlus(e, row, prop) {
-      const val = Number.parseInt(row[prop], 10);
-      if (!Number.isNaN(val)) {
-        row[prop] = val + 1;
-      } else {
-        row[prop] = 0;
+      if (row[prop] > 100) {
+        row[prop] = 100;
       }
       this.changeList();
     },

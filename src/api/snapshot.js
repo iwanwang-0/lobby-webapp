@@ -130,7 +130,6 @@ export function getVotes({ proposal, voter }) {
     .catch((error) => console.error(error));
 }
 
-
 export async function vote({ account, proposal, choice }) {
   const web3 = new Web3Provider(window.ethereum);
   // console.log(web3, account, {

@@ -79,6 +79,8 @@ import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
 
 import {
+  GaugeControllerContract,
+  GaugeControllerInterface,
   getERC20Contract, MultiMerkleStashContract, MultiMerkleStashInterface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
 } from '@/eth/ethereum';
 import VoteList from './VoteList';
@@ -104,10 +106,12 @@ export default {
         {
           title: 'Sort',
           prop: 'sort',
+          width: '80px',
         },
         {
           title: 'Pool',
           prop: 'pool',
+          width: '160px',
         },
         {
           title: 'Apr',
@@ -127,12 +131,11 @@ export default {
             console.log(this);
           },
         },
-        ...[
-          this.voteType === 'VeCRV' ? {
-            title: 'Operation',
-            prop: 'operation',
-          } : null,
-        ],
+        {
+          title: 'Operation',
+          prop: 'operation',
+          width: 160,
+        },
       ].filter((item) => item),
 
       innerList: [],
@@ -165,14 +168,14 @@ export default {
   computed: {
     ...mapState(['user']),
     ...mapGetters(['roundOptions']),
-    ...mapState(['cvxChoices', 'proposal']),
+    ...mapState(['cvxChoices', 'proposal', 'crvChoices', 'allGauges']),
     voteList() {
-      if (this.voteType === 'VeCRV') {
-        return [];
-      }
-      return this.cvxChoices.map((item, idx) => ({
-        sort: idx,
-        pool: item.replace(/\(.*\)/, ''),
+      // if (this.voteType === 'VeCRV') {
+      //   return [];
+      // }
+      return this.crvChoices.map((item, idx) => ({
+        sort: idx + 1,
+        pool: item.label,
         weight: 0,
         newWeight: 0,
         percent: 0,
@@ -264,6 +267,14 @@ export default {
     },
 
     async onVote(record) {
+      console.log(record);
+      console.log(this.allGauges);
+
+      const newWeight = Number.parseFloat(record.newWeight);
+
+      if (!newWeight) {
+        this.showError('Please input vote weight');
+      }
       // const { tokenId } = this.$route.query;
       // const { amount } = this;
       // if (amount < this.min) {
@@ -274,121 +285,52 @@ export default {
       // console.log(amount, tAddr, round);
       this.submitting = true;
       try {
-        const result = await vote({
-          account: this.user.account,
-          proposal: this.proposal.id,
-          choice: [],
-        });
-
-        this.showPending('Pending', {
-          tx: result,
-        });
-
-        // const proof = await this.getProof(tAddr, round);
-
-        // const txHash = await sendTransaction({
-        //   to: config.MultiMerkleStash,
-        //   gas: 640000,
-        //   data: MultiMerkleStashInterface.encodeFunctionData('claim', [
-        //     tAddr,
-        //     round,
-        //     this.user.address,
-        //     amount,
-        //     proof,
-        //   ]),
+        // const result = await vote({
+        //   account: this.user.account,
+        //   proposal: this.proposal.id,
+        //   choice: [],
         // });
 
         // this.showPending('Pending', {
-        //   tx: txHash,
+        //   tx: result,
         // });
 
-        // const buyTx = await provider.waitForTransaction(txHash);
+        // const proof = await this.getProof(tAddr, round);
 
-        // if (buyTx.status === 1) {
-        //   this.showSuccess('Succeeded', {
-        //     tx: txHash,
-        //   });
-        //   this.getReward();
-        //   // this.$store.dispatch('getPosition');
-        //   // this.$store.dispatch('getWithdrawable');
-        //   // this.$store.dispatch('getBalances');
-        // } else {
-        //   this.showError('Failed', {
-        //     tx: txHash,
-        //   });
-        // }
+        const txHash = await sendTransaction({
+          to: config.GaugeController,
+          gas: 640000,
+          data: GaugeControllerInterface.encodeFunctionData('vote_for_gauge_weights', [
+            this.allGauges[record.pool].gauge,
+            newWeight * 1000,
+          ]),
+        });
+
+        this.showPending('Pending', {
+          tx: txHash,
+        });
+
+        const buyTx = await provider.waitForTransaction(txHash);
+
+        if (buyTx.status === 1) {
+          this.showSuccess('Succeeded', {
+            tx: txHash,
+          });
+        } else {
+          this.showError('Failed', {
+            tx: txHash,
+          });
+        }
       } catch (error) {
         console.error(error);
       }
       this.submitting = false;
     },
 
-    // async getTokenInfo(tokenAddress) {
-    //   try {
-    //     const erc20Contract = getERC20Contract(tokenAddress);
-
-    //     const [symbol, decimals] = await Promise.all([
-    //       erc20Contract.symbol(),
-    //       erc20Contract.decimals(),
-    //       // erc20Contract.balanceOf(this.user.address),
-    //       // erc20Contract.allowance(
-    //       //   this.user.address,
-    //       //   config.VotiumVeCRV,
-    //       // ),
-    //     ]);
-    //     if (symbol) {
-    //       return {
-    //         symbol,
-    //         decimals,
-    //       };
-    //     }
-    //     return null;
-    //   } catch (error) {
-    //     return null;
-    //   }
-    // },
 
     openForward() {
       this.$refs['my-modal'].show();
     },
-
-    // async getReward() {
-    //   this.loading = true;
-    //   this.list = [];
-    //   const tempList = [];
-    //   const tree = await getCrvRewardTree();
-    //   this.rewardTree = Object.freeze(tree);
-    //   if (tree) {
-    //     Object.keys(tree).forEach((tAddr) => {
-    //       const tokenDetail = tree[tAddr];
-    //       tokenDetail.values.forEach((item) => {
-    //         const { treeIndex, value: [round, uAddr, amount] } = item;
-    //         if (parseInt(round, 10) === this.round && uAddr.toLowerCase() === this.user.address) {
-    //           tempList.push({
-    //             treeIndex,
-    //             round,
-    //             uAddr,
-    //             tAddr,
-    //             amount,
-    //           });
-    //         }
-    //       });
-    //     });
-    //     // console.log(tree);
-    //     // console.log(this.list);
-    //     const infoList = await Promise.all(tempList.map((item) => this.getTokenInfo(item.tAddr)));
-
-    //     for (let i = 0; i < tempList.length; i++) {
-    //       tempList[i].symbol = infoList[i].symbol;
-    //       tempList[i].decimals = infoList[i].decimals;
-    //       tempList[i].rewards = tempList[i].amount / 10 ** infoList[i].decimals;
-    //     }
-
-    //     this.list = tempList;
-    //   }
-
-    //   this.loading = false;
-    // },
   },
 };
 </script>

@@ -163,10 +163,12 @@ export default {
         {
           title: 'Sort',
           prop: 'sort',
+          width: '80px',
         },
         {
           title: 'Pool',
           prop: 'pool',
+          width: '160px',
         },
         {
           title: 'Apr',
@@ -189,6 +191,7 @@ export default {
         {
           title: 'Operation',
           prop: 'operation',
+          width: '160px',
         },
       ],
       list: [
@@ -246,14 +249,17 @@ export default {
 
   computed: {
     ...mapState(['user']),
-    ...mapState(['cvxChoices', 'proposal']),
+    ...mapState(['cvxChoices', 'crvChoices', 'proposal', 'allGauges']),
 
     voteList() {
       if (this.voteType === 'VeCRV') {
-        return [];
+        return this.crvChoices.map((item, idx) => ({
+          sort: idx + 1,
+          pool: item.value,
+        }));
       }
       return this.cvxChoices.map((item, idx) => ({
-        sort: idx,
+        sort: idx + 1,
         pool: item.replace(/\(.*\)/, ''),
       }));
     },

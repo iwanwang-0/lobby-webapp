@@ -6,6 +6,7 @@ import user from './user';
 import enums from './enums';
 import getters from './getters';
 import { getProposal } from '@/api/snapshot'
+import { getAllGauges } from '@/api/curve';
 
 Vue.use(Vuex);
 
@@ -22,9 +23,10 @@ export default new Vuex.Store({
     enums,
   },
   state: {
-    totalRound: 100,
-    cvxChoices: [],
     proposal: {},
+    allGauges: {},
+    cvxChoices: [],
+    crvChoices: [],
 
     marketOption: [
       {
@@ -59,10 +61,30 @@ export default new Vuex.Store({
   actions: {
     async getProposal({ commit, state }) {
       const proposal = await getProposal();
+      console.log(proposal);
+
       commit('UPDATE_STATE', {
         proposal,
-        cvxChoices: proposal.choices,
+        cvxChoices: proposal.choices?.map((item, idx) => ({
+          value: idx,
+          label: item,
+        })) || [],
       });
+    },
+
+    async getGauges({ commit, state }) {
+      const { success, data } = await getAllGauges();
+      console.log(data);
+      if (success) {
+        commit('UPDATE_STATE', {
+          allGauges: data,
+          crvChoices: Object.keys(data).map((key) => ({
+            value: key,
+            label: key,
+          })),
+        });
+
+      }
     },
   },
 });

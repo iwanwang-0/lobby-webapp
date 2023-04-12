@@ -16,6 +16,7 @@ export default {
   },
   mounted() {
     this.$store.dispatch('getProposal');
+    this.$store.dispatch('getGauges');
   },
 };
 </script>

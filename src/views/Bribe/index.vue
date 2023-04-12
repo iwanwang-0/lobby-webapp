@@ -35,7 +35,7 @@ export default {
     return {
       selected: null,
       voteType: 'VeCRV',
-    }
+    };
   },
   computed: {
     ...mapState(['user']),
@@ -45,7 +45,7 @@ export default {
     changeVoteType(type) {
       this.voteType = type;
     },
-  }
+  },
 };
 </script>
 

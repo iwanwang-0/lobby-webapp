@@ -7,6 +7,8 @@ import VotiumVeCRVAbi from '@/eth/abi/VotiumVeCRV.json';
 
 import MultiMerkleStashForCVXAbi from '@/eth/abi/MultiMerkleStashForCVX.json';
 import VotiumBribeCVXAbi from '@/eth/abi/VotiumBribeCVX.json';
+import GaugeControllerAbi from '@/eth/abi/GaugeController.json';
+
 
 // A Web3Provider wraps a standard Web3 provider, which is
 // what Metamask injects as window.ethereum into each page
@@ -30,6 +32,10 @@ const VotiumBribeCVXContract = new ethers.Contract(
   config.VotiumBribeCVX, VotiumBribeCVXAbi.abi, provider,
 );
 
+const GaugeControllerContract = new ethers.Contract(
+  config.GaugeController, GaugeControllerAbi.abi, provider,
+);
+
 const USDTContract = new ethers.Contract(config.USDT, ERC20.abi, provider);
 const USDCContract = new ethers.Contract(config.USDC, ERC20.abi, provider);
 
@@ -38,6 +44,8 @@ const VotiumVeCRVInterface = new ethers.utils.Interface(VotiumVeCRVAbi.abi);
 
 const MultiMerkleStashForCVXInterface = new ethers.utils.Interface(MultiMerkleStashForCVXAbi.abi);
 const VotiumBribeCVXInterface = new ethers.utils.Interface(VotiumBribeCVXAbi.abi);
+
+const GaugeControllerInterface = new ethers.utils.Interface(GaugeControllerAbi.abi);
 
 const USDTInterface = new ethers.utils.Interface(ERC20.abi);
 const USDCInterface = new ethers.utils.Interface(ERC20.abi);
@@ -86,6 +94,7 @@ export {
   VotiumVeCRVContract,
   MultiMerkleStashForCVXContract,
   VotiumBribeCVXContract,
+  GaugeControllerContract,
 
   USDTContract,
   USDCContract,
@@ -94,6 +103,7 @@ export {
   VotiumVeCRVInterface,
   MultiMerkleStashForCVXInterface,
   VotiumBribeCVXInterface,
+  GaugeControllerInterface,
 
   USDTInterface,
   USDCInterface,

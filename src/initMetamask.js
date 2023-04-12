@@ -7,6 +7,7 @@ import store from './store';
     const chainId = await window.ethereum.request({ method: 'eth_chainId' });
 
     if (!BigNumber.from(chainId).eq(0x38) && !BigNumber.from(chainId).eq(0x61)) {
+
       try {
         window.ethereum.request({
           method: 'wallet_switchEthereumChain',
@@ -43,13 +44,12 @@ import store from './store';
     // If the array of accounts is non-empty, you're already
     // connected.
     window.ethereum.on('accountsChanged', (accounts) => {
-
       // if (accounts?.length) {
       store.dispatch('handleAccountsChanged', accounts);
-        // __user__.isMetamask = true;
-        // __user__.isWalletConnect = false;
-        // __user__.handleAccountsChanged(accounts);
-        // __user__.syncStorage();
+      // __user__.isMetamask = true;
+      // __user__.isWalletConnect = false;
+      // __user__.handleAccountsChanged(accounts);
+      // __user__.syncStorage();
       // } else {
       //   store.dispatch('resetUser', accounts);
       //   // store.reset();
