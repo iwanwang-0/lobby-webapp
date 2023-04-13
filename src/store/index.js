@@ -62,8 +62,6 @@ export default new Vuex.Store({
   actions: {
     async getProposal({ commit, state }) {
       const proposal = await getProposal();
-      console.log(proposal);
-
       commit('UPDATE_STATE', {
         proposal,
         cvxChoices: proposal.choices?.map((item, idx) => ({

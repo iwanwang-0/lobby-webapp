@@ -178,7 +178,7 @@ export default {
       }
       return this.cvxChoices.map((item, idx) => ({
         sort: idx,
-        pool: item.replace(/\(.*\)/, ''),
+        pool: item.label.replace(/\(.*\)/, ''),
         weight: 0,
         newWeight: 0,
         percent: 0,
