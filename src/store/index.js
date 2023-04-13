@@ -23,6 +23,7 @@ export default new Vuex.Store({
     enums,
   },
   state: {
+    totalRound: 100,
     proposal: {},
     allGauges: {},
     cvxChoices: [],

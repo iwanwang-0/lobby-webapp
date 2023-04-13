@@ -170,7 +170,7 @@ export default {
     roundOptions: {
       handler() {
         if (this.roundOptions && this.roundOptions[0]) {
-          this.round = this.roundOptions[0].value
+          this.round = this.roundOptions[0].value;
         }
       },
       immediate: true,
