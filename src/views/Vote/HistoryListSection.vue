@@ -50,7 +50,7 @@ import sendTransaction from '@/common/sendTransaction';
 import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
 
-import { getVotes } from '@/api/snapshot'
+import { getVotes } from '@/api/snapshot';
 
 import {
   getERC20Contract, MultiMerkleStashContract, MultiMerkleStashInterface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
@@ -110,7 +110,6 @@ export default {
         },
       ],
 
-
       market: 'All',
       marketOption: [
         {
@@ -163,23 +162,23 @@ export default {
         voter: this.user.address,
       });
 
-      let list = [];
+      const list = [];
 
       if (res?.data?.votes) {
-        res?.data?.votes.forEach(item => {
-          const { choice, proposal} = item;
+        res.data.votes.forEach((item) => {
+          const { choice, proposal } = item;
 
           const choiceItemKey = Object.keys(choice);
 
-          choiceItemKey.forEach(keyItem => {
+          choiceItemKey.forEach((keyItem) => {
             list.push({
               round: 108,
               pool: proposal.choices[keyItem - 1],
               quantity: choice[keyItem],
               time: moment(item.created * 1000).format('YYYY-MM-DD HH:mm:ss'),
-            })
-          })
-        })
+            });
+          });
+        });
         // Round: '1',
         //   Pool: 'ETH-alETH',
         //   Apr: '30%',
@@ -233,7 +232,6 @@ export default {
   },
 };
 </script>
-
 
 <style lang="scss" scoped>
 @import "@/styles/vars.scss";

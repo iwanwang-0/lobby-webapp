@@ -23,6 +23,7 @@
     "core-js": "^3.6.5",
     "dayjs": "^1.10.5",
     "dotenv": "^16.0.3",
+    "echarts": "^5.4.2",
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^7.0.10",
     "ethers": "^5.4.0",
