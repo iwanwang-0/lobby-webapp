@@ -41,6 +41,9 @@ export default {
           show: true,
           trigger: 'item',
           // position: [10, 10]
+          position(point, params, dom, rect, size) {
+               return [point[0], point[1]];
+          },
         },
         grid: {
           containLabel: true,

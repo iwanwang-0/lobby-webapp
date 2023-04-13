@@ -1,7 +1,7 @@
 <template>
    <b-container class="top-section" fluid="lg">
     <div class="left">
-      Lob
+      <img src="~@/assets/img/logo-ic@2x.png" alt="">
     </div>
     <div class="right">
       <div class="title">
@@ -26,7 +26,9 @@
     // display: grid;
     // border-right: 1px solid $border-color;
     // grid-template-rows: 480px 72px;
-
+    img {
+      width: 400px;
+    }
   }
   .right {
     // display: flex;

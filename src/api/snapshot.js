@@ -79,7 +79,7 @@ export function getProposal() {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export function getVotes({ proposal, voter }) {
+export function getVotes({ voter }) {
   const query = `
     query {
       votes (
@@ -88,11 +88,14 @@ export function getVotes({ proposal, voter }) {
         where: {
           voter: "${voter}"
         }
-        orderBy: "created",
+        orderBy: "created"
         orderDirection: desc
       ) {
         id
         voter
+        vp
+        vp_by_strategy
+        vp_state
         created
         proposal {
           id
@@ -115,30 +118,41 @@ export function getVotes({ proposal, voter }) {
     body: JSON.stringify({ query }),
   })
     .then((response) => response.json())
-    // .then((res) => {
-    //   console.log(res)
-    //   let list = [];
-    //   if (res?.data?.proposals) {
-    //     const keyword = 'Gauge Weight for Week of';
-    //     const target = res?.data?.proposals.find((item) => item.title.match(keyword));
-    //     if (target) {
-    //       return target;
-    //     }
-    //   }
-    //   return {};
-    // })
     .catch((error) => console.error(error));
 }
 
+// eslint-disable-next-line import/prefer-default-export
+export function getVotePower({ proposal, voter }) {
+  console.log( proposal, voter)
+  // proposal: "${proposal}"
+  const query = `
+    query {
+      vp (
+        voter: "${voter}"
+        space: "iwan.eth"
+      ) {
+        vp
+        vp_by_strategy
+        vp_state
+      }
+    }
+    `;
+
+  return fetch(`${hub}/graphql?`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({ query }),
+  })
+    .then((response) => response.json())
+    .catch((error) => console.error(error));
+}
+
+
 export async function vote({ account, proposal, choice }) {
   const web3 = new Web3Provider(window.ethereum);
-  // console.log(web3, account, {
-  //   space: config.space,
-  //   // type: 'weight',
-  //   app: 'my-app',
-  //   proposal,
-  //   choice,
-  // });
   const receipt = await client.vote(web3, account, {
     space: config.space,
     type: 'weighted',

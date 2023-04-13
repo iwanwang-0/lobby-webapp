@@ -50,7 +50,7 @@ import sendTransaction from '@/common/sendTransaction';
 import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
 
-import { getVotes } from '@/api/snapshot';
+import { getVotes, getVotePower } from '@/api/snapshot';
 
 import {
   getERC20Contract, MultiMerkleStashContract, MultiMerkleStashInterface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
@@ -85,7 +85,7 @@ export default {
           prop: 'pool',
         },
         {
-          title: 'Quantity veCRV',
+          title: this.voteType === 'VeVRV' ? 'Quantity VeCRV' : 'Quantity VlCVX',
           prop: 'quantity',
         },
         {
@@ -158,9 +158,19 @@ export default {
 
     async getVotes() {
       const res = await getVotes({
-        proposal: this.proposal.id,
+        // proposal: this.proposal.id,
         voter: this.user.address,
       });
+
+      // const resPower = await getVotePower({
+      //   // proposal: this.proposal.id,
+      //   voter: this.user.address,
+      // });
+
+      // let vp = 0;
+      // if (resPower?.data?.vp?.vp) {
+      //   vp = resPower?.data?.vp?.vp;
+      // }
 
       const list = [];
 
@@ -170,11 +180,16 @@ export default {
 
           const choiceItemKey = Object.keys(choice);
 
+          const sumPower = choiceItemKey.reduce((sum, keyItem) => {
+            return sum + choice[keyItem];
+          }, 0);
+
           choiceItemKey.forEach((keyItem) => {
             list.push({
               round: 108,
               pool: proposal.choices[keyItem - 1],
-              quantity: choice[keyItem],
+              // quantity: choice[keyItem],
+              quantity: item.vp * choice[keyItem] / sumPower,
               time: moment(item.created * 1000).format('YYYY-MM-DD HH:mm:ss'),
             });
           });

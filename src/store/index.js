@@ -2,11 +2,11 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 import config from '@/config';
+import { getProposal } from '@/api/snapshot';
+import { getAllGauges } from '@/api/curve';
 import user from './user';
 import enums from './enums';
 import getters from './getters';
-import { getProposal } from '@/api/snapshot'
-import { getAllGauges } from '@/api/curve';
 
 Vue.use(Vuex);
 
@@ -45,7 +45,7 @@ export default new Vuex.Store({
         label: 'VoteMarket',
         value: 'VoteMarket',
       },
-    ]
+    ],
   },
   getters,
   mutations: {
@@ -82,7 +82,6 @@ export default new Vuex.Store({
             label: key,
           })),
         });
-
       }
     },
   },

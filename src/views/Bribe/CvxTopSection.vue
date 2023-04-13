@@ -10,7 +10,7 @@
           class="link-btn"
           :variant="voteType === 'VeCRV' ? 'primary' : 'outline-primary'"
           size="lg"
-          @click="onTypeChange('VeCRV')"
+          @click="$emit('changeVoteType', 'VeCRV')"
 
         >
           VeCRV
@@ -19,7 +19,7 @@
           class="link-btn"
           :variant="voteType === 'VlCVX' ? 'primary' : 'outline-primary'"
           size="lg"
-          @click="onTypeChange('VlCVX')"
+          @click="$emit('changeVoteType', 'VlCVX')"
         >
           VlCVX
         </b-button>
@@ -35,58 +35,33 @@
         <h5 class="title">{{ list[0].title }}</h5>
         <div class="desc">{{ list[0].desc }}</div>
         <div class="time">Time Remaining to Vote:
-          <template v-if="this.voteType === 'VeCRV'">
-            <em>{{currentDur.date}}</em>d
-            <em>{{currentDur.hour}}</em>h
-            <em>{{currentDur.minute}}</em>min
-            <em>{{currentDur.second}}</em>s
-          </template>
-          <template v-else>
-            <em>{{cvxCurrentDur.date}}</em>d
-            <em>{{cvxCurrentDur.hour}}</em>h
-            <em>{{cvxCurrentDur.minute}}</em>min
-            <em>{{cvxCurrentDur.second}}</em>s
-          </template>
+          <em>{{currentDur.date}}</em>d
+          <em>{{currentDur.hour}}</em>h
+          <em>{{currentDur.minute}}</em>min
+          <em>{{currentDur.second}}</em>s
         </div>
       </div>
       <div class="right">
-        <div class="right-top" :class="{active: selected === 1, vlcvx: voteType === 'VlCVX'}"  v-if="list && list[1]"
+        <div class="right-top" :class="{active: selected === 1}"  v-if="list && list[1]"
         @click="onClick(list[1])"
         >
           <h5 class="title">{{ list[1].title }}</h5>
           <div class="time">Bribe deadline:
-            <template v-if="this.voteType === 'VeCRV'">
-              <em>{{nextDur.date}}</em>d
-              <em>{{nextDur.hour}}</em>h
-              <em>{{nextDur.minute}}</em>min
-              <em>{{nextDur.second}}</em>s
-          </template>
-          <template v-else>
-            <em>{{cvxNextDur.date}}</em>d
-            <em>{{cvxNextDur.hour}}</em>h
-            <em>{{cvxNextDur.minute}}</em>min
-            <em>{{cvxNextDur.second}}</em>s
-          </template>
+            <em>{{nextDur.date}}</em>d
+            <em>{{nextDur.hour}}</em>h
+            <em>{{nextDur.minute}}</em>min
+            <em>{{nextDur.second}}</em>s
           </div>
         </div>
-        <div class="right-bottom" :class="{active: selected === 2,  vlcvx: voteType === 'VlCVX'}"  v-if="list && list[2]"
+        <div class="right-bottom" :class="{active: selected === 2}"  v-if="list && list[2]"
         @click="onClick(list[2])"
         >
           <h5 class="title">{{ list[2].title }}</h5>
           <div class="time">Bribe deadline:
-            <template v-if="this.voteType === 'VeCRV'">
-              <em>{{nextNextDur.date}}</em>d
-              <em>{{nextNextDur.hour}}</em>h
-              <em>{{nextNextDur.minute}}</em>min
-              <em>{{nextNextDur.second}}</em>s
-            </template>
-            <template v-else>
-              <em>{{cvxNextNextDur.date}}</em>d
-              <em>{{cvxNextNextDur.hour}}</em>h
-              <em>{{cvxNextNextDur.minute}}</em>min
-              <em>{{cvxNextNextDur.second}}</em>s
-            </template>
-
+            <em>{{nextNextDur.date}}</em>d
+            <em>{{nextNextDur.hour}}</em>h
+            <em>{{nextNextDur.minute}}</em>min
+            <em>{{nextNextDur.second}}</em>s
           </div>
         </div>
       </div>
@@ -99,7 +74,6 @@
 下下轮贿赂：3.30～4.5 -->
 <script>
 import moment from 'moment';
-import { mapState } from 'vuex';
 
 export default {
   props: {
@@ -115,39 +89,47 @@ export default {
     },
   },
   data() {
+    const today = moment.utc();
+    const thursday = moment.utc().day(4).startOf('day');
+    let current;
+    let next;
+    let nextNext;
+    if (today.isBefore(thursday)) {
+      current = thursday.clone();
+      next = thursday.clone().add(7, 'day');
+      nextNext = thursday.clone().add(14, 'day');
+    } else {
+      current = thursday.clone().add(7, 'day');
+      next = thursday.clone().add(14, 'day');
+      nextNext = thursday.clone().add(21, 'day');
+    }
+
     return {
       now: Date.now(),
-      current: moment(),
-      next: moment(),
-      nextNext: moment(),
-
-      cvxCurrent: moment(),
-      cvxNext: moment(),
-      cvxNextNext: moment(),
-    };
-  },
-  computed: {
-    ...mapState(['cvxChoices', 'proposal', 'crvChoices', 'allGauges']),
-    list() {
-      return [
+      current,
+      next,
+      nextNext,
+      list: [
         {
           idx: 0,
-          title: `Current Bribe (${this.voteType === 'VeCRV' ? this.current.format('MMMM D') : this.cvxCurrent.format('MMMM D')})`,
-          desc: `The ${this.voteType === 'VeCRV' ? 'veCRV' : 'vlCVX'} Gauge voting award for the week of ${this.voteType === 'VeCRV' ? this.current.local().format('MMMM D HH:mm a') : this.cvxCurrent.local().format('MMMM D HH:mm a')} GMT${this.current.local().format('ZZ')}`,
-          time: this.current,
+          title: `Current Bribe (${current.format('MMMM D')})`,
+          desc: `The veCRV Gauge voting award for the week of ${current.local().format('MMMM D HH:mm a')} GMT${current.local().format('ZZ')}`,
+          time: current,
         },
         {
           idx: 1,
-          title: `Next round of Bribe (${this.voteType === 'VeCRV' ? this.next.format('MMMM D') : this.cvxNext.format('MMMM D')})`,
-          time: this.next,
+          title: `Next round of Bribe (${next.format('MMMM D')})`,
+          time: next,
         },
         {
           idx: 2,
-          title: `The third round of Bribe (${this.voteType === 'VeCRV' ? this.nextNext.format('MMMM D') : this.cvxNextNext.format('MMMM D')})`,
-          time: this.nextNext,
+          title: `The third round of Bribe (${nextNext.format('MMMM D')})`,
+          time: nextNext,
         },
-      ]
-    },
+      ],
+    };
+  },
+  computed: {
     currentDur() {
       return this.getRemainTime(this.current);
     },
@@ -157,66 +139,15 @@ export default {
     nextNextDur() {
       return this.getRemainTime(this.nextNext);
     },
-
-    cvxCurrentDur() {
-      return this.getRemainTime(this.cvxCurrent);
-    },
-    cvxNextDur() {
-      return this.getRemainTime(this.cvxNext);
-    },
-    cvxNextNextDur() {
-      return this.getRemainTime(this.cvxNextNext);
-    },
-  },
-
-  watch: {
-    proposal() {
-      this.setTime();
-    },
   },
   created() {
-    this.setTime();
     this.loopSetNow();
     this.$emit('change', this.list[0]);
   },
 
   methods: {
-    onTypeChange(type) {
-      this.$emit('change', this.list[0]);
-      this.$emit('changeVoteType', type);
-    },
-
     onClick(item) {
-      if (this.voteType === 'VeCRV') {
-        this.$emit('change', item);
-      }
-    },
-
-    setTime() {
-      const today = moment.utc();
-      const thursday = moment.utc().day(4).startOf('day');
-
-      if (today.isBefore(thursday)) {
-        this.current = thursday.clone();
-        this.next = thursday.clone().add(7, 'day');
-        this.nextNext = thursday.clone().add(14, 'day');
-      } else {
-        this.current = thursday.clone().add(7, 'day');
-        this.next = thursday.clone().add(14, 'day');
-        this.nextNext = thursday.clone().add(21, 'day');
-      }
-
-      const cvxThursday = moment(this.proposal.end * 1000).utc().startOf('day');
-
-      if (today.isBefore(cvxThursday)) {
-        this.cvxCurrent = cvxThursday.clone();
-        this.cvxNext = cvxThursday.clone().add(14, 'day');
-        this.cvxNextNext = cvxThursday.clone().add(28, 'day');
-      } else {
-        this.cvxCurrent = thursday.clone().add(14, 'day');
-        this.cvxNext = thursday.clone().add(28, 'day');
-        this.cvxNextNext = thursday.clone().add(42, 'day');
-      }
+      this.$emit('change', item);
     },
 
 
@@ -342,9 +273,6 @@ export default {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      &.vlcvx {
-        opacity: 0.6;
-      }
       &.active {
         padding: 6px 5px;
         border: 3px solid;
@@ -358,9 +286,6 @@ export default {
       flex-direction: column;
       justify-content: center;
       border-top: 1px solid $border-color;
-      &.vlcvx {
-        opacity: 0.6;
-      }
        &.active {
         padding: 6px 5px 5px;
         border: 3px solid;
