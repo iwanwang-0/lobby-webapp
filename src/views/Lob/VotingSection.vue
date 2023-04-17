@@ -67,6 +67,8 @@ export default {
     justify-content: center;
     align-items: center;
     text-align: center;
+    align-items: flex-start;
+
     // height: 317px;
     // & > div {
     //   padding-left: 8px;

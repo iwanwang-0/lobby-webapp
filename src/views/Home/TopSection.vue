@@ -30,7 +30,7 @@
     </div>
     <div class="right">
       <div class="block right-title">
-        Our Features
+       <span> Our Features</span>
       </div>
       <div class="block right-row">
         <div class="label">
@@ -168,14 +168,16 @@ export default {
     grid-template-rows: 131px repeat(3, 140px);
     & .right-title {
       font-weight: normal;
-      color: #64D98A;
       font-size: 48px;
-      background: linear-gradient(200deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
       text-align: center;
       padding-top: 22px;
       font-family: "ChillPixels Maximal";
+      span {
+        color: #64D98A;
+        background: linear-gradient(200deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
     }
 
     & > .block {
