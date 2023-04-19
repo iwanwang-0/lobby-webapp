@@ -17,6 +17,14 @@ const user = {
     ethBalance: 0,
     usdtBalance: 0,
 
+    crvFavPoolMap: {
+
+    },
+
+    cvxFavPoolMap: {
+
+    },
+
     // depositAmount: 0,
     // period: 0,
     // reinvestAmount: 0,
@@ -47,6 +55,19 @@ const user = {
         address: '',
         chainId: '',
       });
+    },
+
+    SET_CRV_FAV: (state, payload) => {
+      state.crvFavPoolMap = {
+        ...state.crvFavPoolMap,
+        [payload.pool]: payload.flag,
+      };
+    },
+    SET_CVX_FAV: (state, payload) => {
+      state.cvxFavPoolMap = {
+        ...state.cvxFavPoolMap,
+        [payload.pool]: payload.flag,
+      };
     },
   },
 

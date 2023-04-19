@@ -38,31 +38,51 @@
         </tr>
       </template>
       <template
-        v-for="(row, idx) in list"
+        v-for="(row, rIdx) in list"
       >
         <tr>
-          <td v-for="head in cols">
+          <td v-for="(head, hIdx) in cols">
+
+            <template v-if="hIdx === 0">
+              <img
+                v-if="cvxFavPoolMap[row.pool]"
+                class="favorite-icon"
+                src="~@/assets/img/favorite-active@2x.png"
+                alt=""
+                @click="handleFav(row, false)"
+              >
+              <img
+                v-else
+                class="favorite-icon"
+                src="~@/assets/img/favorite@2x.png"
+                alt=""
+                @click="handleFav(row, true)"
+              >
+                {{ rIdx + 1 }}
+              <!-- <slot name="operation" :row="row"></slot> -->
+            </template>
             <template v-if="head.prop === 'operation' && $scopedSlots.operation">
               <slot name="operation" :row="row"></slot>
             </template>
             <template v-if="head.isEdit && $scopedSlots.operation">
-              <template v-if="voteType === 'VlCVX'">
+              <!-- <template v-if="voteType === 'VlCVX'"> -->
                 <div class="edit-wrapper">
                   <span class="edit-sub" @click="onSub($event, row, head.prop)">-</span>
                   <input
                     class="edit-input vlcvx"
                     type="text"
-                    v-model="row[head.prop]"
+                    placeholder="0"
+                    v-model="valueMap[row.pool]"
                     @input=" onInput($event, row, head.prop)"
                   />
                   <span class="edit-plus" @click="onPlus($event, row, head.prop)">+</span>
                   <span
                    class="percent-input vlcvx" type="text" disabled="true">
-                   {{ row.percent }}
+                   {{ percentMap[row.pool] || 0 }}
                    </span>
                   <span class="suffix">%</span>
                 </div>
-              </template>
+              <!-- </template> -->
             </template>
             <template v-else>
               {{ row[head.prop]  }}
@@ -84,6 +104,12 @@ export default {
     CuButton,
   },
   props: {
+    cvxFavPoolMap: {
+      type: Object,
+    },
+    valueMap: {
+      type: Object,
+    },
     cols: {
       type: Array,
     },
@@ -102,6 +128,7 @@ export default {
   data() {
     return {
       active: '',
+      percentMap: {},
     };
   },
 
@@ -110,41 +137,58 @@ export default {
   },
 
   methods: {
-    onInput(e, row, prop) {
+    handleFav(row, flag) {
+      this.$store.commit('SET_CVX_FAV', {
+        pool: row.pool,
+        flag,
+      });
+    },
+
+    onInput(e, row) {
+      if (!this.valueMap[row.pool]) {
+        this.$set(this.valueMap, row.pool, 0);
+      }
       const val = e.target.value;
-      row[prop] = val.replace(/[^\d]/g, '');
+      const result = val.replace(/[^\d]/g, '');
+      this.valueMap[row.pool] = result;
+      // this.$set(this.valueMap, result);
       this.changeList();
     },
-    onSub(e, row, prop) {
-      if (!Number.isNaN(Number.parseInt(row[prop], 10)) && row[prop] >= 1) {
-        row[prop] -= 1;
+
+    onSub(e, row) {
+       if (!this.valueMap[row.pool]) {
+        this.$set(this.valueMap, row.pool, 0);
+      }
+      if (!Number.isNaN(Number.parseInt(this.valueMap[row.pool], 10)) && this.valueMap[row.pool] >= 1) {
+        this.valueMap[row.pool] -= 1;
       } else {
-        row[prop] = 0;
+        this.valueMap[row.pool] = 0;
       }
       this.changeList();
     },
 
-    onPlus(e, row, prop) {
-      const val = Number.parseInt(row[prop], 10);
+    onPlus(e, row) {
+       if (!this.valueMap[row.pool]) {
+        this.$set(this.valueMap, row.pool, 0);
+      }
+      const val = Number.parseInt(this.valueMap[row.pool], 10);
       if (!Number.isNaN(val)) {
-        row[prop] = val + 1;
+        this.valueMap[row.pool] = val + 1;
       } else {
-        row[prop] = 0;
+        this.valueMap[row.pool] = 0;
       }
       this.changeList();
     },
 
     changeList() {
-      const total = this.list.reduce((sum, item) => sum + (parseInt(item.newWeight, 10) || 0), 0);
-
-      this.list.forEach((item) => {
+      const total = Object.keys(this.valueMap).reduce((sum, key) => sum + (parseInt(this.valueMap[key], 10) || 0), 0);
+      Object.keys(this.valueMap).forEach((key) => {
         if (!total) {
-          item.percent = 0;
+          this.percentMap[key] = 0;
         } else {
-          item.percent = (((parseInt(item.newWeight, 10) || 0) / total) * 100).toFixed(2);
+          this.percentMap[key] = (((parseInt(this.valueMap[key], 10) || 0) / total) * 100).toFixed(2);
         }
       });
-
       this.$emit('change', this.list);
     },
   },
@@ -173,6 +217,11 @@ export default {
 }
 
 .table-body {
+  & .favorite-icon {
+    width: 16px;
+    cursor: pointer;
+  }
+
   & tr + tr {
     border-top: 1px dashed $border-color;
   }

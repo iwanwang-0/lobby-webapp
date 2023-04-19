@@ -63,7 +63,7 @@ function generatePagination({
   for (let i = 1; i <= pageCount; i++) {
     pages.push(i);
   }
-
+  console.log(pages)
   return pages;
 }
 

@@ -111,23 +111,6 @@ export default {
       ],
 
       market: 'All',
-      marketOption: [
-        {
-          label: 'All',
-          value: 'All',
-        },
-        {
-          label: 'Votium',
-          value: 'Votium',
-        },
-        {
-          label: 'yBribe',
-          value: 'yBribe',
-        }, {
-          label: 'VoteMarket',
-          value: 'VoteMarket',
-        },
-      ],
 
       submitting: false,
       loading: false,
@@ -137,7 +120,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'marketOption']),
     ...mapGetters(['roundOptions']),
     ...mapState(['cvxChoices', 'proposal']),
   },
@@ -180,9 +163,7 @@ export default {
 
           const choiceItemKey = Object.keys(choice);
 
-          const sumPower = choiceItemKey.reduce((sum, keyItem) => {
-            return sum + choice[keyItem];
-          }, 0);
+          const sumPower = choiceItemKey.reduce((sum, keyItem) => sum + choice[keyItem], 0);
 
           choiceItemKey.forEach((keyItem) => {
             list.push({

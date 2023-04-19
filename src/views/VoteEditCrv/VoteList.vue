@@ -38,20 +38,39 @@
         </tr>
       </template>
       <template
-        v-for="(row, idx) in list"
+        v-for="(row, rIdx) in list"
       >
         <tr>
-          <td v-for="head in cols">
+          <td v-for="(head, hIdx) in cols">
+
+            <template v-if="hIdx === 0">
+              <img
+                v-if="crvFavPoolMap[row.pool]"
+                class="favorite-icon"
+                src="~@/assets/img/favorite-active@2x.png"
+                alt=""
+                @click="handleFav(row, false)"
+              >
+              <img
+                v-else
+                class="favorite-icon"
+                src="~@/assets/img/favorite@2x.png"
+                alt=""
+                @click="handleFav(row, true)"
+              >
+              {{ rIdx + 1 }}
+            </template>
             <template v-if="head.prop === 'operation' && $scopedSlots.operation">
               <slot name="operation" :row="row"></slot>
             </template>
-            <template v-if="head.isEdit && $scopedSlots.operation">
+            <template v-if="head.isEdit">
               <template>
                 <div class="edit-wrapper">
                   <input
                     class="edit-input"
                     type="text" min="0"
-                    v-model="row[head.prop]"
+                    v-model="valueMap[row.pool]"
+                    placeholder="0"
                     @input=" onInput($event, row, head.prop)"
                    />
                   <span class="suffix">%</span>
@@ -71,6 +90,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import CuButton from '@/components/CuButton.vue';
 
 export default {
@@ -78,11 +98,14 @@ export default {
     CuButton,
   },
   props: {
-    cols: {
-      type: Array,
+    crvFavPoolMap: {
+      type: Object,
     },
     list: {
       type: Array,
+    },
+    valueMap: {
+      type: Object,
     },
     loading: {
       type: Boolean,
@@ -96,7 +119,46 @@ export default {
   data() {
     return {
       active: '',
+
+      cols: [
+        {
+          title: 'Sort',
+          prop: 'sort',
+          width: '80px',
+        },
+        {
+          title: 'Pool',
+          prop: 'pool',
+          width: '160px',
+        },
+        {
+          title: 'Apr',
+          prop: 'Apr',
+        },
+        {
+          title: 'Weight',
+          prop: 'weight',
+        },
+        {
+          title: 'New Weight',
+          prop: 'newWeight',
+          isEdit: true,
+          width: 350,
+          opBtn: 'Best Option',
+          opClick: () => {
+            console.log(this);
+          },
+        },
+        {
+          title: 'Operation',
+          prop: 'operation',
+          width: 160,
+        },
+      ],
     };
+  },
+  computed: {
+    ...mapState(['cvxChoices', 'proposal', 'crvChoices', 'allGauges', 'marketOption']),
   },
 
   created() {
@@ -104,30 +166,28 @@ export default {
   },
 
   methods: {
-    onInput(e, row, prop) {
+    handleFav(row, flag) {
+      this.$store.commit('SET_CRV_FAV', {
+        pool: row.pool,
+        flag,
+      })
+    },
+    onInput(e, row) {
+      if (!this.valueMap[row.pool]) {
+        this.$set(this.valueMap, row.pool, 0);
+      }
+
       const val = e.target.value;
+      let result = val;
       if (!/^[1-9]\d*(\.\d+)?$/.test(val)) {
-        row[prop] = val.replace(/[^\d.]/g, ''); // 非数字和小数点替换为空字符串
+        result = val.replace(/[^\d.]/g, '');
       }
-      if (row[prop] > 100) {
-        row[prop] = 100;
+      if (parseFloat(result) > 100) {
+        result = '100';
       }
-      this.changeList();
+      this.valueMap[row.pool] = result;
     },
 
-    changeList() {
-      const total = this.list.reduce((sum, item) => sum + (parseInt(item.newWeight, 10) || 0), 0);
-
-      this.list.forEach((item) => {
-        if (!total) {
-          item.percent = 0;
-        } else {
-          item.percent = (((parseInt(item.newWeight, 10) || 0) / total) * 100).toFixed(2);
-        }
-      });
-
-      this.$emit('change', this.list);
-    },
   },
 };
 </script>
@@ -154,6 +214,10 @@ export default {
 }
 
 .table-body {
+  & .favorite-icon {
+    width: 16px;
+    cursor: pointer;
+  }
   & tr + tr {
     border-top: 1px dashed $border-color;
   }

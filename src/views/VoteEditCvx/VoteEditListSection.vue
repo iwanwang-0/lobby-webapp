@@ -34,11 +34,12 @@
     <div class="content">
       <VoteList
         :voteType="voteType"
+        :cvxFavPoolMap="user.cvxFavPoolMap"
+        :valueMap="valueMap"
         :cols="cols"
-        :list="innerList"
+        :list="voteList"
         :loading="loading"
         :submitting="submitting"
-        :is-expand="false"
       >
         <template v-slot:operation="{ row }">
           <CuButton
@@ -104,6 +105,9 @@ export default {
 
   data() {
     return {
+      valueMap: {},
+      labelChoiceMap: {},
+
       cols: [
         {
           title: 'Sort',
@@ -141,26 +145,7 @@ export default {
         ],
       ].filter((item) => item),
 
-      innerList: [],
-
       market: 'All',
-      marketOption: [
-        {
-          label: 'All',
-          value: 'All',
-        },
-        {
-          label: 'Votium',
-          value: 'Votium',
-        },
-        {
-          label: 'yBribe',
-          value: 'yBribe',
-        }, {
-          label: 'VoteMarket',
-          value: 'VoteMarket',
-        },
-      ],
 
       submitting: false,
       loading: false,
@@ -171,26 +156,34 @@ export default {
   computed: {
     ...mapState(['user']),
     ...mapGetters(['roundOptions']),
-    ...mapState(['cvxChoices', 'proposal']),
+    ...mapState(['cvxChoices', 'proposal', 'marketOption']),
     voteList() {
-      if (this.voteType === 'VeCRV') {
-        return [];
-      }
-      return this.cvxChoices.map((item, idx) => ({
-        sort: idx,
+      const list = this.cvxChoices.map((item, idx) => ({
+        choice: idx + 1,
+        // sort: idx,
         pool: item.label.replace(/\(.*\)/, ''),
         weight: 0,
         newWeight: 0,
         percent: 0,
       }));
+
+      const topList = list.filter((item) => this.user.cvxFavPoolMap[item.pool]);
+      const otherList = list.filter((item) => !this.user.cvxFavPoolMap[item.pool]);
+
+      return [
+        ...topList,
+        ...otherList,
+      ];
     },
 
   },
 
   watch: {
-    voteList: {
+    cvxChoices: {
       handler() {
-        this.innerList = cloneDeep(this.voteList);
+        this.cvxChoices.forEach((item, idx) => {
+          this.labelChoiceMap[item.label.replace(/\(.*\)/, '')] = idx + 1;
+        });
       },
       immediate: true,
     },
@@ -207,15 +200,20 @@ export default {
 
     async onVoteAll() {
       this.submitting = true;
-      const choiceMap = this.innerList.reduce((choices, item, idx) => {
-        const value = Number.parseInt(item.newWeight, 10) || 0;
+
+      // valueMap: {},
+      // labelChoiceMap: {},
+      console.log(this.labelChoiceMap)
+      const choiceMap = Object.keys(this.valueMap).reduce((choices, key, idx) => {
+        const value = Number.parseInt(this.valueMap[key], 10) || 0;
         if (value) {
+          console.log(key)
           // eslint-disable-next-line no-param-reassign
-          choices[idx + 1] = value;
+          choices[this.labelChoiceMap[key]] = value;
         }
         return choices;
       }, {});
-
+      console.log(choiceMap)
       try {
         await vote({
           account: this.user.address,

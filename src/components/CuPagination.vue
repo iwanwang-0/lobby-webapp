@@ -19,12 +19,13 @@
       <li class="right-btn" @click="onNext">
         <img src="~@/assets/img/page-arrow@2x.png" alt="">
       </li>
+      {{ total }}
     </ul>
   </div>
 </template>
 
 <script>
-import { defineComponent } from '@vue/composition-api';
+import { defineComponent, watch, ref } from '@vue/composition-api';
 import generatePagination from '@/common/generatePagination';
 
 export default defineComponent({
@@ -45,6 +46,8 @@ export default defineComponent({
   },
 
   setup(props, context) {
+    let pageList = ref([]);
+
     const onPrev = () => {
       if (props.page > 1) {
         context.emit('change', props.page - 1);
@@ -61,12 +64,18 @@ export default defineComponent({
       context.emit('change', val);
     };
 
-    const pageList = generatePagination({
-      showPageCount: 10,
-      currentPage: props.page,
-      pageCount: Math.ceil(props.total / props.pageSize) || 1,
-    });
+    const generatePage = () => {
+      pageList.value = generatePagination({
+        showPageCount: 10,
+        currentPage: props.page,
+        pageCount: Math.ceil(props.total / props.pageSize) || 1,
+      });
+    }
 
+    watch(() => props.total, generatePage);
+    watch(() => props.page, generatePage);
+    watch(() => props.pageSize, generatePage);
+    generatePage();
     return {
       onPrev,
       onNext,

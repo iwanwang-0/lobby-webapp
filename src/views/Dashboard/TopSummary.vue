@@ -40,20 +40,10 @@ export default {
   data() {
     return {
       round: 1,
-      options: [
-        {
-          label: '1',
-          value: '1',
-        },
-        {
-          label: '2',
-          value: '2',
-        }
-      ]
     }
   },
   computed: {
-    ...mapGetters(['roundOptions'])
+    ...mapGetters(['roundOptions']),
   },
   watch: {
     roundOptions: {

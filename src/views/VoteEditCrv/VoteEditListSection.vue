@@ -6,7 +6,7 @@
       </span>
       <div class="header-right">
 
-        <CuButton
+        <!-- <CuButton
           class="link-btn"
           variant="link"
           :loading="submitting"
@@ -14,7 +14,7 @@
 
         >
           Vote All
-        </CuButton>
+        </CuButton> -->
 <!--
         <RoundSelect
           :options="roundOptions"
@@ -34,11 +34,11 @@
     <div class="content">
       <VoteList
         :voteType="voteType"
-        :cols="cols"
-        :list="innerList"
+        :valueMap="valueMap"
+        :crvFavPoolMap="user.crvFavPoolMap"
+        :list="voteList"
         :loading="loading"
         :submitting="submitting"
-        :is-expand="false"
       >
         <template v-slot:operation="{ row }">
           <CuButton
@@ -69,7 +69,7 @@ import { BigNumber, utils } from 'ethers';
 import { cloneDeep } from 'lodash';
 
 import CuButton from '@/components/CuButton';
-import RoundSelect from '@/components/RoundSelect';
+// import RoundSelect from '@/components/RoundSelect';
 import CuPagination from '@/components/CuPagination';
 import CuSelect from '@/components/CuSelect';
 
@@ -90,8 +90,8 @@ export default {
     VoteList,
     CuButton,
     // CuSelect,
-    RoundSelect,
-    CuPagination,
+    // RoundSelect,
+    // CuPagination,
   },
 
   props: {
@@ -102,62 +102,10 @@ export default {
 
   data() {
     return {
-      cols: [
-        {
-          title: 'Sort',
-          prop: 'sort',
-          width: '80px',
-        },
-        {
-          title: 'Pool',
-          prop: 'pool',
-          width: '160px',
-        },
-        {
-          title: 'Apr',
-          prop: 'Apr',
-        },
-        {
-          title: 'Weight',
-          prop: 'weight',
-        },
-        {
-          title: 'New Weight',
-          prop: 'newWeight',
-          isEdit: true,
-          width: 350,
-          opBtn: 'Best Option',
-          opClick: () => {
-            console.log(this);
-          },
-        },
-        {
-          title: 'Operation',
-          prop: 'operation',
-          width: 160,
-        },
-      ].filter((item) => item),
-
-      innerList: [],
+      valueMap: {},
+      labelChoiceMap: {},
 
       market: 'All',
-      marketOption: [
-        {
-          label: 'All',
-          value: 'All',
-        },
-        {
-          label: 'Votium',
-          value: 'Votium',
-        },
-        {
-          label: 'yBribe',
-          value: 'yBribe',
-        }, {
-          label: 'VoteMarket',
-          value: 'VoteMarket',
-        },
-      ],
 
       submitting: false,
       loading: false,
@@ -168,26 +116,32 @@ export default {
   computed: {
     ...mapState(['user']),
     ...mapGetters(['roundOptions']),
-    ...mapState(['cvxChoices', 'proposal', 'crvChoices', 'allGauges']),
+    ...mapState(['cvxChoices', 'proposal', 'crvChoices', 'allGauges', 'marketOption']),
     voteList() {
-      // if (this.voteType === 'VeCRV') {
-      //   return [];
-      // }
-      return this.crvChoices.map((item, idx) => ({
-        sort: idx + 1,
+      const list = this.crvChoices.map((item, idx) => ({
+        choice: idx + 1,
         pool: item.label,
         weight: 0,
         newWeight: 0,
         percent: 0,
       }));
-    },
 
+      const topList = list.filter((item) => this.user.crvFavPoolMap[item.pool]);
+      const otherList = list.filter((item) => !this.user.crvFavPoolMap[item.pool]);
+
+      return [
+        ...topList,
+        ...otherList,
+      ];
+    },
   },
 
   watch: {
-    voteList: {
+    crvChoices: {
       handler() {
-        this.innerList = cloneDeep(this.voteList);
+        this.crvChoices.forEach((item, idx) => {
+          this.labelChoiceMap[item.label] = idx + 1;
+        });
       },
       immediate: true,
     },
@@ -203,20 +157,24 @@ export default {
     },
 
     async onVoteAll() {
+      // console.log(this.voteList);
+      // console.log(this.valueMap);
+      // console.log(this.labelChoiceMap);
+      // return;
       this.submitting = true;
-      const choiceMap = this.innerList.reduce((choices, item, idx) => {
-        const value = Number.parseInt(item.newWeight, 10) || 0;
-        if (value) {
-          choices[idx + 1] = value;
-        }
-        return choices;
-      }, {});
+      // const choiceMap = this.innerList.reduce((choices, item, idx) => {
+      //   const value = Number.parseInt(item.newWeight, 10) || 0;
+      //   if (value) {
+      //     choices[idx + 1] = value;
+      //   }
+      //   return choices;
+      // }, {});
 
       try {
         await vote({
           account: this.user.address,
           proposal: this.proposal.id,
-          choice: choiceMap,
+          choice: this.valueMap,
         });
 
         this.showSuccess('Succeeded');
@@ -267,10 +225,8 @@ export default {
     },
 
     async onVote(record) {
-      console.log(record);
-      console.log(this.allGauges);
 
-      const newWeight = Number.parseFloat(record.newWeight);
+      const newWeight = Number.parseFloat(this.valueMap[record.pool]);
 
       if (!newWeight) {
         this.showError('Please input vote weight');
@@ -296,7 +252,10 @@ export default {
         // });
 
         // const proof = await this.getProof(tAddr, round);
-
+          // console.log([
+          //   this.allGauges[record.pool].gauge,
+          //   newWeight * 1000,
+          // ])
         const txHash = await sendTransaction({
           to: config.GaugeController,
           gas: 640000,
@@ -326,7 +285,6 @@ export default {
       }
       this.submitting = false;
     },
-
 
     openForward() {
       this.$refs['my-modal'].show();

@@ -5,23 +5,6 @@
         List
       </span>
       <div class="header-right">
-        <!-- <b-button
-          class="link-btn"
-          :variant="voteType === 'VeCRV' ? 'primary' : 'outline-primary'"
-          size="lg"
-          @click="changeVoteType('VeCRV')"
-
-        >
-          VeCRV
-        </b-button>
-        <b-button
-          class="link-btn"
-          :variant="voteType === 'VlCVX' ? 'primary' : 'outline-primary'"
-          size="lg"
-          @click="changeVoteType('VlCVX')"
-        >
-          VlCVX
-        </b-button> -->
 
         <CuSelect
           type="simple"
@@ -116,13 +99,17 @@
         </template>
       </TableList>
     </div>
-    <!-- <div class="footer">
+    <div class="footer">
+      {{ page }}
+      {{ total }}
       <CuPagination
-        :page="1"
-        :pageSize="10"
-        :total="999"
+        :key="voteType"
+        :page="page"
+        :pageSize="pageSize"
+        :total="total"
+        @change="onPageChange"
       ></CuPagination>
-    </div> -->
+    </div>
   </b-container>
 </template>
 
@@ -168,15 +155,15 @@ export default {
         {
           title: 'Pool',
           prop: 'pool',
-          width: '160px',
+          width: '280px',
         },
         {
           title: 'Apr',
           prop: 'Apr',
         },
         {
-          title: '$/veCVX',
-          prop: '$/veCVX',
+          title: this.voteType === 'VeCRV' ? '$/veCRV' : '$/vlCVX',
+          prop: this.voteType === 'VeCRV' ? 'veCRV' : 'vlCVX',
         },
         {
           title: 'Rewards',
@@ -194,51 +181,13 @@ export default {
           width: '160px',
         },
       ],
-      list: [
-        {
-          Sort: '1',
-          Pool: 'ETH-alETH',
-          Apr: '30%',
-          Rewards: '158.87 $CRV',
-          VoteNumber: '22',
-          operation: '',
-        },
-        {
-          Sort: '2',
-          Pool: 'ETH-alETH',
-          Apr: '30%',
-          Rewards: '158.87 $CRV',
-          VoteNumber: '22',
-          operation: '',
-        },
-        {
-          Sort: '3',
-          Pool: 'ETH-alETH',
-          Apr: '30%',
-          Rewards: '158.87 $CRV',
-          VoteNumber: '22',
-          operation: '',
-        },
-      ],
+      list: [],
+
+      pageSize: 10,
+      page: 1,
+      total: 0,
 
       market: 'All',
-      marketOption: [
-        {
-          label: 'All',
-          value: 'All',
-        },
-        {
-          label: 'Votium',
-          value: 'Votium',
-        },
-        {
-          label: 'yBribe',
-          value: 'yBribe',
-        }, {
-          label: 'VoteMarket',
-          value: 'VoteMarket',
-        },
-      ],
 
       submitting: false,
       loading: false,
@@ -248,28 +197,58 @@ export default {
   },
 
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'marketOption']),
     ...mapState(['cvxChoices', 'crvChoices', 'proposal', 'allGauges']),
 
     voteList() {
+      let list = [];
       if (this.voteType === 'VeCRV') {
-        return this.crvChoices.map((item, idx) => ({
+        list = this.crvChoices.map((item, idx) => ({
           sort: idx + 1,
           pool: item.value,
         }));
       }
-      return this.cvxChoices.map((item, idx) => ({
+      list = this.cvxChoices.map((item, idx) => ({
         sort: idx + 1,
-        pool: item.replace(/\(.*\)/, ''),
+        pool: item.label.replace(/\(.*\)/, ''),
       }));
+
+      return list.slice(this.pageSize * (this.page - 1), this.pageSize * this.page);
+    },
+
+    // total() {
+    //   if (this.voteType === 'VeCRV') {
+    //     return this.crvChoices.length;
+    //   } else {
+    //     return this.cvxChoices.length;
+    //   }
+    // },
+  },
+  watch: {
+    voteType() {
+      this.page = 1;
+      this.setTotal();
+      // if (this.voteType === 'VeCRV') {
+      //   this.total = this.crvChoices.length;
+      // } else {
+      //   this.total = this.cvxChoices.length;
+      // }
     },
   },
-
   created() {
+    this.setTotal();
     // this.getReward();
   },
 
   methods: {
+    setTotal() {
+      this.page = 1;
+      if (this.voteType === 'VeCRV') {
+        this.total = this.crvChoices.length;
+      } else {
+        this.total = this.cvxChoices.length;
+      }
+    },
     onVote() {
       // this.$router.push('/vote-edit');
       if (this.voteType === 'VeCRV') {
@@ -283,9 +262,8 @@ export default {
     selectChange() {
       this.getReward();
     },
-
-    changeVoteType(type) {
-      this.voteType = type;
+    onPageChange(page) {
+      this.page = page;
     },
 
     getProof(tAddr, round) {
@@ -311,8 +289,6 @@ export default {
       //   this.showError(`The minimum claim is ${this.min} DOGE`);
       //   return;
       // }
-
-      console.log(amount, tAddr, round);
       this.submitting = true;
       try {
         const proof = await this.getProof(tAddr, round);
@@ -360,11 +336,6 @@ export default {
         const [symbol, decimals] = await Promise.all([
           erc20Contract.symbol(),
           erc20Contract.decimals(),
-          // erc20Contract.balanceOf(this.user.address),
-          // erc20Contract.allowance(
-          //   this.user.address,
-          //   config.VotiumVeCRV,
-          // ),
         ]);
         if (symbol) {
           return {
@@ -430,7 +401,7 @@ export default {
   border-left: 1px solid $border-color;
   border-right: 1px solid $border-color;
   display: grid;
-  grid-template-rows: 130px auto;
+  grid-template-rows: 130px auto 100px;
   // grid-template-rows: 130px auto 100px;
   .header {
     border-bottom: 1px solid $border-color;

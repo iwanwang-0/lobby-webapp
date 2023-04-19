@@ -30,18 +30,31 @@
 
         <div class="row2">Time Remaining to Vote:
           <span class="remain-text">
-            <em>{{currentDur.date}}</em>d
+            <!-- <em>{{currentDur.date}}</em>d
             <em>{{currentDur.hour}}</em>h
             <em>{{currentDur.minute}}</em>min
-            <em>{{currentDur.second}}</em>s
+            <em>{{currentDur.second}}</em>s -->
+            <template v-if="this.voteType === 'VeCRV'">
+              <em>{{currentDur.date}}</em>d
+              <em>{{currentDur.hour}}</em>h
+              <em>{{currentDur.minute}}</em>min
+              <em>{{currentDur.second}}</em>s
+            </template>
+            <template v-else>
+              <em>{{cvxCurrentDur.date}}</em>d
+              <em>{{cvxCurrentDur.hour}}</em>h
+              <em>{{cvxCurrentDur.minute}}</em>min
+              <em>{{cvxCurrentDur.second}}</em>s
+            </template>
           </span>
+
         </div>
-        <div class="row3">Deadline for the next round of voting：13d13h20min36s</div>
+        <div class="row3">Deadline for the next round of voting：13d 13h 20min 36s</div>
         <!-- <div class="title">Reward</div>
         <div class="desc">Each round of Reward will be distributed <em>48h</em> after the end of voting</div> -->
       </div>
       <div class="right">
-        <div>You veCRV/Voting Power: <span class="power-text"><em>1123,456</em></span> </div>
+        <div>You {{ voteType === 'VeCRV' ? 'veCRV' : 'vlCVX' }}/Voting Power: <span class="power-text"><em>1123,456</em></span> </div>
         <div>You reward will be distributed <em>48h</em> after the voting</div>
         <!-- <div class="right-row">Claimable reward: <em>$123,456</em></div>
         <div class="right-row">Rewards received: <em>$123,456</em></div>
@@ -54,6 +67,7 @@
 
 <script>
 import moment from 'moment';
+import { mapState } from 'vuex';
 
 export default {
   props: {
@@ -62,35 +76,84 @@ export default {
     },
   },
   data() {
-    const today = moment.utc();
-    const thursday = moment.utc().day(4).startOf('day');
-    let current;
-    if (today.isBefore(thursday)) {
-      current = thursday.clone();
-    } else {
-      current = thursday.clone().add(7, 'day');
-    }
+    // const today = moment.utc();
+    // const thursday = moment.utc().day(4).startOf('day');
+    // let current;
+    // if (today.isBefore(thursday)) {
+    //   current = thursday.clone();
+    // } else {
+    //   current = thursday.clone().add(7, 'day');
+    // }
+
+    // const cvxThursday = moment(this.proposal.end * 1000).utc().startOf('day');
+
+    // if (today.isBefore(cvxThursday)) {
+    //   this.cvxCurrent = cvxThursday.clone();
+    //   // this.cvxNext = cvxThursday.clone().add(14, 'day');
+    //   // this.cvxNextNext = cvxThursday.clone().add(28, 'day');
+    // } else {
+    //   this.cvxCurrent = thursday.clone().add(14, 'day');
+    //   // this.cvxNext = thursday.clone().add(28, 'day');
+    //   // this.cvxNextNext = thursday.clone().add(42, 'day');
+    // }
 
     return {
       now: Date.now(),
-      current,
-      desc: `The veCRV Gauge voting award for the week of ${current.local().format('MMMM D HH:mm a')} GMT${current.local().format('ZZ')}`
+      current: moment(),
+      cvxCurrent: moment(),
     };
   },
 
   computed: {
+    ...mapState(['cvxChoices', 'proposal', 'crvChoices', 'allGauges']),
     currentDur() {
       return this.getRemainTime(this.current);
+    },
+    cvxCurrentDur() {
+      return this.getRemainTime(this.cvxCurrent);
+    },
+    desc() {
+      return `The ${this.voteType === 'VeCRV' ? 'veCRV' : 'vlCVX'} Gauge voting award for the week of
+      ${ (this.voteType === 'VeCRV' ? this.current : this.cvxCurrent).local().format('MMMM D HH:mm a')}
+      GMT ${(this.voteType === 'VeCRV' ? this.current : this.cvxCurrent).local().format('ZZ')}`
+    }
+  },
+
+  watch: {
+    proposal() {
+      this.setTime();
     },
   },
 
   created() {
+    this.setTime();
     this.loopSetNow();
   },
 
   methods: {
     changeVoteType(type) {
       this.$emit('changeType', type);
+    },
+
+    setTime() {
+      const today = moment.utc();
+      const thursday = moment.utc().day(4).startOf('day');
+
+      if (today.isBefore(thursday)) {
+        this.current = thursday.clone();
+      } else {
+        this.current = thursday.clone().add(7, 'day');
+        this.next = thursday.clone().add(14, 'day');
+        this.nextNext = thursday.clone().add(21, 'day');
+      }
+
+      const cvxThursday = moment(this.proposal.end * 1000).utc().startOf('day');
+
+      if (today.isBefore(cvxThursday)) {
+        this.cvxCurrent = cvxThursday.clone();
+      } else {
+        this.cvxCurrent = thursday.clone().add(14, 'day');
+      }
     },
 
     getRemainTime(targetTime) {

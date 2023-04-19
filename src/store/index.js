@@ -15,7 +15,7 @@ export default new Vuex.Store({
     createPersistedState({
       storage: window.localStorage,
       key: `vuex_${config.storeVersion}`,
-      paths: ['user.isLogin'],
+      paths: ['user.isLogin', 'user.crvFavPoolMap', 'user.cvxFavPoolMap'],
     }),
   ],
   modules: {
@@ -23,6 +23,7 @@ export default new Vuex.Store({
     enums,
   },
   state: {
+
     totalRound: 100,
     proposal: {},
     allGauges: {},
