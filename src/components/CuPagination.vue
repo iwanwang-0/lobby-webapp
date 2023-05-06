@@ -19,7 +19,6 @@
       <li class="right-btn" @click="onNext">
         <img src="~@/assets/img/page-arrow@2x.png" alt="">
       </li>
-      {{ total }}
     </ul>
   </div>
 </template>

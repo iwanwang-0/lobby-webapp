@@ -36,6 +36,10 @@ export default new Vuex.Store({
         value: 'All',
       },
       {
+        label: 'Lobby',
+        value: 'Lobby',
+      },
+      {
         label: 'Votium',
         value: 'Votium',
       },

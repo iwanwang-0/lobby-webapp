@@ -8,7 +8,7 @@ import Qs from 'qs';
 const BIZ_ERROR = 'BizError';
 
 const instance = axios.create({
-  baseURL: '/service',
+  baseURL: '/api',
   timeout: 30000,
 });
 
