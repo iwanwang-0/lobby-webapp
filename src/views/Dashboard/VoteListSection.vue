@@ -35,14 +35,20 @@
         </template>
 
         <template v-slot:expandPanel="{ row }">
-          <div class="row1">
+          <div>
+            <div class="row1">
             <div>
               You vote weight:
-              <em>0.1%</em>
+              <em>
+                <b-spinner variant="secondary" small label="Small Spinner"></b-spinner>
+              </em>
             </div>
             <div>
               You reward :
-              <em>123,235 veCRV</em>
+              <em>
+                <!-- 123,235 veCRV -->
+                <b-spinner variant="secondary" small label="Small Spinner"></b-spinner>
+              </em>
             </div>
             <div>
               <CuButton
@@ -58,22 +64,27 @@
           <div class="row2">
             <div class="expand-item">
               <div class="label">Max reward per veCRV</div>
-              <div class="content">0.12 CRV</div>
+              <div class="content">{{row.maxRewardPerScore}} $</div>
             </div>
             <div class="expand-item">
               <div class="label">Remaining claimable rewards</div>
-              <div class="content">122,345.33 CRV</div>
+              <div class="content">- $</div>
             </div>
             <div></div>
             <div></div>
 
             <div class="expand-item">
               <div class="label">First voting period</div>
-              <div class="content">February 9, 2023 8:00 am</div>
+              <div class="content">
+                {{ row.week.hex * (WEEK_SECONDS) * 1000 | formatTime('MMMM D, yyyy h:mm a') }}
+              </div>
             </div>
             <div class="expand-item">
               <div class="label">Last voting period</div>
-              <div class="content">March 30, 2023 8:00 am</div>
+              <div class="content">
+                <!-- March 30, 2023 8:00 am -->
+                {{ (row.week.hex * (WEEK_SECONDS) + (WEEK_SECONDS))  * 1000 | formatTime('MMMM D, yyyy h:mm a') }}
+              </div>
             </div>
             <div class="expand-item">
               <div class="label">First week of claim</div>
@@ -85,16 +96,13 @@
             </div>
             <div class="expand-item">
               <div class="label">Contracts</div>
-              <div class="content">0.12 CRV</div>
+              <div class="content">
+                <a :href="`https://etherscan.io/address/${row.gaugeAddr}`">
+                  {{row.gaugeAddr}}
+                </a>
+              </div>
             </div>
-            <div class="expand-item">
-              <div class="label">&nbsp;</div>
-              <div class="content">0.12 CRV</div>
-            </div>
-            <div class="expand-item">
-              <div class="label">&nbsp;</div>
-              <div class="content">0.12 CRV</div>
-            </div>
+          </div>
           </div>
         </template>
       </TableList>
@@ -125,7 +133,7 @@ import sendTransaction from '@/common/sendTransaction';
 import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
 import { fetchBribeList } from '@/api/dashbord'
-
+import toFixed from '@/filters/toFixed'
 import {
   getERC20Contract, MultiMerkleStashContract, MultiMerkleStashInterface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
 } from '@/eth/ethereum';
@@ -145,6 +153,7 @@ export default {
 
   data() {
     return {
+      WEEK_SECONDS: 7 * 24 * 60 * 60,
       forwardAddress: '',
       cols: [
         {
@@ -163,16 +172,16 @@ export default {
         },
         {
           title: this.voteType === 'VeCRV' ? '$/veCRV' : '$/vlCVX',
-          prop: this.voteType === 'VeCRV' ? 'veCRV' : 'vlCVX',
+          prop: 'price',
         },
         {
           title: 'Rewards',
-          prop: 'Rewards',
+          prop: 'rewards',
         },
 
         {
           title: 'Vote number',
-          prop: 'VoteNumber',
+          prop: 'voteNumber',
         },
 
         // {
@@ -229,8 +238,8 @@ export default {
   watch: {
     voteType() {
       this.page = 1;
-      this.getList();
       this.list = [];
+      this.getList();
       // this.setTotal();
       // if (this.voteType === 'VeCRV') {
       //   this.total = this.crvChoices.length;
@@ -240,8 +249,8 @@ export default {
     },
     market() {
       this.page = 1;
-      this.getList();
       this.list = [];
+      this.getList();
       // this.setTotal();
       // if (this.voteType === 'VeCRV') {
       //   this.total = this.crvChoices.length;
@@ -257,7 +266,6 @@ export default {
 
   methods: {
     async getList() {
-      // console.log(this.voteType)
       this.loading = true;
       const res = await fetchBribeList({
         witch: this.voteType === 'VeCRV' ? 'crv' : 'cvx',
@@ -272,6 +280,9 @@ export default {
             sort: idx + 1,
             ...item,
             pool: item.name.shortName,
+            rewards: toFixed(BigNumber.from(item.tokenAmount.hex || 0).div(10 ** item.tokenDecimals), 4),
+            voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
+            price: toFixed(BigNumber.from(item.tokenAmount.hex || 0).div(10 ** item.tokenDecimals) * item.tokenPrice / item.totalScore.hex, 4),
           }
         });
       } else {

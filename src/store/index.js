@@ -31,10 +31,10 @@ export default new Vuex.Store({
     crvChoices: [],
 
     marketOption: [
-      {
-        label: 'All',
-        value: 'All',
-      },
+      // {
+      //   label: 'All',
+      //   value: 'All',
+      // },
       {
         label: 'Lobby',
         value: 'Lobby',
