@@ -1,72 +1,93 @@
 <template>
-    <div class="content">
-      <div class="round-cell">
-        <div class="round-content">
-          <div class="value">{{round}}</div>
-          <div class="label">Round Number</div>
+   <b-container class="top-section" fluid="lg">
+      <div class="content">
+        <div class="round-cell">
+          <div class="round-content">
+            <div class="value">{{round}}</div>
+            <div class="label">Round Number</div>
+          </div>
+          <CuSelect
+            class="select"
+            type="simple"
+            :options="roundOptions"
+            :value="round"
+            @change="onChange"
+          >
+          </CuSelect>
         </div>
-        <CuSelect
-          class="select"
-          type="simple"
-          :options="roundOptions"
-          v-model="round"
-        >
-        </CuSelect>
+        <div>
+          <div class="value">$0.03932</div>
+          <div class="label">$/veCRV</div>
+        </div>
+        <div>
+          <div class="value">{{deadline}}</div>
+          <div class="label">Deadline</div>
+        </div>
+        <div>
+          <div class="value">$1.74m</div>
+          <div class="label">Total</div>
+        </div>
       </div>
-      <div>
-        <div class="value">$0.03932</div>
-        <div class="label">$/veCRV</div>
-      </div>
-      <div>
-        <div class="value">2023/1/10</div>
-        <div class="label">Deadline</div>
-      </div>
-      <div>
-        <div class="value">$1.74m</div>
-        <div class="label">Total</div>
-      </div>
-    </div>
+    </b-container>
 </template>
 <script>
 import { mapGetters } from 'vuex';
+import moment from 'moment';
 import CuSelect from '@/components/CuSelect.vue';
-
 
 export default {
   components: {
     CuSelect,
   },
-
+  props: {
+    round: {
+      type: Number,
+    },
+  },
   data() {
     return {
-      round: 1,
-    }
+      WEEK_SECONDS: 7 * 24 * 60 * 60,
+      // round: 1,
+    };
   },
   computed: {
     ...mapGetters(['roundOptions']),
+    deadline() {
+      return moment((this.round * this.WEEK_SECONDS + this.WEEK_SECONDS) * 1000).format('yyyy/MM/DD');
+    },
   },
   watch: {
     roundOptions: {
       handler() {
         if (this.roundOptions?.[0]) {
-          this.round = this.roundOptions?.[0].value;
+          const round = this.roundOptions?.[0].value;
+          this.$emit('round-change', round);
         }
       },
       immediate: true,
-    }
-  }
+    },
+  },
+
+  methods: {
+    onChange(round) {
+      this.$emit('round-change', round);
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 @import "@/styles/vars.scss";
-.top-section {
-  height: 130px;
+  .top-section {
+    border-left: 1px solid $border-color;
+    border-right: 1px solid $border-color;
+  }
   .content {
     // border-bottom: 1px dashed $border-color;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     border-bottom: 1px solid $border-color;
+    height: 130px;
 
     & > div {
       border-left: 1px dashed $border-color;
@@ -131,6 +152,4 @@ export default {
     }
   }
 
-
-}
 </style>

@@ -154,7 +154,7 @@ export default {
 .options {
   position: absolute;
   top: 100%;
-  left: 0;
+  right: 0;
   z-index: 1;
   // width: 100%;
   max-height: 200px;

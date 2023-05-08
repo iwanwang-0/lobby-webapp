@@ -2,11 +2,11 @@
    <b-container class="top-section" fluid="lg">
     <div class="header">
       <span class="header-text">
-        Current Bribe
+        Dashboard
       </span>
 
       <div class="header-right">
-        <b-button
+        <!-- <b-button
           class="link-btn"
           :variant="voteType === 'VeCRV' ? 'primary' : 'outline-primary'"
           size="lg"
@@ -22,12 +22,26 @@
           @click="$emit('changeVoteType', 'VlCVX')"
         >
           VlCVX
-        </b-button>
+        </b-button> -->
+
+        <CuSelect
+          class="type-select"
+          type="simple"
+          :options="typeOptions"
+          :value="voteType"
+          @change="(val) => $emit('changeVoteType', val)"
+        >
+
+        </CuSelect>
+
+        <CuSelect
+          type="simple"
+          class="cu-select"
+          :options="marketOption"
+          :value="market"
+          @change="(val) => $emit('changeMarket', val)"
+        />
       </div>
-    </div>
-    <TopSummary/>
-     <div class="content">
-      <BarChart/>
     </div>
 
   </b-container>
@@ -37,15 +51,17 @@
 下一轮贿赂：3.23～3.29
 下下轮贿赂：3.30～4.5 -->
 <script>
+import { mapState } from 'vuex';
 import moment from 'moment';
-import TopSummary from './TopSummary.vue';
-import BarChart from './BarChart.vue';
+// import TopSummary from './TopSummary.vue';
+// import BarChart from './BarChart.vue';
+import CuSelect from '@/components/CuSelect';
 
 
 export default {
   components: {
-    TopSummary,
-    BarChart,
+
+    CuSelect,
   },
   props: {
     selected: {
@@ -58,98 +74,44 @@ export default {
     voteType: {
       type: String,
     },
+    market: {
+      type: String,
+    }
     // list: {
     //   type: Array,
     // },
   },
   data() {
-    const today = moment.utc();
-    const thursday = moment.utc().day(4).startOf('day');
-    let current;
-    let next;
-    let nextNext;
-    if (today.isBefore(thursday)) {
-      current = thursday.clone();
-      next = thursday.clone().add(7, 'day');
-      nextNext = thursday.clone().add(14, 'day');
-    } else {
-      current = thursday.clone().add(7, 'day');
-      next = thursday.clone().add(14, 'day');
-      nextNext = thursday.clone().add(21, 'day');
-    }
-
     return {
+      WEEK_SECONDS: 7 * 24 * 60 * 60,
       // voteType: 'VeCRV',
+      // market: 'Lobby',
 
-      now: Date.now(),
-      current,
-      next,
-      nextNext,
-      list: [
+      typeOptions: [
         {
-          idx: 0,
-          title: `Current Bribe (${current.format('MMMM D')})`,
-          desc: `The veCRV Gauge voting award for the week of ${current.local().format('MMMM D HH:mm a')} GMT${current.local().format('ZZ')}`,
-          time: current,
-          // time: 'Time Remaining to Vote: <em>03</em>d <em>13</em>h <em>20</em>min <em>36</em>',
+          label: 'VeCRV',
+          value: 'VeCRV',
         },
         {
-          idx: 1,
-          title: `Next round of Bribe (${next.format('MMMM D')})`,
-          time: next,
-        },
-        {
-          idx: 2,
-          title: `The third round of Bribe (${nextNext.format('MMMM D')})`,
-          time: nextNext,
+          label: 'VlCVX',
+          value: 'VlCVX',
         },
       ],
+
+      type: 'VeCRV',
     };
   },
   computed: {
-    currentDur() {
-      return this.getRemainTime(this.current);
-    },
-    nextDur() {
-      return this.getRemainTime(this.next);
-    },
-    nextNextDur() {
-      return this.getRemainTime(this.nextNext);
-    },
+    ...mapState(['user', 'marketOption']),
+
   },
   created() {
-    this.loopSetNow();
-    this.$emit('change', this.list[0]);
+    // this.$emit('change', this.list[0]);
   },
 
   methods: {
-    onClick(item) {
-      this.$emit('change', item);
-    },
 
-    // changeVoteType(type) {
-    //   this.voteType = type;
-    // },
 
-    getRemainTime(targetTime) {
-      const duration = targetTime.diff(this.now, 'seconds');
-      const second = duration % 60;
-      const minute = Math.floor(duration / 60) % 60;
-      const hour = Math.floor(duration / 60 / 60) % 24;
-      const date = Math.floor(duration / 60 / 60 / 24);
-      return {
-        second,
-        minute,
-        hour,
-        date,
-      };
-    },
-    loopSetNow() {
-      setTimeout(() => {
-        this.now = Date.now();
-        this.loopSetNow();
-      }, 1000);
-    },
   },
 };
 </script>
@@ -159,10 +121,8 @@ export default {
 .top-section {
   border-left: 1px solid $border-color;
   border-right: 1px solid $border-color;
-  border-bottom: 1px solid $border-color;
-  display: grid;
-  grid-template-rows: 130px  130px 458px;
   .header {
+    height: 130px;
     border-bottom: 1px solid $border-color;
     display: flex;
     align-items: center;

@@ -2,7 +2,7 @@
    <b-container class="top-section" fluid="lg">
     <div class="header">
       <span class="header-text">
-        Staking LOB-ETH
+        Lobby-ETH Pool
       </span>
       <span class="address">（0xa76…Eg6FG）</span>
     </div>
@@ -10,24 +10,25 @@
     <div class="content">
       <div>
         <div class="value">358，123</div>
-        <div class="label">Your LOB</div>
+        <div class="label">TVL</div>
       </div>
       <div>
         <div class="value">67.03%</div>
-        <div class="label">APR</div>
+        <div class="label">APY</div>
       </div>
-      <div>
+      <!-- <div>
         <div class="value">0.00</div>
         <div class="label">Locking</div>
-      </div>
+      </div> -->
       <div>
         <div class="value">823，786.79</div>
-        <div class="label">You claimable</div>
+        <div class="label">Rewards</div>
       </div>
     </div>
     <div class="footer">
       <CuButton class="link-btn left-btn">Stake</CuButton>
-      <CuButton class="link-btn">Redeem</CuButton>
+      <CuButton class="link-btn left-btn">Unstake</CuButton>
+      <CuButton class="link-btn">Claim Rewards</CuButton>
     </div>
   </b-container>
 </template>
@@ -78,7 +79,7 @@ export default {
   .content {
     border-bottom: 1px dashed $border-color;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     // height: 317px;
     & > div {
       border-left: 1px dashed $border-color;

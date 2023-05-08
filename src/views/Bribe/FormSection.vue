@@ -96,21 +96,21 @@
           <label class="field-label" for=""></label>
           <!-- <div class="input-wrapper"> -->
             <b-button
-              v-if="user.address && (voteType === 'VeCRV' && !isCrvApproved) || (voteType === 'VlCVX' && !isCvxApproved)"
+              v-if="user.address"
               size="sm"
               class="form-btn"
               variant="link"
-              :disabled="!symbol || submitting"
+              :disabled="!symbol || submitting || !(voteType === 'VeCRV' && !isCrvApproved) || (voteType === 'VlCVX' && !isCvxApproved)"
               @click="onApprove"
             >
             Approve Token</b-button>
 
             <b-button
-              v-if="user.address && (voteType === 'VeCRV' && isCrvApproved) || (voteType === 'VlCVX' && isCvxApproved)"
+              v-if="user.address"
               size="sm"
               class="form-btn"
               variant="link"
-              :disabled="!symbol || submitting"
+              :disabled="!symbol || submitting || !((voteType === 'VeCRV' && isCrvApproved) || (voteType === 'VlCVX' && isCvxApproved))"
               @click="onBribe"
             >
             Bribe</b-button>

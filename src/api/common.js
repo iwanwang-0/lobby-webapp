@@ -96,3 +96,25 @@ export async function getCvxRewardTree() {
 
   return data;
 }
+
+/**
+ * @param {*}
+ */
+export function getTokenMap() {
+  return axios({
+    baseURL: '/',
+    url: '/tokenMap.json',
+    method: 'GET',
+  });
+}
+
+/**
+ * @param {*}
+ */
+export function getGaugeNameMap() {
+  return axios({
+    baseURL: '/',
+    url: '/gaugeNameMap.json',
+    method: 'GET',
+  });
+}

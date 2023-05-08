@@ -3,8 +3,6 @@ import { provider } from "@/eth/ethereum";
 
 import { BigNumber } from 'ethers';
 
-console.log(BigNumber)
-// console.log(provider)
 const sendTransaction = async ({
   to,
   data,

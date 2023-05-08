@@ -2,10 +2,24 @@
   <div class="page-container">
     <TopSection
       :voteType="voteType"
+      :market="market"
       @changeVoteType="changeVoteType"
+      @changeMarket="changeMarket"
     ></TopSection>
-
+    <TopSummary
+      :round="round"
+      @round-change="onRoundChange"
+    />
+    <BarChart
+      :key="'BarChart' + round"
+      :round="round"
+      :market="market"
+      :voteType="voteType"
+    />
     <VoteListSection
+      :key="'VoteListSection' + round"
+      :round="round"
+      :market="market"
       :voteType="voteType"
     ></VoteListSection>
   </div>
@@ -16,16 +30,22 @@
 import { mapState } from 'vuex';
 import TopSection from './TopSection.vue';
 import VoteListSection from './VoteListSection.vue';
+import TopSummary from './TopSummary.vue';
+import BarChart from './BarChart.vue';
 
 export default {
   name: 'Home',
   components: {
     TopSection,
+    TopSummary,
+    BarChart,
     VoteListSection,
   },
   data() {
     return {
       voteType: 'VeCRV',
+      round: 0,
+      market: 'Lobby',
     };
   },
 
@@ -43,7 +63,13 @@ export default {
       this.voteType = type;
     },
 
-
+    onRoundChange(round) {
+      console.log(round)
+      this.round = round;
+    },
+    changeMarket(market) {
+      this.market = market;
+    }
   },
 };
 </script>

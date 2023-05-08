@@ -54,6 +54,9 @@
                 <span class="suffix">%</span>
               </div>
             </template>
+            <template v-if="head.render">
+              <span v-html="head.render(row[head.prop], row)"></span>
+            </template>
             <template v-else>
               {{ row[head.prop]  }}
             </template>
@@ -110,6 +113,7 @@ export default {
         this.active = '';
       } else {
         this.active = idx;
+        this.$emit('expand', this.active);
       }
     },
   },

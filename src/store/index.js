@@ -4,11 +4,15 @@ import createPersistedState from 'vuex-persistedstate';
 import config from '@/config';
 import { getProposal } from '@/api/snapshot';
 import { getAllGauges } from '@/api/curve';
+import { getTokenMap, getGaugeNameMap } from '@/api/common';
+
 import user from './user';
 import enums from './enums';
 import getters from './getters';
 
 Vue.use(Vuex);
+
+const WEEK_SECONDS = 7 * 24 * 60 * 60;
 
 export default new Vuex.Store({
   plugins: [
@@ -24,11 +28,14 @@ export default new Vuex.Store({
   },
   state: {
 
-    totalRound: 100,
+    totalRound: Math.floor(Date.now() / 1000 / WEEK_SECONDS),
     proposal: {},
     allGauges: {},
     cvxChoices: [],
     crvChoices: [],
+
+    tokenMap: {},
+    guageNameMap: {},
 
     marketOption: [
       // {
@@ -65,6 +72,24 @@ export default new Vuex.Store({
     },
   },
   actions: {
+
+    async getTokenMap({ commit, state }) {
+      const data = await getTokenMap();
+      commit('UPDATE_STATE', {
+        tokenMap: {
+          ...data.goerli,
+          ...data.mainnet,
+        },
+      });
+    },
+
+    async getGaugeNameMap({ commit, state }) {
+      const data = await getGaugeNameMap();
+      commit('UPDATE_STATE', {
+        guageNameMap: data,
+      });
+    },
+
     async getProposal({ commit, state }) {
       const proposal = await getProposal();
       commit('UPDATE_STATE', {
@@ -78,7 +103,6 @@ export default new Vuex.Store({
 
     async getGauges({ commit, state }) {
       const { success, data } = await getAllGauges();
-      console.log(data);
       if (success) {
         commit('UPDATE_STATE', {
           allGauges: data,

@@ -5,10 +5,10 @@
     </div>
     <div class="right">
       <div class="title">
-        Lob
+        $LOBBY
       </div>
       <div class="desc">
-        Automatic investment: Lobby will automatically convert your rewards into your vlCVX shares, and you can also manually cancel the automatic investment function
+        Lock $LOBBY to govern the voting power of LobbyDAO
       </div>
     </div>
   </b-container>
@@ -34,9 +34,9 @@
     // display: flex;
     // flex-direction: column;
     // justify-content: center;
-    padding-top: 68px;
+    padding-top: 128px;
     .title {
-      width: 89px;
+      width: 4em;
       font-size: 48px;
       font-family: ChillPixels Maximal;
       background: linear-gradient(218deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
@@ -46,6 +46,7 @@
     }
 
     .desc {
+      margin-top: 12px;
       font-size: 18px;
       color: #fff;
       line-height: 30px;

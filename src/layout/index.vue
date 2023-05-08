@@ -12,7 +12,7 @@
         </div>
       </b-modal>
 
-        <router-view v-if="user.loaded"/>
+        <router-view v-if="user.loaded && loaded"/>
       <footerbar />
   </div>
 </template>
@@ -30,6 +30,7 @@ export default {
   },
   data() {
     return {
+      loaded: false,
       active: 1,
       list: [
         {
@@ -53,6 +54,14 @@ export default {
 
   //   }
   // },
+  async created() {
+    this.loaded = false;
+    await Promise.all([
+      this.$store.dispatch('getTokenMap'),
+      this.$store.dispatch('getGaugeNameMap'),
+    ]);
+    this.loaded = true;
+  },
   methods: {
     openHistory() {
       this.$refs['my-modal'].show();

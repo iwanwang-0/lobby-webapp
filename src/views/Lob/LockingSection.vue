@@ -10,24 +10,24 @@
     <div class="content">
       <div>
         <div class="value">358，123</div>
-        <div class="label">Your LOB</div>
-      </div>
-      <div>
-        <div class="value">67.03%</div>
-        <div class="label">APR</div>
+        <div class="label">Your Locked</div>
       </div>
       <div>
         <div class="value">0.00</div>
-        <div class="label">Locking</div>
+        <div class="label">Your vlLOBBY</div>
+      </div>
+      <div>
+        <div class="value">67.03%</div>
+        <div class="label">APY</div>
       </div>
       <div>
         <div class="value">823，786.79</div>
-        <div class="label">You claimable</div>
+        <div class="label">Rewards</div>
       </div>
     </div>
     <div class="footer">
       <CuButton class="link-btn left-btn">Lock</CuButton>
-      <CuButton class="link-btn">Redeem</CuButton>
+      <CuButton class="link-btn">Unlock</CuButton>
     </div>
   </b-container>
 </template>
