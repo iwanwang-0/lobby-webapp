@@ -204,7 +204,6 @@ export default {
       const choiceMap = Object.keys(this.valueMap).reduce((choices, key, idx) => {
         const value = Number.parseInt(this.valueMap[key], 10) || 0;
         if (value) {
-          // console.log(key)
           // eslint-disable-next-line no-param-reassign
           choices[this.labelChoiceMap[key]] = value;
         }
