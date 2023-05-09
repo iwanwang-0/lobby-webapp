@@ -100,8 +100,6 @@
       </TableList>
     </div>
     <div class="footer">
-      {{ page }}
-      {{ total }}
       <CuPagination
         :key="voteType"
         :page="page"
@@ -185,7 +183,7 @@ export default {
 
       pageSize: 10,
       page: 1,
-      total: 0,
+      // total: 0,/
 
       market: 'All',
 
@@ -207,48 +205,45 @@ export default {
           sort: idx + 1,
           pool: item.value,
         }));
+      } else {
+        list = this.cvxChoices.map((item, idx) => ({
+          sort: idx + 1,
+          pool: item.label.replace(/\(.*\)/, ''),
+        }));
       }
-      list = this.cvxChoices.map((item, idx) => ({
-        sort: idx + 1,
-        pool: item.label.replace(/\(.*\)/, ''),
-      }));
 
+      console.log(list.slice(this.pageSize * (this.page - 1), this.pageSize * this.page))
       return list.slice(this.pageSize * (this.page - 1), this.pageSize * this.page);
     },
 
-    // total() {
-    //   if (this.voteType === 'VeCRV') {
-    //     return this.crvChoices.length;
-    //   } else {
-    //     return this.cvxChoices.length;
-    //   }
-    // },
+    total() {
+      if (this.voteType === 'VeCRV') {
+        return this.crvChoices.length;
+      }
+      return this.cvxChoices.length
+    },
+
   },
   watch: {
     voteType() {
       this.page = 1;
-      this.setTotal();
-      // if (this.voteType === 'VeCRV') {
-      //   this.total = this.crvChoices.length;
-      // } else {
-      //   this.total = this.cvxChoices.length;
-      // }
     },
   },
   created() {
-    this.setTotal();
+    // this.setTotal();
     // this.getReward();
   },
 
   methods: {
-    setTotal() {
-      this.page = 1;
-      if (this.voteType === 'VeCRV') {
-        this.total = this.crvChoices.length;
-      } else {
-        this.total = this.cvxChoices.length;
-      }
-    },
+    // setTotal() {
+    //   this.page = 1;
+    //   if (this.voteType === 'VeCRV') {
+    //     console.log(this.crvChoices.length)
+    //     this.total = this.crvChoices.length;
+    //   } else {
+    //     this.total = this.cvxChoices.length;
+    //   }
+    // },
     onVote() {
       // this.$router.push('/vote-edit');
       if (this.voteType === 'VeCRV') {
@@ -266,69 +261,69 @@ export default {
       this.page = page;
     },
 
-    getProof(tAddr, round) {
-      const content = this.rewardTree[tAddr];
-      const tree = StandardMerkleTree.load(content);
-      // eslint-disable-next-line no-restricted-syntax
-      for (const [i, v] of tree.entries()) {
-        console.log([i, v]);
-        if (v[0] === round && v[1].toLowerCase() === this.user.address.toLowerCase()) {
-          const proof = tree.getProof(i);
-          console.log(proof);
-          return proof;
-          // return tree.getProof(i);
-        }
-      }
-      return '';
-    },
+    // getProof(tAddr, round) {
+    //   const content = this.rewardTree[tAddr];
+    //   const tree = StandardMerkleTree.load(content);
+    //   // eslint-disable-next-line no-restricted-syntax
+    //   for (const [i, v] of tree.entries()) {
+    //     console.log([i, v]);
+    //     if (v[0] === round && v[1].toLowerCase() === this.user.address.toLowerCase()) {
+    //       const proof = tree.getProof(i);
+    //       console.log(proof);
+    //       return proof;
+    //       // return tree.getProof(i);
+    //     }
+    //   }
+    //   return '';
+    // },
 
-    async onClaim({ amount, tAddr, round }) {
-      // const { tokenId } = this.$route.query;
-      // const { amount } = this;
-      // if (amount < this.min) {
-      //   this.showError(`The minimum claim is ${this.min} DOGE`);
-      //   return;
-      // }
-      this.submitting = true;
-      try {
-        const proof = await this.getProof(tAddr, round);
+    // async onClaim({ amount, tAddr, round }) {
+    //   // const { tokenId } = this.$route.query;
+    //   // const { amount } = this;
+    //   // if (amount < this.min) {
+    //   //   this.showError(`The minimum claim is ${this.min} DOGE`);
+    //   //   return;
+    //   // }
+    //   this.submitting = true;
+    //   try {
+    //     const proof = await this.getProof(tAddr, round);
 
-        const txHash = await sendTransaction({
-          to: config.MultiMerkleStash,
-          gas: 640000,
-          data: MultiMerkleStashInterface.encodeFunctionData('claim', [
-            tAddr,
-            round,
-            this.user.address,
-            amount,
-            proof,
-          ]),
-        });
+    //     const txHash = await sendTransaction({
+    //       to: config.MultiMerkleStash,
+    //       gas: 640000,
+    //       data: MultiMerkleStashInterface.encodeFunctionData('claim', [
+    //         tAddr,
+    //         round,
+    //         this.user.address,
+    //         amount,
+    //         proof,
+    //       ]),
+    //     });
 
-        this.showPending('Pending', {
-          tx: txHash,
-        });
+    //     this.showPending('Pending', {
+    //       tx: txHash,
+    //     });
 
-        const buyTx = await provider.waitForTransaction(txHash);
+    //     const buyTx = await provider.waitForTransaction(txHash);
 
-        if (buyTx.status === 1) {
-          this.showSuccess('Succeeded', {
-            tx: txHash,
-          });
-          this.getReward();
-          // this.$store.dispatch('getPosition');
-          // this.$store.dispatch('getWithdrawable');
-          // this.$store.dispatch('getBalances');
-        } else {
-          this.showError('Failed', {
-            tx: txHash,
-          });
-        }
-      } catch (error) {
-        console.error(error);
-      }
-      this.submitting = false;
-    },
+    //     if (buyTx.status === 1) {
+    //       this.showSuccess('Succeeded', {
+    //         tx: txHash,
+    //       });
+    //       this.getReward();
+    //       // this.$store.dispatch('getPosition');
+    //       // this.$store.dispatch('getWithdrawable');
+    //       // this.$store.dispatch('getBalances');
+    //     } else {
+    //       this.showError('Failed', {
+    //         tx: txHash,
+    //       });
+    //     }
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    //   this.submitting = false;
+    // },
     async getTokenInfo(tokenAddress) {
       try {
         const erc20Contract = getERC20Contract(tokenAddress);

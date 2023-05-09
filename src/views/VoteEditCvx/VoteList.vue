@@ -189,6 +189,9 @@ export default {
           this.percentMap[key] = (((parseInt(this.valueMap[key], 10) || 0) / total) * 100).toFixed(2);
         }
       });
+      console.log( this.list)
+      console.log( this.percentMap)
+      console.log( this.valueMap)
       this.$emit('change', this.list);
     },
   },

@@ -53,16 +53,18 @@
                 <span  v-else>{{  row.yourReward  }} {{ row.tokenSymbol }} </span>
               </em>
             </div>
-            <!-- <div>
+            <div>
               <CuButton
+                v-if="row.yourReward"
                 variant="link"
                 class="claim-btn"
                 :disabled="submitting"
+                @click="$router.push('/reward')"
                 size="min"
               >
-                claim
+                Claim
               </CuButton>
-            </div> -->
+            </div>
           </div>
           <div class="row2">
             <div class="expand-item">

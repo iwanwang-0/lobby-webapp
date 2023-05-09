@@ -144,7 +144,7 @@ export default {
           prop: 'newWeight',
           isEdit: true,
           width: 350,
-          opBtn: 'Best Option',
+          // opBtn: 'Best Option',
           opClick: () => {
             console.log(this);
           },

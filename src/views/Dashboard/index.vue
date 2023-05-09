@@ -8,6 +8,7 @@
     ></TopSection>
     <TopSummary
       :round="round"
+      :total="total"
       @round-change="onRoundChange"
     />
     <BarChart
@@ -15,6 +16,7 @@
       :round="round"
       :market="market"
       :voteType="voteType"
+      @total-change="totalChange"
     />
     <VoteListSection
       :key="'VoteListSection' + round"
@@ -46,6 +48,8 @@ export default {
       voteType: 'VeCRV',
       round: 0,
       market: 'Lobby',
+
+      total: 0,
     };
   },
 
@@ -69,7 +73,11 @@ export default {
     },
     changeMarket(market) {
       this.market = market;
-    }
+    },
+
+    totalChange(total) {
+      this.total = total
+    },
   },
 };
 </script>

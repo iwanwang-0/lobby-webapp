@@ -24,7 +24,7 @@
           <div class="label">Deadline</div>
         </div>
         <div>
-          <div class="value">$1.74m</div>
+          <div class="value">${{formatTotal}}</div>
           <div class="label">Total</div>
         </div>
       </div>
@@ -34,6 +34,7 @@
 import { mapGetters } from 'vuex';
 import moment from 'moment';
 import CuSelect from '@/components/CuSelect.vue';
+import numbro from 'numbro';
 
 export default {
   components: {
@@ -41,6 +42,9 @@ export default {
   },
   props: {
     round: {
+      type: Number,
+    },
+    total: {
       type: Number,
     },
   },
@@ -54,6 +58,13 @@ export default {
     ...mapGetters(['roundOptions']),
     deadline() {
       return moment((this.round * this.WEEK_SECONDS + this.WEEK_SECONDS) * 1000).format('yyyy/MM/DD');
+    },
+
+    formatTotal() {
+      return numbro(this.total).format({
+        average: true,
+        totalLength: 3,
+      });
     },
   },
   watch: {

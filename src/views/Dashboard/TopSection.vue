@@ -76,7 +76,8 @@ export default {
     },
     market: {
       type: String,
-    }
+    },
+
     // list: {
     //   type: Array,
     // },

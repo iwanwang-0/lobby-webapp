@@ -132,7 +132,7 @@ export default {
           prop: 'newWeight',
           isEdit: true,
           width: 350,
-          opBtn: 'Best Option',
+          // opBtn: 'Best Option',
           opClick: () => {
             console.log(this);
           },
@@ -201,19 +201,15 @@ export default {
     async onVoteAll() {
       this.submitting = true;
 
-      // valueMap: {},
-      // labelChoiceMap: {},
-      console.log(this.labelChoiceMap)
       const choiceMap = Object.keys(this.valueMap).reduce((choices, key, idx) => {
         const value = Number.parseInt(this.valueMap[key], 10) || 0;
         if (value) {
-          console.log(key)
+          // console.log(key)
           // eslint-disable-next-line no-param-reassign
           choices[this.labelChoiceMap[key]] = value;
         }
         return choices;
       }, {});
-      console.log(choiceMap)
       try {
         await vote({
           account: this.user.address,
@@ -222,9 +218,7 @@ export default {
         });
 
         this.showSuccess('Succeeded');
-
       } catch (error) {
-        // console.error(error);
         this.showError(error.error_description || error.message);
       }
       this.submitting = false;

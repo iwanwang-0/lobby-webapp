@@ -73,7 +73,7 @@ export default {
     // }
     return {
       WEEK_SECONDS: 7 * 24 * 60 * 60,
-
+      total: 0,
       loading: false,
       dataAxis: [],
       chartData: [],
@@ -189,6 +189,7 @@ export default {
     },
     async getList() {
       this.loading = true;
+      this.total = 0;
       const res = await fetchGaugeRewards({
         witch: this.voteType === 'VeCRV' ? 'crv' : 'cvx',
         platform: this.market.toLowerCase(),
@@ -209,6 +210,8 @@ export default {
               };
             });
           const guageName = this.guageNameMap[key.toLowerCase()].shortName;
+          this.total += tokenAddrMap.totalValue;
+
           return {
             guage: key,
             guageNameShort: `${guageName.slice(0, 10)}...${guageName.slice(-10)}`,
@@ -223,6 +226,7 @@ export default {
           list: item.list,
         }));
       }
+      this.$emit('total-change', this.total);
       this.updateOption();
     },
   },
