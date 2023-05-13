@@ -12,7 +12,6 @@
     :voteType="voteType"
     ></VoteListSection>
     <HistoryListSection
-      v-if="proposal.id"
       :voteType="voteType"
       :key="voteType"
     ></HistoryListSection>

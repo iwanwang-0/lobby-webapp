@@ -114,7 +114,7 @@
               </div>
             </div>
           </div>
-          </div>
+        </div>
         </template>
       </TableList>
     </div>
@@ -301,23 +301,15 @@ export default {
       } else {
         this.list = [];
       }
-      // console.log(res)
     },
 
-    // setTotal() {
-    //   this.page = 1;
-    //   if (this.voteType === 'VeCRV') {
-    //     this.total = this.crvChoices.length;
-    //   } else {
-    //     this.total = this.cvxChoices.length;
-    //   }
-    // },
+
     onVote() {
       // this.$router.push('/vote-edit');
       if (this.voteType === 'VeCRV') {
-        this.$router.push('/vote/VeCRV');
+        this.$router.push(`/vote/VeCRV/${this.market}`);
       } else {
-        this.$router.push('/vote/VlCVX');
+        this.$router.push(`/vote/VlCVX/${this.market}`);
       }
       // const lint = `https://snapshot.org/#/iwan.eth/proposal/${this.proposal.id}`
       // window.open(lint);
@@ -338,16 +330,13 @@ export default {
           round: record.week.hex * this.WEEK_SECONDS,
           gauge: record.gaugeAddr,
           witch: this.voteType === 'VeCRV' ? 'crv' : 'cvx',
-          // platform: this.market.toLowerCase(),
           user: this.user.address,
         });
 
-        console.log(res)
         if (res.success) {
           const { score } = res.data;
           record.yourWeight = toFixed(score.hex / record.totalScore.hex, 2);
           record.yourReward = toFixed(score.hex / record.totalScore.hex * record.rewards, 4)
-          this.$forceUpdate();
         }
 
         record.loading = false;

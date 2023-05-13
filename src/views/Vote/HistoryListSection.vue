@@ -20,8 +20,7 @@
         :loading="loading"
         :is-expand="false"
       >
-        <template v-slot:operation="{ row }">
-          <!-- {{ row }} -->
+        <!-- <template v-slot:operation="{ row }">
           <CuButton
             variant="link"
             :disabled="submitting"
@@ -31,7 +30,7 @@
           >
             Vote
           </CuButton>
-        </template>
+        </template> -->
       </TableList>
     </div>
   </b-container>
@@ -43,24 +42,22 @@ import moment from 'moment';
 import { BigNumber, utils } from 'ethers';
 import TableList from '@/components/TableList';
 import RoundSelect from '@/components/RoundSelect';
-import CuButton from '@/components/CuButton';
+// import CuButton from '@/components/CuButton';
+import toFixed from '@/filters/toFixed';
 
 import { getCrvRewardTree } from '@/api/common';
 import sendTransaction from '@/common/sendTransaction';
 import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
 
-import { getVotes, getVotePower } from '@/api/snapshot';
-
-import {
-  getERC20Contract, MultiMerkleStashContract, MultiMerkleStashInterface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
-} from '@/eth/ethereum';
+import { getCvxVotes, getVotePower } from '@/api/snapshot';
+import { getCrvHistory } from '@/api/thegraph';
 
 export default {
   components: {
     TableList,
     RoundSelect,
-    CuButton,
+    // CuButton,
   },
 
   props: {
@@ -85,30 +82,18 @@ export default {
           prop: 'pool',
         },
         {
-          title: this.voteType === 'VeVRV' ? 'Quantity VeCRV' : 'Quantity VlCVX',
+          title: this.voteType === 'VeCRV' ? 'Quantity VeCRV' : 'Quantity VlCVX',
           prop: 'quantity',
         },
         {
           title: 'Time',
           prop: 'time',
+          render(text) {
+            return moment(text * 1000).format('yyyy-MM-DD HH:mm');
+          },
         },
       ],
-      list: [
-        {
-          Round: '1',
-          Pool: 'ETH-alETH',
-          Apr: '30%',
-          'Quantity veCRV': '158.87 $CRV',
-          Time: '2023/1/2',
-        },
-        {
-          Round: '2',
-          Pool: 'ETH-alETH',
-          Apr: '30%',
-          'Quantity veCRV': '158.87 $CRV',
-          Time: '2023/1/2',
-        },
-      ],
+      list: [],
 
       market: 'All',
 
@@ -125,9 +110,22 @@ export default {
     ...mapState(['cvxChoices', 'proposal']),
   },
 
+  watch: {
+    roundOptions: {
+      handler() {
+        this.round = this.roundOptions[0].value;
+      },
+      immediate: true,
+    },
+
+    round() {
+      // this.list = [];
+      this.getVotes();
+    },
+  },
+
   created() {
     this.getVotes();
-    // this.getReward();
   },
 
   methods: {
@@ -135,15 +133,47 @@ export default {
       // this.getReward();
     },
 
-    changeVoteType(type) {
-      this.voteType = type;
+    async getVotes() {
+      if (this.voteType === 'VeCRV') {
+        this.getCrvHistory();
+      } else {
+        this.getCvxVotes();
+      }
     },
 
-    async getVotes() {
-      const res = await getVotes({
-        // proposal: this.proposal.id,
+    async getCrvHistory() {
+      console.log('getCrvHistory')
+      this.loading = true;
+      const data = await getCrvHistory({
+        round: this.round,
+        user: this.user.address,
+      });
+      this.loading = false;
+
+      const list = [];
+      if (data) {
+        data.forEach((item) => {
+          list.push({
+            round: this.round,
+            pool: item.gauge,
+            quantity: toFixed(item.veCRV / 10 ** 18, 2),
+            weight: item.weight,
+            time: item.time,
+          });
+        });
+      }
+
+      console.log(list)
+      this.list = list;
+    },
+
+    async getCvxVotes() {
+      this.loading = true;
+
+      const res = await getCvxVotes({
         voter: this.user.address,
       });
+      this.loading = false;
 
       // const resPower = await getVotePower({
       //   // proposal: this.proposal.id,
@@ -169,17 +199,11 @@ export default {
             list.push({
               round: 108,
               pool: proposal.choices[keyItem - 1],
-              // quantity: choice[keyItem],
               quantity: item.vp * choice[keyItem] / sumPower,
               time: moment(item.created * 1000).format('YYYY-MM-DD HH:mm:ss'),
             });
           });
         });
-        // Round: '1',
-        //   Pool: 'ETH-alETH',
-        //   Apr: '30%',
-        //   'Quantity veCRV': '158.87 $CRV',
-        //   Time: '2023/1/2',
       }
       this.list = list;
     },

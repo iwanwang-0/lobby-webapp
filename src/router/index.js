@@ -46,12 +46,12 @@ const routes = [
         component: () => import('@/views/Reward'),
       },
       {
-        path: '/vote/VeCRV',
+        path: '/vote/VeCRV/:platform',
         name: 'vote-edit',
         component: () => import('@/views/VoteEditCrv'),
       },
       {
-        path: '/vote/VlCVX',
+        path: '/vote/VlCVX/:platform',
         name: 'vote-edit',
         component: () => import('@/views/VoteEditCvx'),
       },

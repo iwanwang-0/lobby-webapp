@@ -79,7 +79,9 @@ export function getProposal() {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export function getVotes({ voter }) {
+export function getCvxVotes({ voter }) {
+  // created_gt: 1681011582
+  // created_lt: 1681048725
   const query = `
     query {
       votes (

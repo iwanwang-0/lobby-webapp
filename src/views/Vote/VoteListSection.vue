@@ -19,7 +19,7 @@
     <div class="content">
       <TableList
         :cols="cols"
-        :list="voteList"
+        :list="list"
         :loading="loading"
         :is-expand="true"
       >
@@ -35,65 +35,83 @@
         </template>
 
         <template v-slot:expandPanel="{ row }">
-          <div class="row1">
-            <div>
-              You vote weight:
-              <em>0.1%</em>
+          <div>
+            <div class="row1"  v-if="user.address">
+              <div>
+                Your vote weight:
+                <em>
+                  <b-spinner v-if="row.loading" variant="secondary" small label="Small Spinner"></b-spinner>
+                  <span v-else>{{  row.yourWeight  }}%</span>
+                </em>
+              </div>
+              <div>
+                Your reward :
+                <em>
+                  <!-- 123,235 veCRV -->
+                  <b-spinner v-if="row.loading"  variant="secondary" small label="Small Spinner"></b-spinner>
+                  <span  v-else>{{  row.yourReward  }} {{ row.tokenSymbol }} </span>
+                </em>
+              </div>
+              <div>
+                <CuButton
+                  v-if="row.yourReward"
+                  variant="link"
+                  class="claim-btn"
+                  :disabled="submitting"
+                  @click="$router.push('/reward')"
+                  size="min"
+                >
+                  Claim
+                </CuButton>
+              </div>
             </div>
-            <div>
-              You reward :
-              <em>123,235 veCRV</em>
-            </div>
-            <div>
-              <CuButton
-                variant="link"
-                class="claim-btn"
-                :disabled="submitting"
-                size="min"
-              >
-                claim
-              </CuButton>
-            </div>
-          </div>
-          <div class="row2">
-            <div class="expand-item">
-              <div class="label">Max reward per veCRV</div>
-              <div class="content">0.12 CRV</div>
-            </div>
-            <div class="expand-item">
-              <div class="label">Remaining claimable rewards</div>
-              <div class="content">122,345.33 CRV</div>
-            </div>
-            <div></div>
-            <div></div>
+            <div class="row2">
+              <div class="expand-item">
+                <div class="label">Max reward per veCRV</div>
+                <div class="content">{{row.maxRewardPerScore / (10 ** row.tokenDecimals)}} USDT</div>
+              </div>
+              <div class="expand-item">
+                <div class="label">Remaining claimable rewards</div>
+                <div class="content">-</div>
+              </div>
+              <div></div>
+              <div></div>
 
-            <div class="expand-item">
-              <div class="label">First voting period</div>
-              <div class="content">February 9, 2023 8:00 am</div>
-            </div>
-            <div class="expand-item">
-              <div class="label">Last voting period</div>
-              <div class="content">March 30, 2023 8:00 am</div>
-            </div>
-            <div class="expand-item">
-              <div class="label">First week of claim</div>
-              <div class="content">February 16, 2023 8:00 am</div>
-            </div>
-            <div class="expand-item">
-              <div class="label">Last week of claim</div>
-              <div class="content">February 16, 2023 8:00 am</div>
-            </div>
-            <div class="expand-item">
-              <div class="label">Contracts</div>
-              <div class="content">0.12 CRV</div>
-            </div>
-            <div class="expand-item">
-              <div class="label">&nbsp;</div>
-              <div class="content">0.12 CRV</div>
-            </div>
-            <div class="expand-item">
-              <div class="label">&nbsp;</div>
-              <div class="content">0.12 CRV</div>
+              <div class="expand-item">
+                <div class="label">Start at</div>
+                <div class="content">
+                  {{ row.week.hex * (WEEK_SECONDS) * 1000 | formatTime('MMMM D, yyyy h:mm a') }}
+                </div>
+              </div>
+              <div class="expand-item">
+                <div class="label">End at</div>
+                <div class="content">
+                  <!-- March 30, 2023 8:00 am -->
+                  {{ (row.week.hex * (WEEK_SECONDS) + (WEEK_SECONDS))  * 1000 | formatTime('MMMM D, yyyy h:mm a') }}
+                </div>
+              </div>
+              <div class="expand-item">
+                <div class="label">First week of claim</div>
+                <div class="content">
+                  -
+                  <!-- February 16, 2023 8:00 am -->
+                </div>
+              </div>
+              <div class="expand-item">
+                <div class="label">Last week of claim</div>
+                <div class="content">
+                  -
+                  <!-- February 16, 2023 8:00 am -->
+                </div>
+              </div>
+              <div class="expand-item">
+                <div class="label">Contracts</div>
+                <div class="content">
+                  <a :href="`https://etherscan.io/address/${row.gaugeAddr}`">
+                    {{row.gaugeAddr}}
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </template>
@@ -113,6 +131,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import moment from 'moment';
 import { BigNumber, utils } from 'ethers';
 import TableList from '@/components/TableList';
 import CuButton from '@/components/CuButton';
@@ -120,6 +139,9 @@ import CuPagination from '@/components/CuPagination';
 import CuSelect from '@/components/CuSelect';
 
 import { getCrvRewardTree } from '@/api/common';
+import { fetchBribeList, fetchUserScore } from '@/api/dashbord';
+import toFixed from '@/filters/toFixed';
+
 import sendTransaction from '@/common/sendTransaction';
 import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
@@ -142,10 +164,25 @@ export default {
   },
 
   data() {
+
+    const today = moment.utc();
+    const thursday = moment.utc().day(4).startOf('day');
+
+    let current;
+    if (today.isBefore(thursday)) {
+      current = thursday.clone().subtract(7, 'day');
+    } else {
+      current = thursday.clone();
+      // this.next = thursday.clone().add(14, 'day');
+      // this.nextNext = thursday.clone().add(21, 'day');
+    }
+    const  WEEK_SECONDS = 7 * 24 * 60 * 60;
+
     return {
+      WEEK_SECONDS,
       forwardAddress: '',
       cols: [
-        {
+      {
           title: 'Sort',
           prop: 'sort',
           width: '80px',
@@ -157,20 +194,26 @@ export default {
         },
         {
           title: 'Apr',
-          prop: 'Apr',
+          prop: 'apr',
+          render(text) {
+            return `${text}%`;
+          },
         },
         {
           title: this.voteType === 'VeCRV' ? '$/veCRV' : '$/vlCVX',
-          prop: this.voteType === 'VeCRV' ? 'veCRV' : 'vlCVX',
+          prop: 'price',
         },
         {
           title: 'Rewards',
-          prop: 'Rewards',
+          prop: 'rewards',
+          render(text, record) {
+            return `${text} ${record.tokenSymbol}`
+          }
         },
 
         {
           title: 'Vote number',
-          prop: 'VoteNumber',
+          prop: 'voteNumber',
         },
 
         {
@@ -179,62 +222,115 @@ export default {
           width: '160px',
         },
       ],
+
       list: [],
 
       pageSize: 10,
       page: 1,
-      // total: 0,/
+      total: 0,
 
-      market: 'All',
+      market: 'Lobby',
 
       submitting: false,
       loading: false,
 
       rewardTree: null,
+
+      round: current.unix() / WEEK_SECONDS,
     };
   },
 
   computed: {
-    ...mapState(['user', 'marketOption']),
+    ...mapState(['user', 'marketOption', 'tokenMap']),
     ...mapState(['cvxChoices', 'crvChoices', 'proposal', 'allGauges']),
 
-    voteList() {
-      let list = [];
-      if (this.voteType === 'VeCRV') {
-        list = this.crvChoices.map((item, idx) => ({
-          sort: idx + 1,
-          pool: item.value,
-        }));
-      } else {
-        list = this.cvxChoices.map((item, idx) => ({
-          sort: idx + 1,
-          pool: item.label.replace(/\(.*\)/, ''),
-        }));
-      }
+    // voteList() {
+    //   let list = [];
+    //   if (this.voteType === 'VeCRV') {
+    //     list = this.crvChoices.map((item, idx) => ({
+    //       sort: idx + 1,
+    //       pool: item.value,
+    //     }));
+    //   } else {
+    //     list = this.cvxChoices.map((item, idx) => ({
+    //       sort: idx + 1,
+    //       pool: item.label.replace(/\(.*\)/, ''),
+    //     }));
+    //   }
 
-      console.log(list.slice(this.pageSize * (this.page - 1), this.pageSize * this.page))
-      return list.slice(this.pageSize * (this.page - 1), this.pageSize * this.page);
-    },
+    //   console.log(list.slice(this.pageSize * (this.page - 1), this.pageSize * this.page))
+    //   return list.slice(this.pageSize * (this.page - 1), this.pageSize * this.page);
+    // },
 
-    total() {
-      if (this.voteType === 'VeCRV') {
-        return this.crvChoices.length;
-      }
-      return this.cvxChoices.length
-    },
+    // total() {
+    //   if (this.voteType === 'VeCRV') {
+    //     return this.crvChoices.length;
+    //   }
+    //   return this.cvxChoices.length
+    // },
 
   },
   watch: {
     voteType() {
       this.page = 1;
+      this.list = [];
+      this.getList();
+    },
+    market() {
+      this.page = 1;
+      this.list = [];
+      this.getList();
     },
   },
   created() {
-    // this.setTotal();
-    // this.getReward();
+    this.getList();
   },
 
+  // watch: {
+  //   // voteType() {
+  //   //   this.page = 1;
+  //   //   this.list = [];
+  //   //   this.getList();
+  //   // },
+  //   // market() {
+  //   //   this.page = 1;
+  //   //   this.list = [];
+  //   //   this.getList();
+  //   // },
+  // },
+
   methods: {
+    async getList() {
+      this.loading = true;
+      const res = await fetchBribeList({
+        witch: this.voteType === 'VeCRV' ? 'crv' : 'cvx',
+        platform: this.market.toLowerCase(),
+        round: this.round * this.WEEK_SECONDS,
+      });
+      this.loading = false;
+      if (res.success) {
+        this.total = res.data.length;
+        this.list = res.data.map((item, idx) => {
+          const token = this.tokenMap[item.tokenAddr.toLowerCase()];
+          const decimals = token?.decimals ?? 0;
+          return {
+            sort: idx + 1,
+            ...item,
+            loading: false,
+            yourWeight: '',
+            yourReward: '',
+            pool: item.name.shortName,
+            tokenSymbol: token.symbol,
+            rewards: toFixed(BigNumber.from(item.tokenAmount.hex || 0) / (10 ** decimals), 4),
+            voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
+            price: toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / item.totalScore.hex, 4),
+          };
+        });
+      } else {
+        this.list = [];
+      }
+    },
+
     // setTotal() {
     //   this.page = 1;
     //   if (this.voteType === 'VeCRV') {
@@ -247,9 +343,9 @@ export default {
     onVote() {
       // this.$router.push('/vote-edit');
       if (this.voteType === 'VeCRV') {
-        this.$router.push('/vote/VeCRV');
+        this.$router.push(`/vote/VeCRV/${this.market}`);
       } else {
-        this.$router.push('/vote/VlCVX');
+        this.$router.push(`/vote/VlCVX/${this.market}`);
       }
       // const lint = `https://snapshot.org/#/iwan.eth/proposal/${this.proposal.id}`
       // window.open(lint);

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Qs from 'qs';
+import config from '../config';
 
 // import { Message, Loading } from 'element-ui';
 // import { getCsrf } from '@/api/utils';
@@ -8,7 +9,7 @@ import Qs from 'qs';
 const BIZ_ERROR = 'BizError';
 
 const instance = axios.create({
-  baseURL: 'http://8.218.123.140:8001/api',
+  baseURL: `${config.serverUrl}/api`,
   timeout: 30000,
 });
 
@@ -88,7 +89,7 @@ instance.interceptors.response.use((response) => {
   }
   const { config, response } = error;
 
-  if (response.status === 401 && response?.data?.Code === 2) {
+  if (response?.data?.Code === 2) {
     window.location.href = '/login';
   }
 

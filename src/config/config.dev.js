@@ -1,5 +1,7 @@
 export default {
   storeVersion: '1.0.0',
+  debug: true,
+  serverUrl: 'http://8.218.123.140:8001',
   // webUrl: 'http://47.75.74.35:8000',
 
   // defaultPricePrecision: 8,
