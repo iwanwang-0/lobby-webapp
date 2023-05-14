@@ -14,6 +14,8 @@ Vue.use(Vuex);
 
 const WEEK_SECONDS = 7 * 24 * 60 * 60;
 
+const HOUR_SECONDS = 60 * 60;
+
 export default new Vuex.Store({
   plugins: [
     createPersistedState({
@@ -27,6 +29,8 @@ export default new Vuex.Store({
     enums,
   },
   state: {
+
+    totalRound: Math.floor(Date.now() / 1000 / WEEK_SECONDS),
 
     totalRound: Math.floor(Date.now() / 1000 / WEEK_SECONDS),
     proposal: {},
