@@ -132,6 +132,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import moment from 'moment';
 import { BigNumber, utils } from 'ethers';
 import TableList from '@/components/TableList';
 import CuButton from '@/components/CuButton';
@@ -228,7 +229,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['user', 'marketOption', 'tokenMap']),
+    ...mapState(['user', 'marketOption', 'tokenMap', 'totalRound']),
     ...mapState(['cvxChoices', 'crvChoices', 'proposal']),
 
     voteList() {
@@ -274,10 +275,14 @@ export default {
   methods: {
     async getList() {
       this.loading = true;
+      const roundTime = this.round * this.WEEK_SECONDS;
+      const hourRoundTime = moment().startOf('hour').subtract(this.totalRound - this.round, 'hour').unix();
+
       const res = await fetchBribeList({
         witch: this.voteType === 'VeCRV' ? 'crv' : 'cvx',
         platform: this.market.toLowerCase(),
-        round: this.round * this.WEEK_SECONDS,
+        round: this.voteType === 'VlCVX' && config.debug ? hourRoundTime : roundTime,
+
       });
       this.loading = false;
       if (res.success) {

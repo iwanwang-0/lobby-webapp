@@ -181,12 +181,15 @@ export default {
     };
   },
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'crvList']),
     ...mapState(['cvxChoices', 'proposal', 'crvChoices']),
 
     choices() {
       if (this.voteType === 'VeCRV') {
-        return this.crvChoices;
+        return this.crvList.map((item) => ({
+          label: item.name,
+          value: item.address,
+        }));
       }
       return this.cvxChoices;
     },
@@ -341,7 +344,6 @@ export default {
     },
 
     async onBribe() {
-
       if (!this.selectedRound) {
         this.showError('Please select round');
         return false;
@@ -355,16 +357,13 @@ export default {
         gauge, tokenAddress, totalRewards, maxReward,
       } = this;
 
-      console.log(gauge, tokenAddress, totalRewards, maxReward)
+      // console.log(gauge, tokenAddress, totalRewards, maxReward)
 
       if (gauge == null || !tokenAddress || !totalRewards || !maxReward) {
         this.showError('The form field is error');
         return;
       }
 
-      // console.log(this.selectedRound.time)
-
-      // console.log();
       this.submitting = true;
 
       const erc20Contract = getERC20Contract(this.tokenAddress);
@@ -387,7 +386,7 @@ export default {
               this.tokenAddress,
               BigNumber.from(totalRewards + '0'.repeat(this.decimals)).toHexString(),
               BigNumber.from(this.selectedRound.time.valueOf() / (7 * 24 * 60 * 60 * 1000)).toHexString(),
-              this.allGauges[this.gauge].gauge,
+              this.gauge,
             ]),
           });
         } else {
@@ -414,7 +413,6 @@ export default {
           });
           this.amount = '';
 
-          // await this.$store.dispatch('getPosition');
         } else {
           this.showError('Faild', {
             tx: buyTxHash,

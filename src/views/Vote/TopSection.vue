@@ -76,26 +76,6 @@ export default {
     },
   },
   data() {
-    // const today = moment.utc();
-    // const thursday = moment.utc().day(4).startOf('day');
-    // let current;
-    // if (today.isBefore(thursday)) {
-    //   current = thursday.clone();
-    // } else {
-    //   current = thursday.clone().add(7, 'day');
-    // }
-
-    // const cvxThursday = moment(this.proposal.end * 1000).utc().startOf('day');
-
-    // if (today.isBefore(cvxThursday)) {
-    //   this.cvxCurrent = cvxThursday.clone();
-    //   // this.cvxNext = cvxThursday.clone().add(14, 'day');
-    //   // this.cvxNextNext = cvxThursday.clone().add(28, 'day');
-    // } else {
-    //   this.cvxCurrent = thursday.clone().add(14, 'day');
-    //   // this.cvxNext = thursday.clone().add(28, 'day');
-    //   // this.cvxNextNext = thursday.clone().add(42, 'day');
-    // }
 
     return {
       now: Date.now(),

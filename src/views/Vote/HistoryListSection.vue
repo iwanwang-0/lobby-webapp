@@ -73,7 +73,23 @@ export default {
       round: 0,
 
       forwardAddress: '',
-      cols: [
+      list: [],
+
+      market: 'All',
+
+      submitting: false,
+      loading: false,
+
+      rewardTree: null,
+    };
+  },
+
+  computed: {
+    ...mapState(['user', 'marketOption', 'guageNameMap']),
+    ...mapGetters(['roundOptions']),
+    ...mapState(['cvxChoices', 'proposal']),
+    cols() {
+      return [
         {
           title: 'Round',
           prop: 'round',
@@ -93,22 +109,8 @@ export default {
             return moment(text * 1000).format('yyyy-MM-DD HH:mm');
           },
         },
-      ],
-      list: [],
-
-      market: 'All',
-
-      submitting: false,
-      loading: false,
-
-      rewardTree: null,
-    };
-  },
-
-  computed: {
-    ...mapState(['user', 'marketOption', 'guageNameMap']),
-    ...mapGetters(['roundOptions']),
-    ...mapState(['cvxChoices', 'proposal']),
+      ];
+    },
   },
 
   watch: {
@@ -133,7 +135,6 @@ export default {
     selectChange() {
       // this.getReward();
     },
-
 
     async getVotes() {
       if (this.voteType === 'VeCRV') {

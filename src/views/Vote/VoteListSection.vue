@@ -178,7 +178,32 @@ export default {
     return {
       WEEK_SECONDS,
       forwardAddress: '',
-      cols: [
+
+      list: [],
+
+      pageSize: 10,
+      page: 1,
+      total: 0,
+
+      market: 'Lobby',
+
+      submitting: false,
+      loading: false,
+
+      rewardTree: null,
+
+      round: current.unix() / WEEK_SECONDS,
+
+      hourStart: moment().startOf('hour').unix(),
+    };
+  },
+
+  computed: {
+    ...mapState(['user', 'marketOption', 'tokenMap']),
+    ...mapState(['cvxChoices', 'crvChoices', 'proposal']),
+
+    cols() {
+      return [
         {
           title: 'Sort',
           prop: 'sort',
@@ -204,8 +229,8 @@ export default {
           title: 'Rewards',
           prop: 'rewards',
           render(text, record) {
-            return `${text} ${record.tokenSymbol}`
-          }
+            return `${text} ${record.tokenSymbol}`;
+          },
         },
 
         {
@@ -218,29 +243,8 @@ export default {
           prop: 'operation',
           width: '160px',
         },
-      ],
-
-      list: [],
-
-      pageSize: 10,
-      page: 1,
-      total: 0,
-
-      market: 'Lobby',
-
-      submitting: false,
-      loading: false,
-
-      rewardTree: null,
-
-      round: current.unix() / WEEK_SECONDS,
-    };
-  },
-
-  computed: {
-    ...mapState(['user', 'marketOption', 'tokenMap']),
-    ...mapState(['cvxChoices', 'crvChoices', 'proposal']),
-
+      ];
+    },
     // voteList() {
     //   let list = [];
     //   if (this.voteType === 'VeCRV') {
@@ -313,7 +317,7 @@ export default {
         if (res.success) {
           const { score } = res.data;
           record.yourWeight = toFixed(score.hex / record.totalScore.hex, 2);
-          record.yourReward = toFixed(score.hex / record.totalScore.hex * record.rewards, 4)
+          record.yourReward = toFixed(score.hex / record.totalScore.hex * record.rewards, 4);
         }
 
         record.loading = false;
@@ -321,13 +325,14 @@ export default {
       }
     },
 
-
     async getList() {
       this.loading = true;
+      const roundTime = this.round * this.WEEK_SECONDS;
+
       const res = await fetchBribeList({
         witch: this.voteType === 'VeCRV' ? 'crv' : 'cvx',
         platform: this.market.toLowerCase(),
-        round: this.round * this.WEEK_SECONDS,
+        round: this.voteType === 'VlCVX' && config.debug ? this.hourStart : roundTime,
       });
       this.loading = false;
       if (res.success) {
@@ -335,6 +340,8 @@ export default {
         this.list = res.data.map((item, idx) => {
           const token = this.tokenMap[item.tokenAddr.toLowerCase()];
           const decimals = token?.decimals ?? 0;
+
+          const totalScore = Number.parseInt(item.totalScore.hex, 10);
           return {
             sort: idx + 1,
             ...item,
@@ -344,8 +351,8 @@ export default {
             pool: item.name.shortName,
             tokenSymbol: token.symbol,
             rewards: toFixed(BigNumber.from(item.tokenAmount.hex || 0) / (10 ** decimals), 4),
-            voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
-            price: toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / item.totalScore.hex, 4),
+            voteNumber: toFixed(BigNumber.from(totalScore || 0) / 10 ** 18, 4),
+            price: totalScore > 0 ? toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / totalScore, 4) : 0,
           };
         });
       } else {

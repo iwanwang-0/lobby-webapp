@@ -16,10 +16,12 @@
 
 <script>
 import { mapState } from 'vuex';
+import moment from 'moment';
 import * as echarts from 'echarts';
 import { fetchGaugeRewards, fetchUserScore } from '@/api/dashbord';
 import toFixed from '@/filters/toFixed';
 import { BigNumber } from 'ethers';
+import config from '@/config';
 
 export default {
   props: {
@@ -34,43 +36,6 @@ export default {
     },
   },
   data() {
-    // prettier-ignore
-    // const dataAxis = [
-    //   'FRAX+3CRV(0xd632…)',
-    //   'FRAX+3CRV(0xd632…)',
-    //   'FRAX+3CRV(0xd632…)',
-    //   'FRAX+3CRV(0xd632…)',
-    //   'FRAX+3CRV(0xd632…)',
-    //   'FRAX+3CRV(0xd632…)',
-    //   'FRAX+3CRV(0xd632…)',
-    //   'FRAX+3CRV(0xd632…)',
-    //   'FRAX+3CRV(0xd632…)',
-    //   'FRAX+3CRV(0xd632…)',
-    //   'FRAX+3CRV(0xd632…)',
-    //   'FRAX+3CRV(0xd632…)',
-    //   'FRAX+3CRV(0xd632…)',
-    //   'FRAX+3CRV(0xd632…)',
-    // ];
-    // // prettier-ignore
-    // const data = [{
-    //   value: 220,
-    //   list: [
-    //     {
-    //       label: 'USDT',
-    //       value: '100',
-    //     },
-    //     {
-    //       label: 'USDC',
-    //       value: '200',
-    //     },
-    //   ],
-    // }, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149, 210, 122, 133, 334, 198, 123, 125, 220];
-
-    // const yMax = 500;
-    // const dataShadow = [];
-    // for (let i = 0; i < data.length; i++) {
-    //   dataShadow.push(yMax);
-    // }
     return {
       WEEK_SECONDS: 7 * 24 * 60 * 60,
       total: 0,
@@ -190,10 +155,14 @@ export default {
     async getList() {
       this.loading = true;
       this.total = 0;
+
+      const roundTime = this.round * this.WEEK_SECONDS;
+      const hourRoundTime = moment().startOf('hour').subtract(this.totalRound - this.round, 'hour').unix();
+
       const res = await fetchGaugeRewards({
         witch: this.voteType === 'VeCRV' ? 'crv' : 'cvx',
         platform: this.market.toLowerCase(),
-        round: this.round * this.WEEK_SECONDS,
+        round: this.voteType === 'VlCVX' && config.debug ? hourRoundTime : roundTime,
       });
 
       this.loading = false;

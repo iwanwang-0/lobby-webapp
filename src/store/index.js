@@ -32,7 +32,7 @@ export default new Vuex.Store({
 
     totalRound: Math.floor(Date.now() / 1000 / WEEK_SECONDS),
 
-    totalRound: Math.floor(Date.now() / 1000 / WEEK_SECONDS),
+    cvxTotalRound: Math.floor(Date.now() / 1000 / HOUR_SECONDS),
     proposal: {},
     allGauges: {},
     cvxChoices: [],
@@ -98,6 +98,10 @@ export default new Vuex.Store({
           weight: 0,
           ...data[key],
         })),
+        // crvChoices: Object.keys(data).map((key) => ({
+        //   value: key,
+        //   label: key,
+        // })),
       });
     },
 
