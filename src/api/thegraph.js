@@ -61,11 +61,8 @@ export function getCrvHistory({ round, user }) {
   };
 
   return fetch('https://api.thegraph.com/subgraphs/name/pengiundev/curve-gaugecontroller-mainnet', {
-    referrerPolicy: 'strict-origin-when-cross-origin',
     body: JSON.stringify(body),
     method: 'POST',
-    mode: 'cors',
-    credentials: 'omit',
   })
     .then((response) => response.json())
     .then((res) => {
@@ -75,13 +72,6 @@ export function getCrvHistory({ round, user }) {
         const { gaugeVotes } = res.data;
         return gaugeVotes;
       }
-      // if (res?.data?.proposals) {
-      //   const keyword = 'Gauge Weight for Week of';
-      //   const target = res?.data?.proposals.find((item) => item.title.match(keyword));
-      //   if (target) {
-      //     return target;
-      //   }
-      // }
       return [];
     })
     .catch((error) => console.error(error));

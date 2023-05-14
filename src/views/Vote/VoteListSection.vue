@@ -22,6 +22,7 @@
         :list="list"
         :loading="loading"
         :is-expand="true"
+        @expand="onExpand"
       >
         <template v-slot:operation="{ row }">
           <!-- {{ row }} -->
@@ -164,7 +165,6 @@ export default {
   },
 
   data() {
-
     const today = moment.utc();
     const thursday = moment.utc().day(4).startOf('day');
 
@@ -173,16 +173,13 @@ export default {
       current = thursday.clone().subtract(7, 'day');
     } else {
       current = thursday.clone();
-      // this.next = thursday.clone().add(14, 'day');
-      // this.nextNext = thursday.clone().add(21, 'day');
     }
-    const  WEEK_SECONDS = 7 * 24 * 60 * 60;
-
+    const WEEK_SECONDS = 7 * 24 * 60 * 60;
     return {
       WEEK_SECONDS,
       forwardAddress: '',
       cols: [
-      {
+        {
           title: 'Sort',
           prop: 'sort',
           width: '80px',
@@ -242,7 +239,7 @@ export default {
 
   computed: {
     ...mapState(['user', 'marketOption', 'tokenMap']),
-    ...mapState(['cvxChoices', 'crvChoices', 'proposal', 'allGauges']),
+    ...mapState(['cvxChoices', 'crvChoices', 'proposal']),
 
     // voteList() {
     //   let list = [];
@@ -300,6 +297,31 @@ export default {
   // },
 
   methods: {
+
+    async onExpand(idx) {
+      const record = this.list[idx];
+      if (record.loaded !== true && record.loading !== true && this.user.address) {
+        record.loading = true;
+        // console.log(this.user)
+        const res = await fetchUserScore({
+          round: record.week.hex * this.WEEK_SECONDS,
+          gauge: record.gaugeAddr,
+          witch: this.voteType === 'VeCRV' ? 'crv' : 'cvx',
+          user: this.user.address,
+        });
+
+        if (res.success) {
+          const { score } = res.data;
+          record.yourWeight = toFixed(score.hex / record.totalScore.hex, 2);
+          record.yourReward = toFixed(score.hex / record.totalScore.hex * record.rewards, 4)
+        }
+
+        record.loading = false;
+        record.loaded = true;
+      }
+    },
+
+
     async getList() {
       this.loading = true;
       const res = await fetchBribeList({
@@ -343,9 +365,9 @@ export default {
     onVote() {
       // this.$router.push('/vote-edit');
       if (this.voteType === 'VeCRV') {
-        this.$router.push(`/vote/VeCRV/${this.market}`);
+        this.$router.push(`/vote/VeCRV/${this.market}/${this.round}`);
       } else {
-        this.$router.push(`/vote/VlCVX/${this.market}`);
+        this.$router.push(`/vote/VlCVX/${this.market}/${this.round}`);
       }
       // const lint = `https://snapshot.org/#/iwan.eth/proposal/${this.proposal.id}`
       // window.open(lint);

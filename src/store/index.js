@@ -34,6 +34,8 @@ export default new Vuex.Store({
     cvxChoices: [],
     crvChoices: [],
 
+    crvList: [],
+
     tokenMap: {},
     guageNameMap: {},
 
@@ -87,8 +89,20 @@ export default new Vuex.Store({
       const data = await getGaugeNameMap();
       commit('UPDATE_STATE', {
         guageNameMap: data,
+        crvList: Object.keys(data).map((key) => ({
+          address: key,
+          weight: 0,
+          ...data[key],
+        })),
       });
     },
+
+    // async getGaugeNameMap({ commit, state }) {
+    //   const data = await getGaugeNameMap();
+    //   commit('UPDATE_STATE', {
+    //     guageNameMap: data,
+    //   });
+    // },
 
     async getProposal({ commit, state }) {
       const proposal = await getProposal();
@@ -106,10 +120,10 @@ export default new Vuex.Store({
       if (success) {
         commit('UPDATE_STATE', {
           allGauges: data,
-          crvChoices: Object.keys(data).map((key) => ({
-            value: key,
-            label: key,
-          })),
+          // crvChoices: Object.keys(data).map((key) => ({
+          //   value: key,
+          //   label: key,
+          // })),
         });
       }
     },

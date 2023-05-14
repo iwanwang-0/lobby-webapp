@@ -19,6 +19,7 @@
         :list="list"
         :loading="loading"
         :is-expand="false"
+
       >
         <!-- <template v-slot:operation="{ row }">
           <CuButton
@@ -105,7 +106,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['user', 'marketOption']),
+    ...mapState(['user', 'marketOption', 'guageNameMap']),
     ...mapGetters(['roundOptions']),
     ...mapState(['cvxChoices', 'proposal']),
   },
@@ -133,6 +134,7 @@ export default {
       // this.getReward();
     },
 
+
     async getVotes() {
       if (this.voteType === 'VeCRV') {
         this.getCrvHistory();
@@ -142,7 +144,6 @@ export default {
     },
 
     async getCrvHistory() {
-      console.log('getCrvHistory')
       this.loading = true;
       const data = await getCrvHistory({
         round: this.round,
@@ -155,7 +156,7 @@ export default {
         data.forEach((item) => {
           list.push({
             round: this.round,
-            pool: item.gauge,
+            pool: this.guageNameMap[item.gauge]?.name || item.gauge,
             quantity: toFixed(item.veCRV / 10 ** 18, 2),
             weight: item.weight,
             time: item.time,
@@ -163,7 +164,6 @@ export default {
         });
       }
 
-      console.log(list)
       this.list = list;
     },
 
@@ -197,10 +197,10 @@ export default {
 
           choiceItemKey.forEach((keyItem) => {
             list.push({
-              round: 108,
+              round: this.round,
               pool: proposal.choices[keyItem - 1],
               quantity: item.vp * choice[keyItem] / sumPower,
-              time: moment(item.created * 1000).format('YYYY-MM-DD HH:mm:ss'),
+              time: item.created,
             });
           });
         });

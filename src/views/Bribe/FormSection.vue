@@ -182,7 +182,7 @@ export default {
   },
   computed: {
     ...mapState(['user']),
-    ...mapState(['cvxChoices', 'proposal', 'crvChoices', 'allGauges']),
+    ...mapState(['cvxChoices', 'proposal', 'crvChoices']),
 
     choices() {
       if (this.voteType === 'VeCRV') {

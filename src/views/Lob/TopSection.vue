@@ -1,7 +1,7 @@
 <template>
    <b-container class="top-section" fluid="lg">
     <div class="left">
-      <img src="~@/assets/img/logo-ic@2x.png" alt="">
+      <img src="~@/assets/img/logo-ic@2x.svg" alt="">
     </div>
     <div class="right">
       <div class="title">

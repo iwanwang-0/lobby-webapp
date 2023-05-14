@@ -105,7 +105,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['cvxChoices', 'proposal', 'crvChoices', 'allGauges']),
+    ...mapState(['cvxChoices', 'proposal', 'crvChoices']),
     currentDur() {
       return this.getRemainTime(this.current);
     },

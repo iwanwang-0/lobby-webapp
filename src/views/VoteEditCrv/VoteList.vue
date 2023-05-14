@@ -63,6 +63,8 @@
             <template v-if="head.prop === 'operation' && $scopedSlots.operation">
               <slot name="operation" :row="row"></slot>
             </template>
+
+
             <template v-if="head.isEdit">
               <template>
                 <div class="edit-wrapper">
@@ -76,6 +78,9 @@
                   <span class="suffix">%</span>
                 </div>
               </template>
+            </template>
+            <template v-else-if="typeof head.render === 'function'">
+              {{ head.render(row[head.prop], row) }}
             </template>
             <template v-else>
               {{ row[head.prop]  }}
@@ -131,13 +136,19 @@ export default {
           prop: 'pool',
           width: '160px',
         },
-        {
-          title: 'Apr',
-          prop: 'Apr',
-        },
+        // {
+        //   title: 'Apr',
+        //   prop: 'apr',
+        //   render(text) {
+        //     return `${text}%`;
+        //   }
+        // },
         {
           title: 'Weight',
           prop: 'weight',
+          render(text) {
+            return `${text / 100}%`;
+          }
         },
         {
           title: 'New Weight',
@@ -158,7 +169,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(['cvxChoices', 'proposal', 'crvChoices', 'allGauges', 'marketOption']),
+    ...mapState(['cvxChoices', 'proposal', 'crvChoices', 'marketOption']),
   },
 
   created() {

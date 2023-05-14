@@ -70,7 +70,7 @@ import { BigNumber, utils } from 'ethers';
 import { cloneDeep } from 'lodash';
 
 import CuButton from '@/components/CuButton';
-import RoundSelect from '@/components/RoundSelect';
+// import RoundSelect from '@/components/RoundSelect';
 import CuPagination from '@/components/CuPagination';
 import CuSelect from '@/components/CuSelect';
 
@@ -93,7 +93,7 @@ export default {
     VoteList,
     CuButton,
     // CuSelect,
-    RoundSelect,
+    // RoundSelect,
     CuPagination,
   },
 
@@ -105,6 +105,8 @@ export default {
 
   data() {
     return {
+      WEEK_SECONDS: 7 * 24 * 60 * 60,
+
       valueMap: {},
       labelChoiceMap: {},
 
@@ -119,10 +121,10 @@ export default {
           prop: 'pool',
           width: '160px',
         },
-        {
-          title: 'Apr',
-          prop: 'Apr',
-        },
+        // {
+        //   title: 'Apr',
+        //   prop: 'Apr',
+        // },
         {
           title: 'Weight',
           prop: 'weight',
@@ -154,7 +156,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'tokenMap', 'guageNameMap']),
     ...mapGetters(['roundOptions']),
     ...mapState(['cvxChoices', 'proposal', 'marketOption']),
     voteList() {
@@ -215,7 +217,6 @@ export default {
           proposal: this.proposal.id,
           choice: choiceMap,
         });
-
         this.showSuccess('Succeeded');
       } catch (error) {
         this.showError(error.error_description || error.message);

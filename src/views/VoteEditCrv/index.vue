@@ -20,9 +20,9 @@ export default {
   },
 
   data() {
-    const { type } = this.$route.params;
+    // const { type } = this.$route.params;
     return {
-      type,
+      type: 'VeCRV',
     }
   }
 };

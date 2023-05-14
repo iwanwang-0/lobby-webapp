@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_图层_1" data-name="图层 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 400">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#_未命名的渐变_104);
+      }
+
+      .cls-2 {
+        fill: #0b0b0e;
+      }
+
+      .cls-3 {
+        fill: url(#_未命名的渐变_104-2);
+      }
+    </style>
+    <linearGradient id="_未命名的渐变_104" data-name="未命名的渐变 104" x1="92.99" y1="268.51" x2="315.6" y2="-40.61" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff2f2f"/>
+      <stop offset=".04" stop-color="#ff342f"/>
+      <stop offset=".08" stop-color="#ff4430"/>
+      <stop offset=".13" stop-color="#ff5d32"/>
+      <stop offset=".18" stop-color="#ff8135"/>
+      <stop offset=".24" stop-color="#ffaf38"/>
+      <stop offset=".28" stop-color="#ffdb3c"/>
+      <stop offset=".31" stop-color="#f8db3b"/>
+      <stop offset=".35" stop-color="#e7dd3a"/>
+      <stop offset=".39" stop-color="#cbe139"/>
+      <stop offset=".43" stop-color="#a4e636"/>
+      <stop offset=".48" stop-color="#71ed33"/>
+      <stop offset=".53" stop-color="#34f530"/>
+      <stop offset=".54" stop-color="#2df630"/>
+      <stop offset=".56" stop-color="#2cf43f"/>
+      <stop offset=".62" stop-color="#2bef68"/>
+      <stop offset=".69" stop-color="#2ae7a9"/>
+      <stop offset=".74" stop-color="#29e1de"/>
+      <stop offset=".83" stop-color="#2ac2e8"/>
+      <stop offset="1" stop-color="#2f81ff"/>
+    </linearGradient>
+    <linearGradient id="_未命名的渐变_104-2" data-name="未命名的渐变 104" x1="-4.76" y1="10.72" x2="289.41" y2="263.17" xlink:href="#_未命名的渐变_104"/>
+  </defs>
+  <rect class="cls-1" x="100" y="100" width="109.29" height="165.78"/>
+  <rect class="cls-3" x="171.48" y="134.22" width="128.52" height="165.78"/>
+  <polygon class="cls-2" points="259.62 228.24 209.29 228.24 209.29 134.22 171.48 134.22 171.48 265.78 209.29 265.78 209.29 265.78 259.62 265.78 259.62 228.24"/>
+</svg>

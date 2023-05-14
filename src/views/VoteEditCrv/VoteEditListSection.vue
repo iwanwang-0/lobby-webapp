@@ -77,6 +77,9 @@ import { vote } from '@/api/snapshot';
 import sendTransaction from '@/common/sendTransaction';
 import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
+import { fetchBribeList, fetchUserScore } from '@/api/dashbord';
+import toFixed from '@/filters/toFixed';
+import { getCrvHistory } from '@/api/thegraph';
 
 import {
   GaugeControllerContract,
@@ -101,29 +104,38 @@ export default {
   },
 
   data() {
-    return {
-      valueMap: {},
-      labelChoiceMap: {},
+    const { platform, round } = this.$route.params;
 
-      market: 'All',
+    return {
+      WEEK_SECONDS: 7 * 24 * 60 * 60,
+
+      valueMap: {},
+      // labelChoiceMap: {},
+
+      market: platform,
+
+      round,
 
       submitting: false,
       loading: false,
 
+      historyMap: {},
     };
   },
 
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'tokenMap', 'guageNameMap']),
     ...mapGetters(['roundOptions']),
-    ...mapState(['cvxChoices', 'proposal', 'crvChoices', 'allGauges', 'marketOption']),
+    ...mapState(['crvList', 'proposal', 'allGauges', 'marketOption']),
     voteList() {
-      const list = this.crvChoices.map((item, idx) => ({
+      const list = this.crvList.map((item, idx) => ({
         choice: idx + 1,
-        pool: item.label,
-        weight: 0,
+        pool: item.name,
+        address: item.address,
+        weight: this.historyMap[item.address.toLowerCase()]?.weight || 0,
         newWeight: 0,
-        percent: 0,
+        // percent: 0,
+        // apr: item.apr,
       }));
 
       const topList = list.filter((item) => this.user.crvFavPoolMap[item.pool]);
@@ -137,30 +149,41 @@ export default {
   },
 
   watch: {
-    crvChoices: {
-      handler() {
-        this.crvChoices.forEach((item, idx) => {
-          this.labelChoiceMap[item.label] = idx + 1;
-        });
-      },
-      immediate: true,
-    },
+    // crvList: {
+    //   handler() {
+    //     this.crvList.forEach((item, idx) => {
+    //       this.labelChoiceMap[item.label] = idx + 1;
+    //     });
+    //   },
+    //   immediate: true,
+    // },
   },
 
   created() {
-    // this.getReward();
+    this.getCrvHistory();
   },
 
   methods: {
     selectChange() {
       this.getReward();
     },
+    async getCrvHistory() {
+      // this.loading = true;
+      const data = await getCrvHistory({
+        round: this.round,
+        user: this.user.address,
+      });
+      // this.loading = false;
+      this.historyMap = data.reduce((map, item) => {
+        // eslint-disable-next-line no-param-reassign
+        map[item.gauge] = item;
+        return map;
+      }, {});
+
+      // console.log(this.historyMap)
+    },
 
     async onVoteAll() {
-      // console.log(this.voteList);
-      // console.log(this.valueMap);
-      // console.log(this.labelChoiceMap);
-      // return;
       this.submitting = true;
       // const choiceMap = this.innerList.reduce((choices, item, idx) => {
       //   const value = Number.parseInt(item.newWeight, 10) || 0;
@@ -178,45 +201,6 @@ export default {
         });
 
         this.showSuccess('Succeeded');
-
-        // console.log(txHash);
-        // this.showPending('Pending', {
-        //   tx: txHash,
-        // });
-
-        // const proof = await this.getProof(tAddr, round);
-
-        // const txHash = await sendTransaction({
-        //   to: config.MultiMerkleStash,
-        //   gas: 640000,
-        //   data: MultiMerkleStashInterface.encodeFunctionData('claim', [
-        //     tAddr,
-        //     round,
-        //     this.user.address,
-        //     amount,
-        //     proof,
-        //   ]),
-        // });
-
-        // this.showPending('Pending', {
-        //   tx: txHash,
-        // });
-
-        // const buyTx = await provider.waitForTransaction(txHash);
-
-        // if (buyTx.status === 1) {
-        //   this.showSuccess('Succeeded', {
-        //     tx: txHash,
-        //   });
-        //   // this.getReward();
-        //   // this.$store.dispatch('getPosition');
-        //   // this.$store.dispatch('getWithdrawable');
-        //   // this.$store.dispatch('getBalances');
-        // } else {
-        //   this.showError('Failed', {
-        //     tx: txHash,
-        //   });
-        // }
       } catch (error) {
         // console.error(error);
         this.showError(error.error_description || error.message);
@@ -225,11 +209,12 @@ export default {
     },
 
     async onVote(record) {
-
       const newWeight = Number.parseFloat(this.valueMap[record.pool]);
 
+      console.log(record)
       if (!newWeight) {
         this.showError('Please input vote weight');
+        return;
       }
       // const { tokenId } = this.$route.query;
       // const { amount } = this;
@@ -238,29 +223,18 @@ export default {
       //   return;
       // }
 
-      // console.log(amount, tAddr, round);
       this.submitting = true;
       try {
-        // const result = await vote({
-        //   account: this.user.account,
-        //   proposal: this.proposal.id,
-        //   choice: [],
-        // });
-
-        // this.showPending('Pending', {
-        //   tx: result,
-        // });
-
         // const proof = await this.getProof(tAddr, round);
-          // console.log([
-          //   this.allGauges[record.pool].gauge,
-          //   newWeight * 1000,
-          // ])
+        // console.log([
+        //   this.allGauges[record.pool].gauge,
+        //   newWeight * 1000,
+        // ])
         const txHash = await sendTransaction({
           to: config.GaugeController,
           gas: 640000,
           data: GaugeControllerInterface.encodeFunctionData('vote_for_gauge_weights', [
-            this.allGauges[record.pool].gauge,
+            record.address,
             newWeight * 1000,
           ]),
         });
