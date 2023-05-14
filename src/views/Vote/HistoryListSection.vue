@@ -119,7 +119,7 @@ export default {
     },
 
     round() {
-      // this.list = [];
+      this.list = [];
       this.getVotes();
     },
   },
