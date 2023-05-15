@@ -110,7 +110,7 @@
               size="sm"
               class="form-btn"
               variant="link"
-              :disabled="!symbol || submitting || !((voteType === 'VeCRV' && isCrvApproved) || !(voteType === 'VlCVX' && isCvxApproved))"
+              :disabled="!symbol || submitting || !(voteType === 'VeCRV' && isCrvApproved) || !(voteType === 'VlCVX' && isCvxApproved)"
               @click="onBribe"
             >
             Bribe</b-button>
