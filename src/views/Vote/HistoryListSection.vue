@@ -40,16 +40,11 @@
 <script>
 import { mapState, mapGetters } from 'vuex';
 import moment from 'moment';
-import { BigNumber, utils } from 'ethers';
+// import { BigNumber, utils } from 'ethers';
 import TableList from '@/components/TableList';
 import RoundSelect from '@/components/RoundSelect';
 // import CuButton from '@/components/CuButton';
 import toFixed from '@/filters/toFixed';
-
-import { getCrvRewardTree } from '@/api/common';
-import sendTransaction from '@/common/sendTransaction';
-import config from '@/config';
-import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
 
 import { getCvxVotes, getVotePower } from '@/api/snapshot';
 import { getCrvHistory } from '@/api/thegraph';

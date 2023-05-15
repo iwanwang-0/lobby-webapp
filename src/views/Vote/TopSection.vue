@@ -54,7 +54,13 @@
         <div class="desc">Each round of Reward will be distributed <em>48h</em> after the end of voting</div> -->
       </div>
       <div class="right">
-        <div>You {{ voteType === 'VeCRV' ? 'veCRV' : 'vlCVX' }}/Voting Power: <span class="power-text"><em>1123,456</em></span> </div>
+        <div>You {{ voteType === 'VeCRV' ? 'veCRV' : 'vlCVX' }}/Voting Power:
+           <span class="power-text">
+              <em>
+              {{voteType === 'VeCRV' ? crvBalance : cvxBalance}}
+            </em>
+          </span>
+        </div>
         <div>You reward will be distributed <em>48h</em> after the voting</div>
         <!-- <div class="right-row">Claimable reward: <em>$123,456</em></div>
         <div class="right-row">Rewards received: <em>$123,456</em></div>
@@ -68,6 +74,11 @@
 <script>
 import moment from 'moment';
 import { mapState } from 'vuex';
+import config from '@/config'
+import {
+  getERC20Contract, getERC20Interface, provider
+} from '@/eth/ethereum';
+import toFixed from '@/filters/toFixed'
 
 export default {
   props: {
@@ -81,11 +92,15 @@ export default {
       now: Date.now(),
       current: moment(),
       cvxCurrent: moment(),
+
+      crvBalance: 0,
+      cvxBalance: 0,
+
     };
   },
 
   computed: {
-    ...mapState(['cvxChoices', 'proposal', 'crvChoices']),
+    ...mapState(['user', 'cvxChoices', 'proposal', 'crvChoices']),
     currentDur() {
       return this.getRemainTime(this.current);
     },
@@ -103,14 +118,37 @@ export default {
     proposal() {
       this.setTime();
     },
+    user: {
+      handler() {
+        if (this.user.address) {
+          this.getCrvBalance();
+          this.getCvxBalance();
+        }
+      },
+      immediate: true,
+    }
   },
 
   created() {
     this.setTime();
     this.loopSetNow();
+    // if (this.user.address) {
+    //   this.getCrvBalance();
+    //   this.getCvxBalance();
+    // }
   },
 
   methods: {
+    getCrvBalance() {
+
+    },
+
+    async getCvxBalance() {
+      const balance = await getERC20Contract(config.USDT).balanceOf(this.user.address);
+      console.log(balance)
+      // console.log(balance)
+      this.cvxBalance = toFixed(balance / 1e18, 2);
+    },
     changeVoteType(type) {
       this.$emit('changeType', type);
     },

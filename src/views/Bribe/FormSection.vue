@@ -110,7 +110,7 @@
               size="sm"
               class="form-btn"
               variant="link"
-              :disabled="!symbol || submitting || !(voteType === 'VeCRV' && isCrvApproved) || !(voteType === 'VlCVX' && isCvxApproved)"
+              :disabled="!symbol || submitting || (voteType === 'VeCRV' && !isCrvApproved) || (voteType === 'VlCVX' && !isCvxApproved)"
               @click="onBribe"
             >
             Bribe</b-button>
@@ -258,7 +258,7 @@ export default {
             this.user.address,
             config.VotiumVeCRV,
           );
-          if (crvAllowance.gt(1 + '0'.repeat(25))) {
+          if (crvAllowance.gt(1 + '0'.repeat(24))) {
             this.crvAllowance = crvAllowance;
             this.isCrvApproved = true;
           } else {
@@ -336,6 +336,15 @@ export default {
           this.showSuccess('Success', {
             tx: approveTxHash,
           });
+
+          if (this.voteType === 'VeCRV') {
+            this.crvAllowance = BigNumber.from(1 + '0'.repeat(30)).toHexString();
+            this.isCrvApproved = true;
+          } else {
+            this.cvxAllowance = BigNumber.from(1 + '0'.repeat(30)).toHexString();
+            this.isCvxApproved = true;
+          }
+
           this.getApproveInfo();
         }
       } finally {
@@ -412,7 +421,6 @@ export default {
             tx: buyTxHash,
           });
           this.amount = '';
-
         } else {
           this.showError('Faild', {
             tx: buyTxHash,
