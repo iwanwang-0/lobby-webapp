@@ -148,7 +148,7 @@ import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
 
 import {
-  getERC20Contract, MultiMerkleStashContract, MultiMerkleStashInterface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
+  getERC20Contract
 } from '@/eth/ethereum';
 
 export default {
@@ -245,31 +245,6 @@ export default {
         },
       ];
     },
-    // voteList() {
-    //   let list = [];
-    //   if (this.voteType === 'VeCRV') {
-    //     list = this.crvChoices.map((item, idx) => ({
-    //       sort: idx + 1,
-    //       pool: item.value,
-    //     }));
-    //   } else {
-    //     list = this.cvxChoices.map((item, idx) => ({
-    //       sort: idx + 1,
-    //       pool: item.label.replace(/\(.*\)/, ''),
-    //     }));
-    //   }
-
-    //   console.log(list.slice(this.pageSize * (this.page - 1), this.pageSize * this.page))
-    //   return list.slice(this.pageSize * (this.page - 1), this.pageSize * this.page);
-    // },
-
-    // total() {
-    //   if (this.voteType === 'VeCRV') {
-    //     return this.crvChoices.length;
-    //   }
-    //   return this.cvxChoices.length
-    // },
-
   },
   watch: {
     voteType() {
@@ -286,19 +261,6 @@ export default {
   created() {
     this.getList();
   },
-
-  // watch: {
-  //   // voteType() {
-  //   //   this.page = 1;
-  //   //   this.list = [];
-  //   //   this.getList();
-  //   // },
-  //   // market() {
-  //   //   this.page = 1;
-  //   //   this.list = [];
-  //   //   this.getList();
-  //   // },
-  // },
 
   methods: {
 
@@ -360,15 +322,6 @@ export default {
       }
     },
 
-    // setTotal() {
-    //   this.page = 1;
-    //   if (this.voteType === 'VeCRV') {
-    //     console.log(this.crvChoices.length)
-    //     this.total = this.crvChoices.length;
-    //   } else {
-    //     this.total = this.cvxChoices.length;
-    //   }
-    // },
     onVote() {
       // this.$router.push('/vote-edit');
       if (this.voteType === 'VeCRV') {

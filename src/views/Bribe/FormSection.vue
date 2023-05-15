@@ -100,7 +100,7 @@
               size="sm"
               class="form-btn"
               variant="link"
-              :disabled="!symbol || submitting || !(voteType === 'VeCRV' && !isCrvApproved) || (voteType === 'VlCVX' && !isCvxApproved)"
+              :disabled="!symbol || submitting || (voteType === 'VeCRV' && isCrvApproved) || (voteType === 'VlCVX' && isCvxApproved)"
               @click="onApprove"
             >
             Approve Token</b-button>
@@ -258,9 +258,9 @@ export default {
             this.user.address,
             config.VotiumVeCRV,
           );
-          if (crvAllowance.gt(1 + '0'.repeat(20))) {
+          if (crvAllowance.gt(1 + '0'.repeat(25))) {
             this.crvAllowance = crvAllowance;
-            this.isCrvApproved = crvAllowance.gt(1 + '0'.repeat(20));
+            this.isCrvApproved = true;
           } else {
             this.crvAllowance = '';
             this.isCrvApproved = false;
@@ -270,9 +270,9 @@ export default {
             this.user.address,
             config.VotiumBribeCVX,
           );
-          if (cvxAllowance.gt(1 + '0'.repeat(20))) {
+          if (cvxAllowance.gt(1 + '0'.repeat(24))) {
             this.cvxAllowance = cvxAllowance;
-            this.isCvxApproved = cvxAllowance.gt(1 + '0'.repeat(20));
+            this.isCvxApproved = true;
           } else {
             this.cvxAllowance = '';
             this.isCvxApproved = false;

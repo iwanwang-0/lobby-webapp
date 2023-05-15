@@ -85,9 +85,9 @@ export default {
   },
 
   computed: {
-    ...mapState(['user', 'marketOption', 'guageNameMap']),
+    ...mapState(['user', 'guageNameMap']),
     ...mapGetters(['roundOptions']),
-    ...mapState(['cvxChoices', 'proposal']),
+    ...mapState(['proposal']),
     cols() {
       return [
         {

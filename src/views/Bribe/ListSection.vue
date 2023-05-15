@@ -9,14 +9,20 @@
     <div class="content">
       <TableList
         :cols="cols"
-        :list="data"
+        :list="list"
       />
     </div>
   </b-container>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import TableList from '@/components/TableList';
+import {
+  getERC20Contract, getERC20Interface, provider,
+  VotiumVeCRVContract, VotiumVeCRVInterface,
+  VotiumBribeCVXContract, VotiumBribeCVXInterface,
+} from '@/eth/ethereum';
 
 export default {
   components: {
@@ -47,7 +53,7 @@ export default {
           prop: 'time',
         },
       ],
-      data: [
+      list: [
         {
           round: '1',
           pool: 'ETH-alETH',
@@ -63,6 +69,62 @@ export default {
           time: '2022/02/22',
         },
       ]
+    }
+  },
+  computed: {
+    ...mapState(['user']),
+
+  },
+  created() {
+    this.getCrvHistory();
+  },
+  methods: {
+    async  getCrvHistory() {
+      const res = await VotiumVeCRVContract.getBribeInfo(this.user.address);
+      console.log(res);
+//     struct BribeInfo {
+//     address token;
+//     uint256 amount;
+//     uint256 round;
+//     address gauge;
+//     uint256 time;
+// }
+      if (Array.isArray(res)) {
+        this.list = res.map((item) => {
+          // console.log(item)
+          return {
+            amount: item.amount,
+            round: item.round,
+            gauge: item.gauge,
+            token: item.token,
+            time: item.time,
+          }
+        })
+      }
+    },
+
+    async  getCvxHistory() {
+      const res = await VotiumBribeCVXContract.getBribeInfo(this.user.address);
+      console.log(res);
+//       struct BribeInfo {
+//     address token;
+//     uint256 amount;
+//     bytes32 proposal;
+//     uint256 choiceIndex;
+//     uint256 time;
+// }
+      if (Array.isArray(res)) {
+        this.list = res.map((item) => {
+          // console.log(item)
+          return {
+            amount: item.amount,
+            round: item.round,
+            gauge: item.gauge,
+            token: item.token,
+            time: item.time,
+          }
+        })
+      }
     }
   }
 };
