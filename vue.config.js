@@ -36,8 +36,7 @@ module.exports = {
     config.externals = {
     }
     // config.devtool = 'cheap-eval-source-map';
-    config.optimization.minimizer = [];
-
+    // config.optimization.minimizer = [];
 
 
     config.resolve = {
