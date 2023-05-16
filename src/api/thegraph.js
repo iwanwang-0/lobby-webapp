@@ -67,10 +67,10 @@ export function getCrvHistory({ round, user }) {
     .then((response) => response.json())
     .then((res) => {
       if (res.data) {
-        // const { myVotes } = res.data;
-        // return myVotes;
-        const { gaugeVotes } = res.data;
-        return gaugeVotes;
+        const { myVotes } = res.data;
+        return myVotes;
+        // const { gaugeVotes } = res.data;
+        // return gaugeVotes;
       }
       return [];
     })

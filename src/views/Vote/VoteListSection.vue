@@ -151,6 +151,7 @@ import {
   getERC20Contract
 } from '@/eth/ethereum';
 
+
 export default {
   props: {
     voteType: {
@@ -175,8 +176,6 @@ export default {
       current = thursday.clone();
     }
 
-    // console.log(current)
-    // console.log(moment().utc().startOf('hour'))
     const WEEK_SECONDS = 7 * 24 * 60 * 60;
     return {
       WEEK_SECONDS,

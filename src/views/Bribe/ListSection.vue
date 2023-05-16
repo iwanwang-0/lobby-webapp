@@ -8,6 +8,7 @@
 
     <div class="content">
       <TableList
+        :loading="loading"
         :cols="cols"
         :list="list"
       />
@@ -17,12 +18,14 @@
 
 <script>
 import { mapState } from 'vuex';
+import moment from 'moment';
 import TableList from '@/components/TableList';
 import {
   getERC20Contract, getERC20Interface, provider,
   VotiumVeCRVContract, VotiumVeCRVInterface,
   VotiumBribeCVXContract, VotiumBribeCVXInterface,
 } from '@/eth/ethereum';
+import toFixed from '@/filters/toFixed';
 
 export default {
   components: {
@@ -51,37 +54,42 @@ export default {
         {
           title: 'Time',
           prop: 'time',
+          render(text) {
+            return moment(text * 1000).format('yyyy-MM-DD HH:mm')
+          }
         },
       ],
       list: [
-        {
-          round: '1',
-          pool: 'ETH-alETH',
-          token: 'ETH',
-          quantity: '100',
-          time: '2022/02/22',
-        },
-        {
-          round: '2',
-          pool: 'ETH-alETH',
-          token: 'ETH',
-          quantity: '100',
-          time: '2022/02/22',
-        },
-      ]
+        // {
+        //   round: '1',
+        //   pool: 'ETH-alETH',
+        //   token: 'ETH',
+        //   quantity: '100',
+        //   time: '2022/02/22',
+        // },
+        // {
+        //   round: '2',
+        //   pool: 'ETH-alETH',
+        //   token: 'ETH',
+        //   quantity: '100',
+        //   time: '2022/02/22',
+        // },
+      ],
+      loading: false,
     }
   },
   computed: {
-    ...mapState(['user']),
-
+    ...mapState(['user', 'tokenMap', 'guageNameMap']),
   },
   created() {
     this.getCrvHistory();
   },
   methods: {
     async  getCrvHistory() {
+      this.loading = true;
       const res = await VotiumVeCRVContract.getBribeInfo(this.user.address);
-      console.log(res);
+      this.loading = false;
+
 //     struct BribeInfo {
 //     address token;
 //     uint256 amount;
@@ -92,11 +100,17 @@ export default {
       if (Array.isArray(res)) {
         this.list = res.map((item) => {
           // console.log(item)
+          // console.log(item)
+          // console.log(this.guageNameMap)
+          // console.log(this.guageNameMap[item.gauge])
+          const token = this.tokenMap[item.token.toLowerCase()];
+          const guage = this.guageNameMap[item.gauge.toLowerCase()];
           return {
-            amount: item.amount,
+            quantity: toFixed(item.amount / 10 ** token.decimals, 4),
             round: item.round,
             gauge: item.gauge,
-            token: item.token,
+            pool: guage?.shortName,
+            token: token?.symbol,
             time: item.time,
           }
         })
@@ -113,14 +127,21 @@ export default {
 //     uint256 choiceIndex;
 //     uint256 time;
 // }
+// quantity: toFixed(item.amount / 10 ** token.decimals, 4),
+//             round: item.round,
+//             gauge: item.gauge,
+//             pool: guage?.shortName,
+//             token: token?.symbol,
+//             time: item.time,
       if (Array.isArray(res)) {
         this.list = res.map((item) => {
-          // console.log(item)
+          const token = this.tokenMap[item.token.toLowerCase()];
+          // const guage = this.guageNameMap[item.gauge.toLowerCase()];
           return {
-            amount: item.amount,
-            round: item.round,
-            gauge: item.gauge,
-            token: item.token,
+            quantity: toFixed(item.amount / 10 ** token.decimals, 4),
+            round: 'round',
+            pool: 'shortName',
+            token: token?.symbol,
             time: item.time,
           }
         })
