@@ -174,6 +174,9 @@ export default {
     } else {
       current = thursday.clone();
     }
+
+    // console.log(current)
+    // console.log(moment().utc().startOf('hour'))
     const WEEK_SECONDS = 7 * 24 * 60 * 60;
     return {
       WEEK_SECONDS,
@@ -194,7 +197,7 @@ export default {
 
       round: current.unix() / WEEK_SECONDS,
 
-      hourStart: moment().startOf('hour').unix(),
+      hourStart: moment().utc().startOf('hour').unix(),
     };
   },
 
