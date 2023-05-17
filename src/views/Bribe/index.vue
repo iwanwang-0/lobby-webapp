@@ -9,9 +9,11 @@
     <FormSection
       :selected-round="selected"
       :voteType="voteType"
+      @bribeSuccess="bribeIdx += 1"
     ></FormSection>
     <ListSection
       :voteType="voteType"
+      :key="bribeIdx"
     ></ListSection>
   </div>
 </template>
@@ -35,6 +37,7 @@ export default {
     return {
       selected: null,
       voteType: 'VeCRV',
+      bribeIdx: 0,
     };
   },
   computed: {

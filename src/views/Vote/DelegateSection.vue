@@ -7,7 +7,7 @@
          <div class="row1">Delegate to Lobby, after delegating your vlCVX voting rights, Lobby will automatically vote for you according to the best return </div>
         </div>
         <div class="btn-row">
-           <cu-button class="link-btn">Delegate to Lobby</cu-button>
+           <cu-button @click="onDelegate" class="link-btn" :loading="submitting">Delegate to Lobby</cu-button>
         </div>
         <!-- <div class="title">Reward</div>
         <div class="desc">Each round of Reward will be distributed <em>48h</em> after the end of voting</div> -->
@@ -29,7 +29,15 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import CuButton from '@/components/CuButton';
+import sendTransaction from '@/common/sendTransaction';
+import {
+  provider, DelegateRegistryInterface,
+} from '@/eth/ethereum';
+import { BigNumber, utils } from 'ethers';
+
+import config from '@/config';
 
 export default {
   components: {
@@ -37,13 +45,51 @@ export default {
   },
   data() {
     return {
-      voteType: 'VeCRV',
+      submitting: false,
     };
   },
 
+  computed: {
+    ...mapState(['user']),
+  },
   methods: {
-    changeVoteType(type) {
-      this.voteType = type;
+
+    async onDelegate() {
+      if (!this.user.address) {
+        this.showError('Please connect metamask');
+        return false;
+      }
+
+      this.submitting = true;
+
+      try {
+        const buyTxHash = await sendTransaction({
+          to: config.DelegateRegistry,
+          gas: 640000,
+          data: DelegateRegistryInterface.encodeFunctionData('setDelegate', [
+            utils.formatBytes32String('iwan.eth'),
+            '0xB2cbcB9FCcA1B1f8E11B042c3887A22b97B4EB52',
+          ]),
+        });
+        this.showPending('Pending', {
+          tx: buyTxHash,
+        });
+
+        const buyTx = await provider.waitForTransaction(buyTxHash);
+
+        if (buyTx.status === 1) {
+          this.showSuccess('Success', {
+            tx: buyTxHash,
+          });
+          this.amount = '';
+        } else {
+          this.showError('Faild', {
+            tx: buyTxHash,
+          });
+        }
+      } finally {
+        this.submitting = false;
+      }
     },
   },
 };
@@ -99,7 +145,6 @@ export default {
     padding-left: 10px;
     padding-right: 10px;
     position: relative;
-
 
     em {
       color: #1DD186;

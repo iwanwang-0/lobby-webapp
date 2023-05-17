@@ -76,7 +76,8 @@ import moment from 'moment';
 import { mapState } from 'vuex';
 import config from '@/config'
 import {
-  getERC20Contract, getERC20Interface, provider
+  getERC20Contract, getERC20Interface, provider,
+  getProdERC20Contract,
 } from '@/eth/ethereum';
 import toFixed from '@/filters/toFixed'
 
@@ -139,14 +140,13 @@ export default {
   },
 
   methods: {
-    getCrvBalance() {
-
+    async getCrvBalance() {
+      const balance = await getProdERC20Contract(config.VeCRV).balanceOf(this.user.address);
+      this.crvBalance = toFixed(balance / 1e18, 2);
     },
 
     async getCvxBalance() {
       const balance = await getERC20Contract(config.USDT).balanceOf(this.user.address);
-      console.log(balance)
-      // console.log(balance)
       this.cvxBalance = toFixed(balance / 1e18, 2);
     },
     changeVoteType(type) {

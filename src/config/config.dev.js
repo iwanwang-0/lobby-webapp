@@ -1,4 +1,5 @@
 export default {
+  env: 'dev',
   storeVersion: '1.0.0',
   debug: true,
   serverUrl: 'http://8.218.123.140:8001',
@@ -29,6 +30,9 @@ export default {
   gethServer: 'https://goerli.infura.io/v3/800d17c94bfb46c8b0296a5770703215',
   chainId: '0x5',
 
+  prodGethServer: 'https://mainnet.infura.io/v3/800d17c94bfb46c8b0296a5770703215',
+  prodChainId: '0x1',
+
   addressZero: '0x0000000000000000000000000000000000000000',
   hashZero: '0x0000000000000000000000000000000000000000000000000000000000000000',
   // 本地测试节点
@@ -46,6 +50,8 @@ export default {
   USDC: '0xdBEB7e5cacfA3B7754651ccC67F4e98bF23fb9BC',
 
   VeCRV: '0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2',
+
+  DelegateRegistry: '0x469788fE6E9E9681C6ebF3bF78e7Fd26Fc015446',
 
   GaugeController: '0x2f50d538606fa9edd2b11e2446beb18c9d5846bb',
 

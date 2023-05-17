@@ -6,8 +6,9 @@ import store from './store';
   if (window.ethereum) {
     const chainId = await window.ethereum.request({ method: 'eth_chainId' });
 
-    if (!BigNumber.from(chainId).eq(0x38) && !BigNumber.from(chainId).eq(0x61)) {
-
+    console.log(chainId)
+    if (!BigNumber.from(chainId).eq(0x5) && !BigNumber.from(chainId).eq(0x1)) {
+      console.log('xxx')
       try {
         window.ethereum.request({
           method: 'wallet_switchEthereumChain',

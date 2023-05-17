@@ -22,6 +22,62 @@ import { Web3Provider } from '@ethersproject/providers';
 const hub = 'https://hub.snapshot.org';
 
 
+
+export function getProposalListById(ids) {
+
+  const query = `
+    query {
+      proposals(
+        first: 1,
+        skip: 0,
+        where: {
+          space_in: ["iwan.eth"],
+          id_id: ${JSON.stringify(ids)},
+        },
+        orderBy: "created",
+        orderDirection: desc
+      ) {
+        id
+        title
+        body
+        type
+        choices
+        start
+        end
+        snapshot
+        state
+        author
+        space {
+          id
+          name
+        }
+      }
+    }
+  `;
+
+  return fetch(`${hub}/graphql?`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({ query }),
+  })
+    .then((response) => response.json())
+    .then((res) => {
+      if (res?.data?.proposals) {
+        const keyword = 'Gauge Weight for Week of';
+        const target = res?.data?.proposals.find((item) => item.title.match(keyword));
+        if (target) {
+          return target;
+        }
+      }
+      return {};
+    })
+    .catch((error) => console.error(error));
+}
+
+
 // eslint-disable-next-line import/prefer-default-export
 export function getProposal() {
 

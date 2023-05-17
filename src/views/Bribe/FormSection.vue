@@ -162,6 +162,7 @@ export default {
 
   data() {
     return {
+      WEEK_SECONDS: 7 * 24 * 60 * 60,
       selectedToken: null,
       submitting: false,
 
@@ -307,6 +308,7 @@ export default {
           approveTxHash = await sendTransaction({
             to: this.tokenAddress,
             gas: 80000,
+            // gasPrice: 18000000000,
             data: erc20Interface.encodeFunctionData('approve', [
               config.VotiumVeCRV,
               BigNumber.from(1 + '0'.repeat(30)).toHexString(),
@@ -316,6 +318,7 @@ export default {
           approveTxHash = await sendTransaction({
             to: this.tokenAddress,
             gas: 80000,
+            // gasPrice: 18000000000,
             data: erc20Interface.encodeFunctionData('approve', [
               config.VotiumBribeCVX,
               BigNumber.from(1 + '0'.repeat(30)).toHexString(),
@@ -326,13 +329,12 @@ export default {
         this.showPending('Pending', {
           tx: approveTxHash,
         });
+
         const approveTx = await provider.waitForTransaction(approveTxHash);
 
         if (approveTx.status !== 1) {
           this.showError('Approve fail，please retry');
-          this.submitting = false;
         } else {
-          // this.showSuccess('Approve success');
           this.showSuccess('Success', {
             tx: approveTxHash,
           });
@@ -399,6 +401,12 @@ export default {
             ]),
           });
         } else {
+          console.log([
+            this.tokenAddress,
+            BigNumber.from(totalRewards + '0'.repeat(this.decimals)).toHexString(),
+            this.proposal.id,
+            this.gauge,
+          ]);
           buyTxHash = await sendTransaction({
             to: config.VotiumBribeCVX,
             gas: 640000,
@@ -421,11 +429,15 @@ export default {
             tx: buyTxHash,
           });
           this.amount = '';
+          this.$emit('bribeSuccess')
         } else {
           this.showError('Faild', {
             tx: buyTxHash,
           });
         }
+      } catch (e) {
+        this.submitting = false;
+        console.log(e)
       } finally {
         this.submitting = false;
       }

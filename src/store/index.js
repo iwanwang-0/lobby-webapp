@@ -62,7 +62,10 @@ export default new Vuex.Store({
       }, {
         label: 'VoteMarket',
         value: 'VoteMarket',
-      },
+      },{
+        label: 'Quest',
+        value: 'Quest',
+      }
     ],
   },
   getters,

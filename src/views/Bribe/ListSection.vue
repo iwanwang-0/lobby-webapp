@@ -26,14 +26,22 @@ import {
   VotiumBribeCVXContract, VotiumBribeCVXInterface,
 } from '@/eth/ethereum';
 import toFixed from '@/filters/toFixed';
+import {getProposalListById} from '@/api/snapshot'
 
 export default {
   components: {
     TableList,
   },
 
+  props: {
+    voteType: {
+      type: String,
+    },
+  },
+
   data() {
     return {
+      WEEK_SECONDS: 7 * 24 * 60 * 60,
       cols: [
         {
           title: 'Round',
@@ -55,28 +63,13 @@ export default {
           title: 'Time',
           prop: 'time',
           render(text) {
-            return moment(text * 1000).format('yyyy-MM-DD HH:mm')
-          }
+            return moment(text * 1000).format('yyyy-MM-DD HH:mm');
+          },
         },
       ],
-      list: [
-        // {
-        //   round: '1',
-        //   pool: 'ETH-alETH',
-        //   token: 'ETH',
-        //   quantity: '100',
-        //   time: '2022/02/22',
-        // },
-        // {
-        //   round: '2',
-        //   pool: 'ETH-alETH',
-        //   token: 'ETH',
-        //   quantity: '100',
-        //   time: '2022/02/22',
-        // },
-      ],
+      list: [],
       loading: false,
-    }
+    };
   },
   computed: {
     ...mapState(['user', 'tokenMap', 'guageNameMap']),
@@ -84,19 +77,29 @@ export default {
   created() {
     this.getCrvHistory();
   },
+  watch: {
+    voteType() {
+      this.list = []
+      if (this.voteType === 'VeCRV') {
+        this.getCrvHistory();
+      } else {
+        this.getCvxHistory();
+      }
+    },
+  },
   methods: {
     async  getCrvHistory() {
       this.loading = true;
       const res = await VotiumVeCRVContract.getBribeInfo(this.user.address);
       this.loading = false;
 
-//     struct BribeInfo {
-//     address token;
-//     uint256 amount;
-//     uint256 round;
-//     address gauge;
-//     uint256 time;
-// }
+      //     struct BribeInfo {
+      //     address token;
+      //     uint256 amount;
+      //     uint256 round;
+      //     address gauge;
+      //     uint256 time;
+      // }
       if (Array.isArray(res)) {
         this.list = res.map((item) => {
           // console.log(item)
@@ -112,42 +115,40 @@ export default {
             pool: guage?.shortName,
             token: token?.symbol,
             time: item.time,
-          }
-        })
+          };
+        });
       }
     },
 
     async  getCvxHistory() {
       const res = await VotiumBribeCVXContract.getBribeInfo(this.user.address);
       console.log(res);
-//       struct BribeInfo {
-//     address token;
-//     uint256 amount;
-//     bytes32 proposal;
-//     uint256 choiceIndex;
-//     uint256 time;
-// }
-// quantity: toFixed(item.amount / 10 ** token.decimals, 4),
-//             round: item.round,
-//             gauge: item.gauge,
-//             pool: guage?.shortName,
-//             token: token?.symbol,
-//             time: item.time,
+      //       struct BribeInfo {
+      //     address token;
+      //     uint256 amount;
+      //     bytes32 proposal;
+      //     uint256 choiceIndex;
+      //     uint256 time;
+      // }
+
+      // getProposalListById
+
+      // 获取所有proposal，然后再获取对应的pool和round
       if (Array.isArray(res)) {
         this.list = res.map((item) => {
           const token = this.tokenMap[item.token.toLowerCase()];
-          // const guage = this.guageNameMap[item.gauge.toLowerCase()];
+          const round = Math.floor(item.time / this.WEEK_SECONDS);
           return {
             quantity: toFixed(item.amount / 10 ** token.decimals, 4),
-            round: 'round',
+            round,
             pool: 'shortName',
             token: token?.symbol,
             time: item.time,
-          }
-        })
+          };
+        });
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
