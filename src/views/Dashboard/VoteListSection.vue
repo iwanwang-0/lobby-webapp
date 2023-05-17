@@ -279,6 +279,7 @@ export default {
         this.list = res.data.map((item, idx) => {
           const token = this.tokenMap[item.tokenAddr.toLowerCase()];
           const decimals = token?.decimals ?? 0;
+          const symbol = token?.symbol ?? '-';
           return {
             sort: idx + 1,
             ...item,
@@ -286,7 +287,7 @@ export default {
             yourWeight: '',
             yourReward: '',
             pool: item.name.shortName,
-            tokenSymbol: token.symbol,
+            tokenSymbol: symbol,
             rewards: toFixed(BigNumber.from(item.tokenAmount.hex || 0) / (10 ** decimals), 4),
             voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
             price: toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / item.totalScore.hex, 4),
