@@ -173,9 +173,13 @@ export default {
             .filter((item) => item !== 'totalValue')
             .map((tokenAddr) => {
               const tokenInfo = this.tokenMap[tokenAddr.toLowerCase()];
+
+              const decimals = tokenInfo?.decimals ?? 0;
+              const symbol = tokenInfo?.symbol ?? '-';
+
               return {
-                label: tokenInfo.symbol,
-                value: toFixed(tokenAddrMap[tokenAddr].hex / 10 ** tokenInfo.decimals, 4),
+                label: symbol,
+                value: toFixed(tokenAddrMap[tokenAddr].hex / 10 ** decimals, 4),
               };
             });
           const guageName = this.guageNameMap[key.toLowerCase()].shortName;
