@@ -157,7 +157,7 @@ export default {
   right: 0;
   z-index: 1;
   // width: 100%;
-  max-height: 200px;
+  max-height: 240px;
   overflow-y: auto;
   background: #363537;
   border: 1px solid #4C4C4C;
