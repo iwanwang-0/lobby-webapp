@@ -192,7 +192,7 @@ export default {
             total: tokenAddrMap.totalValue,
             list: tokenList,
           };
-        }).sort((a, b) => a.total - b.total);
+        }).sort((a, b) => b.total - a.total);
         this.dataAxis = gaugeRewardsList.map((item) => item.guageNameShort);
         this.chartData = gaugeRewardsList.map((item) => ({
           value: item.total,

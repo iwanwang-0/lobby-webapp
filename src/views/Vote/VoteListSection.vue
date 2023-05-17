@@ -322,7 +322,8 @@ export default {
             pool: item.name.shortName,
             tokenSymbol: symbol,
             rewards: toFixed(BigNumber.from(item.tokenAmount.hex || 0) / (10 ** decimals), 4),
-            voteNumber: toFixed(BigNumber.from(totalScore || 0) / 10 ** 18, 4),
+            // voteNumber: toFixed(BigNumber.from(totalScore || 0) / 10 ** 18, 4),
+            voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
             price: totalScore > 0 ? toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / totalScore, 4) : 0,
           };
         });
