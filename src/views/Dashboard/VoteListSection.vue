@@ -233,17 +233,6 @@ export default {
     ...mapState(['cvxChoices', 'crvChoices', 'proposal']),
 
     voteList() {
-      // let list = [];
-      // if (this.voteType === 'VeCRV') {
-      //   list = this.crvChoices.map((item, idx) => ({
-      //     sort: idx + 1,
-      //     pool: item.value,
-      //   }));
-      // }
-      // list = this.cvxChoices.map((item, idx) => ({
-      //   sort: idx + 1,
-      //   pool: item.label.replace(/\(.*\)/, ''),
-      // }));
 
       return this.list.slice(this.pageSize * (this.page - 1), this.pageSize * this.page);
     },

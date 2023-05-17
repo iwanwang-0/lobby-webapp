@@ -19,7 +19,7 @@
     <div class="content">
       <TableList
         :cols="cols"
-        :list="list"
+        :list="voteList"
         :loading="loading"
         :is-expand="true"
         @expand="onExpand"
@@ -247,6 +247,12 @@ export default {
         },
       ];
     },
+
+
+    voteList() {
+
+      return this.list.slice(this.pageSize * (this.page - 1), this.pageSize * this.page);
+    },
   },
   watch: {
     voteType() {
@@ -304,6 +310,7 @@ export default {
         this.list = res.data.map((item, idx) => {
           const token = this.tokenMap[item.tokenAddr.toLowerCase()];
           const decimals = token?.decimals ?? 0;
+          const symbol = token?.symbol ?? '-';
 
           const totalScore = Number.parseInt(item.totalScore.hex, 10);
           return {
@@ -313,7 +320,7 @@ export default {
             yourWeight: '',
             yourReward: '',
             pool: item.name.shortName,
-            tokenSymbol: token.symbol,
+            tokenSymbol: symbol,
             rewards: toFixed(BigNumber.from(item.tokenAmount.hex || 0) / (10 ** decimals), 4),
             voteNumber: toFixed(BigNumber.from(totalScore || 0) / 10 ** 18, 4),
             price: totalScore > 0 ? toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / totalScore, 4) : 0,
