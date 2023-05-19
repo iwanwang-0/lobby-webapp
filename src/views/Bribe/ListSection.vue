@@ -26,7 +26,7 @@ import {
   VotiumBribeCVXContract, VotiumBribeCVXInterface,
 } from '@/eth/ethereum';
 import toFixed from '@/filters/toFixed';
-import {getProposalListById} from '@/api/snapshot'
+import { getProposalListById } from '@/api/snapshot';
 
 export default {
   components: {
@@ -75,37 +75,30 @@ export default {
     ...mapState(['user', 'tokenMap', 'guageNameMap']),
   },
   created() {
-    this.getCrvHistory();
+    this.getList();
   },
   watch: {
     voteType() {
-      this.list = []
+      this.list = [];
+      this.getList();
+    },
+  },
+  methods: {
+    getList() {
+      console.log(this.voteType);
       if (this.voteType === 'VeCRV') {
         this.getCrvHistory();
       } else {
         this.getCvxHistory();
       }
     },
-  },
-  methods: {
     async  getCrvHistory() {
       this.loading = true;
       const res = await VotiumVeCRVContract.getBribeInfo(this.user.address);
       this.loading = false;
 
-      //     struct BribeInfo {
-      //     address token;
-      //     uint256 amount;
-      //     uint256 round;
-      //     address gauge;
-      //     uint256 time;
-      // }
       if (Array.isArray(res)) {
         this.list = res.map((item) => {
-          // console.log(item)
-          // console.log(item)
-          // console.log(this.guageNameMap)
-          // console.log(this.guageNameMap[item.gauge])
           const token = this.tokenMap[item.token.toLowerCase()];
           const guage = this.guageNameMap[item.gauge.toLowerCase()];
           return {
@@ -121,8 +114,8 @@ export default {
     },
 
     async  getCvxHistory() {
+      this.loading = true;
       const res = await VotiumBribeCVXContract.getBribeInfo(this.user.address);
-      console.log(res);
       //       struct BribeInfo {
       //     address token;
       //     uint256 amount;
@@ -130,22 +123,49 @@ export default {
       //     uint256 choiceIndex;
       //     uint256 time;
       // }
-
-      // getProposalListById
-
       // 获取所有proposal，然后再获取对应的pool和round
+      // console.log(res);
+
+      const proposals = await getProposalListById(res.map(((item) => item.proposal)));
+
+      this.loading = false;
+
+      const proposalsMap ={};
+      proposals.forEach((proposal) => {
+        proposalsMap[proposal.id] = proposal.choices;
+      })
+
       if (Array.isArray(res)) {
-        this.list = res.map((item) => {
+        const list = res.map((item) => {
           const token = this.tokenMap[item.token.toLowerCase()];
           const round = Math.floor(item.time / this.WEEK_SECONDS);
+          const index = parseInt(item.choiceIndex, 10);
+          const pool = proposalsMap?.[item.proposal]?.[index];
           return {
             quantity: toFixed(item.amount / 10 ** token.decimals, 4),
             round,
-            pool: 'shortName',
+            pool: pool || '-',
+            proposal: item.proposal,
+            choiceIndex: parseInt(item.choiceIndex, 10),
             token: token?.symbol,
             time: item.time,
           };
         });
+
+        // console.log(res);
+        // console.log('xxx')
+        // console.log(xxx);
+        // let proposalChoiceMap = {}
+
+
+        // Object.keys(proposals).forEach((key) => {
+        //   const proposal = proposals[key];
+        //   // const index = list.findIndex((item) => item.time === proposal.start);
+        //   // if (index > -1) {
+        //   //   list[index].pool = proposal.name;
+        //   // }
+        // });
+        this.list = list;
       }
     },
   },

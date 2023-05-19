@@ -22,17 +22,16 @@ import { Web3Provider } from '@ethersproject/providers';
 const hub = 'https://hub.snapshot.org';
 
 
-
 export function getProposalListById(ids) {
 
   const query = `
     query {
       proposals(
-        first: 1,
+        first: 100,
         skip: 0,
         where: {
           space_in: ["iwan.eth"],
-          id_id: ${JSON.stringify(ids)},
+          id_in: ${JSON.stringify(ids)},
         },
         orderBy: "created",
         orderDirection: desc
@@ -66,11 +65,7 @@ export function getProposalListById(ids) {
     .then((response) => response.json())
     .then((res) => {
       if (res?.data?.proposals) {
-        const keyword = 'Gauge Weight for Week of';
-        const target = res?.data?.proposals.find((item) => item.title.match(keyword));
-        if (target) {
-          return target;
-        }
+        return res?.data?.proposals;
       }
       return {};
     })
