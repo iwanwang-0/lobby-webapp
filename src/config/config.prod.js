@@ -1,7 +1,7 @@
 export default {
   env: 'prod',
   storeVersion: '1.0.0',
-  debug: true,
+  debug: false,
   serverUrl: '',
   // webUrl: 'http://47.75.74.35:8000',
 

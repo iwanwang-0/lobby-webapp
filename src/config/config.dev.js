@@ -1,7 +1,7 @@
 export default {
   env: 'dev',
   storeVersion: '1.0.0',
-  debug: true,
+  debug: false,
   serverUrl: 'http://8.218.123.140:8001',
   // webUrl: 'http://47.75.74.35:8000',
 
