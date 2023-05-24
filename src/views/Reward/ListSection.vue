@@ -43,7 +43,7 @@
         </b-button> -->
 
         <RoundSelect
-          :options="roundOptions"
+          :options="rewordRoundOptions"
           @change="selectChange"
           v-model="round"
         />
@@ -104,10 +104,13 @@ import { getCvxRewardTree, getCrvRewardTree } from '@/api/common';
 import sendTransaction from '@/common/sendTransaction';
 import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
+import toFixed from '@/filters/toFixed';
 
 import {
   getERC20Contract, MultiMerkleStashContract, MultiMerkleStashInterface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
 } from '@/eth/ethereum';
+
+const WEEK_SECONDS = 7 * 24 * 60 * 60;
 
 export default {
   components: {
@@ -119,6 +122,7 @@ export default {
 
   data() {
     return {
+
       typeOptions: [
         {
           label: 'VeCRV',
@@ -158,6 +162,8 @@ export default {
       loading: false,
 
       rewardTree: null,
+
+      rewordRoundOptions: [],
     };
   },
 
@@ -167,22 +173,19 @@ export default {
   },
 
   watch: {
-    roundOptions: {
-      handler() {
-        if (this.roundOptions && this.roundOptions[0]) {
-          this.round = this.roundOptions[0].value;
-        }
-      },
-      immediate: true,
-    },
+    // roundOptions: {
+    //   handler() {
+    //     if (this.roundOptions && this.roundOptions[0]) {
+    //       this.round = this.roundOptions[0].value;
+    //     }
+    //   },
+    //   immediate: true,
+    // },
     type: {
       handler() {
         this.getReward();
-        // if (this.roundOptions && this.roundOptions[0]) {
-        //   this.round = this.roundOptions[0].value
-        // }
       },
-    }
+    },
   },
 
   created() {
@@ -212,7 +215,6 @@ export default {
       this.submitting = true;
       // const tAddr = this.user.address;
       try {
-
         const params = this.list.map((item) => {
           const proof = this.getProof(item.tAddr, item.round);
           return {
@@ -220,7 +222,7 @@ export default {
             index: item.round,
             amount: item.amount,
             merkleProof: proof,
-          }
+          };
         });
         const txHash = await sendTransaction({
           to: config.MultiMerkleStash,
@@ -337,27 +339,50 @@ export default {
         tree = await getCvxRewardTree();
       }
 
-      console.log(tree)
       this.rewardTree = Object.freeze(tree);
 
+      const roundOptionsSet = new Set();
       if (tree) {
         Object.keys(tree).forEach((tAddr) => {
           const tokenDetail = tree[tAddr];
           tokenDetail.values.forEach((item) => {
+            const { value: [round, uAddr] } = item;
+            if (uAddr.toLowerCase() === this.user.address) {
+              roundOptionsSet.add(round / WEEK_SECONDS);
+            }
+          });
+        });
+
+        if (roundOptionsSet.size === 0) {
+          this.rewordRoundOptions = [{
+            label: '-',
+            value: '-',
+          }];
+          this.round = '-';
+        } else {
+          this.rewordRoundOptions = [...roundOptionsSet].sort((a, b) => b - a).map((item) => ({
+            label: item,
+            value: item,
+          }));
+          this.round = this.rewordRoundOptions[0].value;
+        }
+
+        Object.keys(tree).forEach((tAddr) => {
+          const tokenDetail = tree[tAddr];
+          tokenDetail.values.forEach((item) => {
             const { treeIndex, value: [round, uAddr, amount] } = item;
-            if (parseInt(round, 10) === this.round && uAddr.toLowerCase() === this.user.address) {
+            if (parseInt(round, 10) === this.round * WEEK_SECONDS && uAddr.toLowerCase() === this.user.address) {
               tempList.push({
                 treeIndex,
-                round,
+                round: round / WEEK_SECONDS,
                 uAddr,
                 tAddr,
-                amount,
+                amount: toFixed(amount.hex, 4),
               });
             }
           });
         });
-        // console.log(tree);
-        // console.log(this.list);
+
         const infoList = await Promise.all(tempList.map((item) => this.getTokenInfo(item.tAddr)));
 
         for (let i = 0; i < tempList.length; i++) {
