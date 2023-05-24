@@ -97,6 +97,7 @@
 <script>
 import { mapState } from 'vuex';
 import CuButton from '@/components/CuButton.vue';
+import toFixed from '@/filters/toFixed'
 
 export default {
   components: {
@@ -181,7 +182,7 @@ export default {
       this.$store.commit('SET_CRV_FAV', {
         pool: row.pool,
         flag,
-      })
+      });
     },
     onInput(e, row) {
       if (!this.valueMap[row.pool]) {
@@ -190,11 +191,17 @@ export default {
 
       const val = e.target.value;
       let result = val;
+
       if (!/^[1-9]\d*(\.\d+)?$/.test(val)) {
         result = val.replace(/[^\d.]/g, '');
       }
-      if (parseFloat(result) > 100) {
-        result = '100';
+
+      const sum = Object.values(this.valueMap).reduce((calc, item) => {
+        return calc + parseFloat(item || 0);
+      }, 0);
+
+      if (sum > 100) {
+        result = toFixed(100 - (sum - parseFloat(val)), 4);
       }
       this.valueMap[row.pool] = result;
     },

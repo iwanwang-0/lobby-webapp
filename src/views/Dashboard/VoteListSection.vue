@@ -182,6 +182,9 @@ export default {
           title: 'Pool',
           prop: 'pool',
           width: '280px',
+          render(text, record) {
+            return `${text} <br/> <span style="font-size: 12px">${record.platform || '-'}</span>`;
+          },
         },
         {
           title: 'Apr',
@@ -273,6 +276,9 @@ export default {
         round: this.voteType === 'VlCVX' && config.debug ? hourRoundTime : roundTime,
 
       });
+
+      console.log(res);
+
       this.loading = false;
       if (res.success) {
         this.total = res.data.length;

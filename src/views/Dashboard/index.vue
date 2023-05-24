@@ -47,7 +47,7 @@ export default {
     return {
       voteType: 'VeCRV',
       round: 0,
-      market: 'Lobby',
+      market: 'All',
 
       total: 0,
     };

@@ -187,7 +187,7 @@ export default {
       page: 1,
       total: 0,
 
-      market: 'Lobby',
+      market: 'All',
 
       submitting: false,
       loading: false,
@@ -215,6 +215,9 @@ export default {
           title: 'Pool',
           prop: 'pool',
           width: '280px',
+          render(text, record) {
+            return `${text} <br/> <span style="font-size: 12px">${record.platform || '-'}</span>`;
+          },
         },
         {
           title: 'Apr',

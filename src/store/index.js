@@ -44,14 +44,14 @@ export default new Vuex.Store({
     guageNameMap: {},
 
     marketOption: [
-      // {
-      //   label: 'All',
-      //   value: 'All',
-      // },
       {
-        label: 'Lobby',
-        value: 'Lobby',
+        label: 'All',
+        value: 'All',
       },
+      // {
+      //   label: 'Lobby',
+      //   value: 'Lobby',
+      // },
       {
         label: 'Votium',
         value: 'Votium',
