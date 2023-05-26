@@ -6,16 +6,29 @@
         <th
           v-for="head in cols"
           :width="head.width"
+          :key="head.prop"
         >
-          {{ head.title }}
-          <b-button
-            style="margin-left: 8px"
-            variant="outline-primary"
-            v-if="head.opBtn"
-            @click="head.opClick"
-          >
-            {{ head.opBtn }}
-          </b-button>
+          <span class="header-cell-content">
+            {{ head.title }}
+            <!-- <span  v-if="head.sorter">
+              {{ head.prop === sort.prop ? sort.order : 'none'  }}
+            </span> -->
+            <img
+              v-if="head.sorter"
+              @click="onSort(head.prop)"
+              class="sorter-icon"
+              :src="head.prop === sort.prop ? sort.img : sortDefault"
+              alt=""
+            />
+            <b-button
+              style="margin-left: 8px"
+              variant="outline-primary"
+              v-if="head.opBtn"
+              @click="head.opClick"
+            >
+              {{ head.opBtn }}
+            </b-button>
+          </span>
         </th>
       </tr>
     </thead>
@@ -78,6 +91,9 @@
 
 <script>
 import CuButton from './CuButton.vue';
+import sortDefault from '@/assets/img/short-default@2x.png';
+import sortDesc from '@/assets/img/short-desc@2x.png';
+import sortAsc from '@/assets/img/short-asc@2x.png';
 
 export default {
   components: {
@@ -102,7 +118,13 @@ export default {
 
   data() {
     return {
+      sortDefault,
       active: '',
+      sort: {
+        prop: '',
+        order: 'none',
+        img: sortDefault,
+      },
     };
   },
 
@@ -115,6 +137,25 @@ export default {
         this.active = idx;
         this.$emit('expand', this.active);
       }
+    },
+    onSort(prop) {
+      if (this.sort.prop !== prop) {
+        this.sort.prop = prop;
+        this.sort.order = 'none';
+        this.sort.img = sortDefault;
+      }
+      // this.sort.prop = prop;
+      if (this.sort.order === 'none') {
+        this.sort.order = 'asc';
+        this.sort.img = sortAsc;
+      } else if (this.sort.order === 'asc') {
+        this.sort.order = 'desc';
+        this.sort.img = sortDesc;
+      } else {
+        this.sort.order = 'none';
+        this.sort.img = sortDefault;
+      }
+      this.$emit('sort', this.sort);
     },
   },
 };
@@ -139,6 +180,17 @@ export default {
       border-left: 1px dashed $border-color;
     }
   }
+  .sorter-icon {
+    width: 20px;
+    margin-left: 8px;
+    cursor: pointer;
+  }
+
+  .header-cell-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 
 .table-body {
@@ -155,6 +207,8 @@ export default {
       color: #1DD186;
     }
   }
+
+
   .edit-wrapper {
     display: inline-flex;
     width: 300px;

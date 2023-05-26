@@ -81,7 +81,13 @@ export default {
 
   computed: {
     ...mapState(['user', 'guageNameMap']),
-    ...mapGetters(['roundOptions']),
+    ...mapGetters(['cvxRoundOptions', 'crvRoundOptions']),
+    roundOptions() {
+      if (this.voteType === 'VeCRV') {
+        return this.crvRoundOptions;
+      }
+      return this.cvxRoundOptions;
+    },
     ...mapState(['proposal']),
     cols() {
       return [
@@ -111,6 +117,7 @@ export default {
   watch: {
     roundOptions: {
       handler() {
+        console.log(this.roundOptions[0]);
         this.round = this.roundOptions[0].value;
       },
       immediate: true,

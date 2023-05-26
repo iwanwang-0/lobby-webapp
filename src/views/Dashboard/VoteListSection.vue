@@ -23,6 +23,7 @@
         :loading="loading"
         :is-expand="true"
         @expand="onExpand"
+        @sort="onSort"
       >
         <template v-slot:operation="{ row }">
           <!-- {{ row }} -->
@@ -155,10 +156,10 @@ export default {
       type: String,
     },
     round: {
-      type: Number
+      type: Number,
     },
     market: {
-      type: String
+      type: String,
     },
   },
   components: {
@@ -176,7 +177,7 @@ export default {
         {
           title: 'Sort',
           prop: 'sort',
-          width: '80px',
+          width: '120px',
         },
         {
           title: 'Pool',
@@ -189,6 +190,8 @@ export default {
         {
           title: 'Apr',
           prop: 'apr',
+          width: '120px',
+          sorter: true,
           render(text) {
             return `${text}%`;
           },
@@ -196,18 +199,23 @@ export default {
         {
           title: this.voteType === 'VeCRV' ? '$/veCRV' : '$/vlCVX',
           prop: 'price',
+          width: '180px',
+          sorter: true,
         },
         {
           title: 'Rewards',
           prop: 'rewards',
+          width: '180px',
+          sorter: true,
           render(text, record) {
-            return `${text} ${record.tokenSymbol}`
-          }
+            return `${text} ${record.tokenSymbol}`;
+          },
         },
 
         {
           title: 'Vote number',
           prop: 'voteNumber',
+          sorter: true,
         },
 
         // {
@@ -228,6 +236,11 @@ export default {
       loading: false,
 
       rewardTree: null,
+
+      sort: {
+        order: '',
+        prop: '',
+      },
     };
   },
 
@@ -236,8 +249,16 @@ export default {
     ...mapState(['cvxChoices', 'crvChoices', 'proposal']),
 
     voteList() {
-
-      return this.list.slice(this.pageSize * (this.page - 1), this.pageSize * this.page);
+      return this.list.slice()
+        .sort((a, b) => {
+          if (this.sort.order === 'asc') {
+            return a[this.sort.prop] - b[this.sort.prop];
+          } if (this.sort.order === 'desc') {
+            return b[this.sort.prop] - a[this.sort.prop];
+          }
+          return 0;
+        })
+        .slice(this.pageSize * (this.page - 1), this.pageSize * this.page);
     },
 
     // total() {
@@ -277,15 +298,15 @@ export default {
 
       });
 
-      console.log(res);
-
       this.loading = false;
       if (res.success) {
         this.total = res.data.length;
         this.list = res.data.map((item, idx) => {
           const token = this.tokenMap[item.tokenAddr.toLowerCase()];
-          const decimals = token?.decimals ?? 0;
           const symbol = token?.symbol ?? '-';
+
+          const totalScore = +item.totalScore.hex;
+
           return {
             sort: idx + 1,
             ...item,
@@ -294,16 +315,16 @@ export default {
             yourReward: '',
             pool: item.name.shortName,
             tokenSymbol: symbol,
-            rewards: toFixed(BigNumber.from(item.tokenAmount.hex || 0) / (10 ** decimals), 4),
+            rewards: toFixed(BigNumber.from(item.tokenAmount.hex || 0) / (10 ** item.tokenDecimals), 4),
             voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
-            price: toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / item.totalScore.hex, 4),
+            // price: toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / item.totalScore.hex, 4),
+            price: totalScore > 0 ? toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / totalScore, 4) : 0,
           };
         });
       } else {
         this.list = [];
       }
     },
-
 
     onVote() {
       // this.$router.push('/vote-edit');
@@ -322,6 +343,10 @@ export default {
       this.page = page;
     },
 
+    onSort(sort) {
+      this.sort = sort;
+    },
+
     async onExpand(idx) {
       const record = this.list[idx];
       if (record.loaded !== true && record.loading !== true && this.user.address) {
@@ -337,7 +362,7 @@ export default {
         if (res.success) {
           const { score } = res.data;
           record.yourWeight = toFixed(score.hex / record.totalScore.hex, 2);
-          record.yourReward = toFixed(score.hex / record.totalScore.hex * record.rewards, 4)
+          record.yourReward = toFixed(score.hex / record.totalScore.hex * record.rewards, 4);
         }
 
         record.loading = false;

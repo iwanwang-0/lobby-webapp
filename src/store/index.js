@@ -9,10 +9,10 @@ import { getTokenMap, getGaugeNameMap } from '@/api/common';
 import user from './user';
 import enums from './enums';
 import getters from './getters';
+import { WEEK_SECONDS } from '@/constants/time';
 
 Vue.use(Vuex);
 
-const WEEK_SECONDS = 7 * 24 * 60 * 60;
 
 const HOUR_SECONDS = 60 * 60;
 

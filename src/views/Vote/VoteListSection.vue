@@ -23,6 +23,8 @@
         :loading="loading"
         :is-expand="true"
         @expand="onExpand"
+        @sort="onSort"
+
       >
         <template v-slot:operation="{ row }">
           <!-- {{ row }} -->
@@ -197,6 +199,11 @@ export default {
       round: current.unix() / WEEK_SECONDS,
 
       hourStart: moment().utc().startOf('hour').unix(),
+
+      sort: {
+        order: '',
+        prop: '',
+      },
     };
   },
 
@@ -222,6 +229,8 @@ export default {
         {
           title: 'Apr',
           prop: 'apr',
+          sorter: true,
+          width: '120px',
           render(text) {
             return `${text}%`;
           },
@@ -229,10 +238,14 @@ export default {
         {
           title: this.voteType === 'VeCRV' ? '$/veCRV' : '$/vlCVX',
           prop: 'price',
+          width: '180px',
+          sorter: true,
         },
         {
           title: 'Rewards',
           prop: 'rewards',
+          width: '180px',
+          sorter: true,
           render(text, record) {
             return `${text} ${record.tokenSymbol}`;
           },
@@ -241,6 +254,7 @@ export default {
         {
           title: 'Vote number',
           prop: 'voteNumber',
+          sorter: true,
         },
 
         {
@@ -253,8 +267,16 @@ export default {
 
 
     voteList() {
-
-      return this.list.slice(this.pageSize * (this.page - 1), this.pageSize * this.page);
+      return this.list.slice()
+        .sort((a, b) => {
+          if (this.sort.order === 'asc') {
+            return a[this.sort.prop] - b[this.sort.prop];
+          } if (this.sort.order === 'desc') {
+            return b[this.sort.prop] - a[this.sort.prop];
+          }
+          return 0;
+        })
+      .slice(this.pageSize * (this.page - 1), this.pageSize * this.page);
     },
   },
   watch: {
@@ -312,10 +334,10 @@ export default {
         this.total = res.data.length;
         this.list = res.data.map((item, idx) => {
           const token = this.tokenMap[item.tokenAddr.toLowerCase()];
-          const decimals = token?.decimals ?? 0;
           const symbol = token?.symbol ?? '-';
 
-          const totalScore = Number.parseInt(item.totalScore.hex, 10);
+          const totalScore = +item.totalScore.hex;
+
           return {
             sort: idx + 1,
             ...item,
@@ -324,7 +346,7 @@ export default {
             yourReward: '',
             pool: item.name.shortName,
             tokenSymbol: symbol,
-            rewards: toFixed(BigNumber.from(item.tokenAmount.hex || 0) / (10 ** decimals), 4),
+            rewards: toFixed(BigNumber.from(item.tokenAmount.hex || 0) / (10 ** item.tokenDecimals), 4),
             // voteNumber: toFixed(BigNumber.from(totalScore || 0) / 10 ** 18, 4),
             voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
             price: totalScore > 0 ? toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / totalScore, 4) : 0,
@@ -335,6 +357,9 @@ export default {
       }
     },
 
+    onSort(sort) {
+      this.sort = sort;
+    },
     onVote() {
       // this.$router.push('/vote-edit');
       if (this.voteType === 'VeCRV') {

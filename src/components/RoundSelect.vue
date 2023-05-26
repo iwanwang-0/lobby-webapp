@@ -2,7 +2,7 @@
   <div class="select" v-click-outside="onClickOutside">
    <span class="label"> Round:</span>
     <div class="selected" @click="isOpen = !isOpen" >
-      <div class="value">{{ value }}</div>
+      <div class="value">{{ selectedText }}</div>
       <img class="arrow"
         :style="`width: 18px; transform: ${isOpen ? 'rotate(180deg)' : 'rotate(0)'}`"
         src="~@/assets/img/arrow-down@2x.png" alt="">
@@ -11,7 +11,7 @@
       <div class="option"
         v-for="option in options"
         :key="option.value"
-        @click="selectOption(option)">
+        @click="selectOption(option.value)">
           {{ renderOption ? renderOption(option) : option.label }}
       </div>
     </div>
@@ -43,28 +43,34 @@ export default {
   data() {
     return {
       isOpen: false,
-      selectedOption: null,
+      selectedOptionVal: null,
     };
   },
   created() {
-    this.selectedOption = this.value
+    this.selectedOptionVal = this.value;
   },
   computed: {
     selectedText() {
+      const targetOpt = this.options.find((option) => option.value === this.selectedOptionVal);
       if (this.renderOption) {
-        return this.renderOption(this.selectOption);
+        return this.renderOption(targetOpt);
       }
-      return this.selectedOption && this.selectedOption.label;
+      return targetOpt?.label || this.selectedOptionVal;
+    },
+  },
+  watch: {
+    value(val) {
+      this.selectedOptionVal = val;
     },
   },
   methods: {
     onClickOutside() {
       this.isOpen = false;
     },
-    selectOption(option) {
-      this.selectedOption = option;
-      this.$emit('change', option.value);
-      this.$emit('input', option.value);
+    selectOption(value) {
+      this.selectedOptionVal = value;
+      this.$emit('change', value);
+      this.$emit('input', value);
       this.isOpen = false;
     },
   },

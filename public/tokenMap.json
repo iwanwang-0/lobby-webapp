@@ -284,6 +284,61 @@
             "label":"usd-coin",
             "symbol":"USDC",
             "decimals":6
+        },
+        "0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f":{
+            "label":"stake-dao",
+            "symbol":"SDT",
+            "decimals":18
+        },
+        "0x2ebd53d035150f328bd754d6dc66b99b0edb89aa":{
+            "label":"metronome",
+            "symbol":"MET",
+            "decimals":18
+        },
+        "0xdf4ef6ee483953fe3b84abd08c6a060445c01170":{
+            "label":"wrapped-accumulate",
+            "symbol":"WACME",
+            "decimals":8
+        },
+        "0xef3a930e1ffffacd2fc13434ac81bd278b0ecc8d":{
+            "label":"stafi",
+            "symbol":"FIS",
+            "decimals":18
+        },
+        "0xa1f82e14bc09a1b42710df1a8a999b62f294e592":{
+            "label":"conflux-token",
+            "symbol":"eCFX",
+            "decimals":18
+        },
+        "0x6ba75d640bebfe5da1197bb5a2aff3327789b5d3":{
+            "label":"vnx-euro",
+            "symbol":"VEUR",
+            "decimals":18
+        },
+        "0x9c354503c38481a7a7a51629142963f98ecc12d0":{
+            "label":"origin-dollar-governance",
+            "symbol":"OGV",
+            "decimals":18
+        },
+        "0x9ae380f0272e2162340a5bb646c354271c0f5cfc":{
+            "label":"conic-finance",
+            "symbol":"CNC",
+            "decimals":18
+        },
+        "0xa2e3356610840701bdf5611a53974510ae27e2e1":{
+            "label":"wrapped-beacon-eth",
+            "symbol":"wBETH",
+            "decimals":18
+        },
+        "0xab846fb6c81370327e784ae7cbb6d6a6af6ff4bf":{
+            "label":"paladin",
+            "symbol":"PAL",
+            "decimals":18
+        },
+        "0x465a5a630482f3abd6d3b84b39b29b07214d19e5":{
+            "label":"flux-usdc",
+            "symbol":"fUSDC",
+            "decimals":8
         }
     },
     "goerli": {

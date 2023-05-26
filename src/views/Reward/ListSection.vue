@@ -109,8 +109,8 @@ import toFixed from '@/filters/toFixed';
 import {
   getERC20Contract, MultiMerkleStashContract, MultiMerkleStashInterface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
 } from '@/eth/ethereum';
+import { WEEK_SECONDS, CRV_START_SECONDS, CVX_START_SECONDS } from '@/constants/time';
 
-const WEEK_SECONDS = 7 * 24 * 60 * 60;
 
 export default {
   components: {
@@ -360,10 +360,21 @@ export default {
           }];
           this.round = '-';
         } else {
-          this.rewordRoundOptions = [...roundOptionsSet].sort((a, b) => b - a).map((item) => ({
-            label: item,
-            value: item,
-          }));
+          const crvStartRound = Math.floor(CRV_START_SECONDS / WEEK_SECONDS);
+          const cvxStartRound = Math.floor(CVX_START_SECONDS / WEEK_SECONDS);
+
+          this.rewordRoundOptions = [...roundOptionsSet].sort((a, b) => b - a).map((item) => {
+            let label = '';
+            if (this.type === 'VeCRV') {
+              label = item - crvStartRound;
+            } else {
+              label = Math.floor((item - cvxStartRound) / 2);
+            }
+            return {
+              label,
+              value: item,
+            };
+          });
           this.round = this.rewordRoundOptions[0].value;
         }
 

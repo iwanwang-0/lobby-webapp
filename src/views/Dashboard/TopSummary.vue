@@ -3,7 +3,7 @@
       <div class="content">
         <div class="round-cell">
           <div class="round-content">
-            <div class="value">{{round}}</div>
+            <div class="value">{{roundLabel}}</div>
             <div class="label">Round Number</div>
           </div>
           <CuSelect
@@ -47,6 +47,9 @@ export default {
     total: {
       type: Number,
     },
+    voteType: {
+      type: String,
+    }
   },
   data() {
     return {
@@ -55,7 +58,16 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['roundOptions']),
+    ...mapGetters(['cvxRoundOptions', 'crvRoundOptions']),
+    roundOptions() {
+      if (this.voteType === 'VeCRV') {
+        return this.crvRoundOptions;
+      }
+      return this.cvxRoundOptions;
+    },
+    roundLabel() {
+      return this.roundOptions.find((item) => item.value === this.round)?.label || '-';
+    },
     deadline() {
       return moment((this.round * this.WEEK_SECONDS + this.WEEK_SECONDS) * 1000).format('yyyy/MM/DD');
     },
@@ -81,6 +93,7 @@ export default {
 
   methods: {
     onChange(round) {
+      console.log(round);
       this.$emit('round-change', round);
     },
   },

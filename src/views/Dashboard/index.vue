@@ -7,6 +7,7 @@
       @changeMarket="changeMarket"
     ></TopSection>
     <TopSummary
+      :voteType="voteType"
       :round="round"
       :total="total"
       @round-change="onRoundChange"

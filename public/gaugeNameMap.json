@@ -211,13 +211,25 @@
         "name":"rETH+frxETH (0xfcc0…8e9B)",
         "shortName":"rETH+frxETH (0xfcc0…)"
     },
-    "0x0f83875a00a52898da26eef0bca2b8a21541cfab":{
-        "name":"agEUR+VEUR (0xF05C…edFA)",
-        "shortName":"agEUR+VEUR (0xF05C…)"
+    "0x5fddb41cf566f6305293b2c9ad0faf70deaf7992":{
+        "name":"ANGLE+sdANGLE (0x96AA…1f26)",
+        "shortName":"ANGLE+sdANGLE (0x96AA…)"
     },
-    "0xd03be91b1932715709e18021734fcb91bb431715":{
-        "name":"ETH+OETH (0x94B1…13E7)",
-        "shortName":"ETH+OETH (0x94B1…)"
+    "0x26f7786de3e6d9bd37fcf47be6f2bc455a21b74a":{
+        "name":"CRV+sdCRV (0xCA02…72D0)",
+        "shortName":"CRV+sdCRV (0xCA02…)"
+    },
+    "0x0060e266c2af65bfc4fd51b04c93d952df805630":{
+        "name":"FXS+sdFXS (0x71c9…8595)",
+        "shortName":"FXS+sdFXS (0x71c9…)"
+    },
+    "0x7292afc5d77f988c873ca18f73cd96636c4ac145":{
+        "name":"YFI+sdYFI (0x852b…9CC8)",
+        "shortName":"YFI+sdYFI (0x852b…)"
+    },
+    "0x785dff4ad2b6e55d150d335b46d567d854053dc8":{
+        "name":"PENDLE+sdPENDLE (0x26f3…A8c0)",
+        "shortName":"PENDLE+sdPENDLE (0x26f3…)"
     },
     "0xfb389aca09ddc676fc9d5ac3cfd2cd133bf44e19":{
         "name":"FXS+ETH (0x0347…b46f)",
@@ -262,10 +274,6 @@
     "0x37ffee1c3c321663f7fe0ff90fc44f8ce5f731ff":{
         "name":"DUCK+USDT (0xFEB0…1197)",
         "shortName":"DUCK+USDT (0xFEB0…)"
-    },
-    "0xb0a6f55a758c8f035c067672e89903d76a5abe9b":{
-        "name":"DCHF+3Crv (0xDcb1…78C3)",
-        "shortName":"DCHF+3Crv (0xDcb1…)"
     },
     "0x79dbb869e4f00821927785d21315219edb016082":{
         "name":"bl+LUSD (0xec5f…cE8F)",
@@ -314,6 +322,22 @@
     "0x1c509c35b0e3974df6fcf8187b22f86bdc5959ee":{
         "name":"STG+FRAXBP (0xaBf0…4D19)",
         "shortName":"STG+FRAXBP (0xaBf0…)"
+    },
+    "0xd774a20a0812bede2b34255943ed307d50b658bc":{
+        "name":"ALCX+CRV (0x87Ae…99b4)",
+        "shortName":"ALCX+CRV (0x87Ae…)"
+    },
+    "0xf2ffccffab6a9116d4f9206a543bc94726f5302a":{
+        "name":"safETH+ETH (0x0249…02F6)",
+        "shortName":"safETH+ETH (0x0249…)"
+    },
+    "0x27cace18f661161661683bba43933b2e6eb1741e":{
+        "name":"hyUSD+eUSD (0x8a84…65CD)",
+        "shortName":"hyUSD+eUSD (0x8a84…)"
+    },
+    "0x98c05bb51b202d8efefaae3eb8d9ec6b497dc8b0":{
+        "name":"VCHF+FRAXBP (0x031a…526f)",
+        "shortName":"VCHF+FRAXBP (0x031a…)"
     },
     "0x7ca5b0a2910b33e9759dc7ddb0413949071d7575":{
         "name":"cDAI+cUSDC (0xA2B4…7A56)",
@@ -1059,6 +1083,30 @@
         "name":"stACME+WACME (0x4424…95F5)",
         "shortName":"stACME+WACME (0x4424…)"
     },
+    "0x0f83875a00a52898da26eef0bca2b8a21541cfab":{
+        "name":"agEUR+VEUR (0xF05C…edFA)",
+        "shortName":"agEUR+VEUR (0xF05C…)"
+    },
+    "0xd03be91b1932715709e18021734fcb91bb431715":{
+        "name":"ETH+OETH (0x94B1…13E7)",
+        "shortName":"ETH+OETH (0x94B1…)"
+    },
+    "0x50161102a240b1456d770dbb55c76d8dc2d160aa":{
+        "name":"ETH+wBETH (0xBfAb…85E6)",
+        "shortName":"ETH+wBETH (0xBfAb…)"
+    },
+    "0xb0a6f55a758c8f035c067672e89903d76a5abe9b":{
+        "name":"DCHF+3Crv (0xDcb1…78C3)",
+        "shortName":"DCHF+3Crv (0xDcb1…)"
+    },
+    "0x79f21bc30632cd40d2af8134b469a0eb4c9574aa":{
+        "name":"ETH+stETH (0x21E2…843a)",
+        "shortName":"ETH+stETH (0x21E2…)"
+    },
+    "0xe6a9fd148ad624a5a8700c6366e23e3cd308dfcb":{
+        "name":"swETH+frxETH (0x67e0…b767)",
+        "shortName":"swETH+frxETH (0x67e0…)"
+    },
     "0x82d0adea8c4cf2fc84a499b568f4c1194d63113d":{
         "name":"AAVE+palStkAAVE (0x4853…6B15)",
         "shortName":"AAVE+palStkAAVE (0x4853…)"
@@ -1066,6 +1114,22 @@
     "0x25530f3c929d3f4137a766de3d37700d2fc00ff8":{
         "name":"frETH+ETH (0x6E77…3bFc)",
         "shortName":"frETH+ETH (0x6E77…)"
+    },
+    "0x95f00391cb5eebcd190eb58728b4ce23dbfa6ac1":{
+        "name":"USDC+crvUSD (0x4DEc…D69E)",
+        "shortName":"USDC+crvUSD (0x4DEc…)"
+    },
+    "0x4e6bb6b7447b7b2aa268c16ab87f4bb48bf57939":{
+        "name":"USDT+crvUSD (0x390f…7BF4)",
+        "shortName":"USDT+crvUSD (0x390f…)"
+    },
+    "0xfcaf4ec80a94a5409141af16a1dca950a6973a39":{
+        "name":"TUSD+crvUSD (0x34D6…8db0)",
+        "shortName":"TUSD+crvUSD (0x34D6…)"
+    },
+    "0x5c07440a172805d566faf7ebaf16ef068ac05f43":{
+        "name":"USDP+crvUSD (0xCa97…53D0)",
+        "shortName":"USDP+crvUSD (0xCa97…)"
     },
     "0x279f11f8e2825dbe0b00f6776376601ac948d868":{
         "name":"fantom-FRAX+DAI+USDC (0x7a65…7320)",
@@ -1207,6 +1271,10 @@
         "name":"polygon-USDR+am3CRV (0xa138…3e1F)",
         "shortName":"poly-USDR+am3CRV (0xa138…)"
     },
+    "0x2fa834922f022462f4028749aa93ebf6357cf070":{
+        "name":"polygon-FRAX+USDC (0xB6aC…a4e7)",
+        "shortName":"poly-FRAX+USDC (0xB6aC…)"
+    },
     "0xf2ddf89c04d702369ab9ef8399edb99a76e951ce":{
         "name":"arbitrum-VST+FRAX (0x59bF…6Ba4)",
         "shortName":"arbi-VST+FRAX (0x59bF…)"
@@ -1250,6 +1318,22 @@
     "0x4c1227ecc3f99a3e510db26fba72f7a1cbf50586":{
         "name":"arbitrum-axlUSDC+FRAXBP-f (0x741a…5D48)",
         "shortName":"arbi-axlUSDC+FRAXBP-f (0x741a…)"
+    },
+    "0x1f240ee9b03dc95ebcc15fded4e78c9628ea1008":{
+        "name":"arbitrum-tBTC+WBTC (0x4431…21A8)",
+        "shortName":"arbi-tBTC+WBTC (0x4431…)"
+    },
+    "0xa934f44a8a06588262e8a29e95b7956382ddccdc":{
+        "name":"arbitrum-REUSD+2CRV (0xF0f8…5146)",
+        "shortName":"arbi-REUSD+2CRV (0xF0f8…)"
+    },
+    "0x7c0ac20c3ca8c6257ea099131081d8199bf6b8f6":{
+        "name":"arbitrum-REUSD+2CRV (0xae0b…83aC)",
+        "shortName":"arbi-REUSD+2CRV (0xae0b…)"
+    },
+    "0xd6dacdcb438f048cf90e53415872cdb3fcc95421":{
+        "name":"arbitrum-WBTC+tBTC (0x755D…cA46)",
+        "shortName":"arbi-WBTC+tBTC (0x755D…)"
     },
     "0x0638cc138b5c7169a9f1c55908a902174ca8b04c":{
         "name":"arbitrum-axlUSDC+USDC (0x15a1…ABAc)",
@@ -1354,6 +1438,10 @@
     "0x2eb49a3eff789d7b2286bf17667acbf12d882c17":{
         "name":"optimism-MIM+3CRV (0x810D…1F09)",
         "shortName":"op-MIM+3CRV (0x810D…)"
+    },
+    "0xe7a2082c0bf3c9c568cd79ed8a0f3ffc8b584d5d":{
+        "name":"optimism-sETH+wstETH (0x047f…9E1c)",
+        "shortName":"op-sETH+wstETH (0x047f…)"
     },
     "0x9509a9d5c55793858fe8b1c00a99e012a7af4aab":{
         "name":"xdai-rGNO+sGNO (0x5D73…3B9C)",
