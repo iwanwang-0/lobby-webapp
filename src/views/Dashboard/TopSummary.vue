@@ -16,7 +16,7 @@
           </CuSelect>
         </div>
         <div>
-          <div class="value">$0.03932</div>
+          <div class="value">${{price | toFixed(4)}}</div>
           <div class="label">$/veCRV</div>
         </div>
         <div>
@@ -45,6 +45,9 @@ export default {
       type: Number,
     },
     total: {
+      type: Number,
+    },
+    price: {
       type: Number,
     },
     voteType: {

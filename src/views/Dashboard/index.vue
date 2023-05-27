@@ -10,6 +10,7 @@
       :voteType="voteType"
       :round="round"
       :total="total"
+      :price="price"
       @round-change="onRoundChange"
     />
     <BarChart
@@ -18,6 +19,7 @@
       :market="market"
       :voteType="voteType"
       @total-change="totalChange"
+      @price-change="priceChange"
     />
     <VoteListSection
       :key="'VoteListSection' + round"
@@ -51,6 +53,7 @@ export default {
       market: 'All',
 
       total: 0,
+      price: 0,
     };
   },
 
@@ -79,6 +82,9 @@ export default {
     totalChange(total) {
       this.total = total
     },
+    priceChange(price) {
+      this.price = price;
+    }
   },
 };
 </script>

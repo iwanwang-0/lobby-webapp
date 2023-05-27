@@ -39,6 +39,7 @@ export default {
     return {
       WEEK_SECONDS: 7 * 24 * 60 * 60,
       total: 0,
+      totalScore: 0,
       loading: false,
       dataAxis: [],
       chartData: [],
@@ -170,7 +171,7 @@ export default {
         const gaugeRewardsList = Object.keys(res.data.gaugeRewards).map((key) => {
           const tokenAddrMap = res.data.gaugeRewards[key];
           const tokenList = Object.keys(tokenAddrMap)
-            .filter((item) => item !== 'totalValue')
+            .filter((item) => item !== 'totalValue' && item !== 'totalScore')
             .map((tokenAddr) => {
               const tokenInfo = this.tokenMap[tokenAddr.toLowerCase()];
 
@@ -184,7 +185,7 @@ export default {
             });
           const guageName = this.guageNameMap[key.toLowerCase()].shortName;
           this.total += tokenAddrMap.totalValue;
-
+          this.totalScore += +tokenAddrMap.totalScore.hex
           return {
             guage: key,
             guageNameShort: `${guageName.slice(0, 10)}...${guageName.slice(-10)}`,
@@ -200,6 +201,10 @@ export default {
         }));
       }
       this.$emit('total-change', this.total);
+      this.$emit('price-change', this.total / (this.totalScore / 10 ** 18));
+
+      console.log('total: ', this.total);
+      console.log('totalScore', this.totalScore / 10 ** 18);
       this.updateOption();
     },
   },
