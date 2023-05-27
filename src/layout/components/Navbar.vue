@@ -18,8 +18,8 @@
         <b-navbar-nav class="main-nav">
           <b-nav-item :active="$route.path === '/'" @click="$router.push('/')">Home</b-nav-item>
           <b-nav-item :active="$route.path.startsWith('/vote')" @click="$router.push('/vote')">Vote Market</b-nav-item>
-          <b-nav-item :active="$route.path.startsWith('/bribe')" @click="$router.push('/bribe')">Bribe</b-nav-item>
-          <b-nav-item :active="$route.path.startsWith('/lob')" @click="$router.push('/lob')">Earn</b-nav-item>
+          <!-- <b-nav-item :active="$route.path.startsWith('/bribe')" @click="$router.push('/bribe')">Bribe</b-nav-item> -->
+          <!-- <b-nav-item :active="$route.path.startsWith('/lob')" @click="$router.push('/lob')">Earn</b-nav-item> -->
           <b-nav-item :active="$route.path.startsWith('/dashboard')" @click="$router.push('/dashboard')">Dashboard</b-nav-item>
         </b-navbar-nav>
 

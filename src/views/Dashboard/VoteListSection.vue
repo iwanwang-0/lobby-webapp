@@ -206,7 +206,6 @@ export default {
           title: 'Rewards',
           prop: 'rewards',
           width: '180px',
-          sorter: true,
           render(text, record) {
             return `${text} ${record.tokenSymbol}`;
           },
