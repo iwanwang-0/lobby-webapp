@@ -100,13 +100,13 @@
                   <!-- February 16, 2023 8:00 am -->
                 </div>
               </div>
-              <div class="expand-item">
+              <!-- <div class="expand-item">
                 <div class="label">Last week of claim</div>
                 <div class="content">
                   -
-                  <!-- February 16, 2023 8:00 am -->
+                  February 16, 2023 8:00 am
                 </div>
-              </div>
+              </div> -->
               <div class="expand-item">
                 <div class="label">Contracts</div>
                 <div class="content">

@@ -2,11 +2,14 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Layout from '@/layout';
 
-// import Home from '../views/Home.vue';
-
 Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: '/',
+    name: 'Index',
+    component: () => import('@/views/Index'),
+  },
   {
     path: '/',
     // name: 'Home',
@@ -14,7 +17,7 @@ const routes = [
     // redirect: '/home',
     children: [
       {
-        path: '/',
+        path: '/home',
         name: 'Home',
         component: () => import('@/views/Home'),
       },

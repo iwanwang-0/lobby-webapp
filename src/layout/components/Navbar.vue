@@ -17,7 +17,7 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="main-nav">
           <b-nav-item :active="$route.path === '/'" @click="$router.push('/')">Home</b-nav-item>
-          <b-nav-item :active="$route.path.startsWith('/vote')" @click="$router.push('/vote')">Vote Market</b-nav-item>
+          <b-nav-item :active="$route.path.startsWith('/vote')" @click="$router.push('/vote')">Vote</b-nav-item>
           <!-- <b-nav-item :active="$route.path.startsWith('/bribe')" @click="$router.push('/bribe')">Bribe</b-nav-item> -->
           <!-- <b-nav-item :active="$route.path.startsWith('/lob')" @click="$router.push('/lob')">Earn</b-nav-item> -->
           <b-nav-item :active="$route.path.startsWith('/dashboard')" @click="$router.push('/dashboard')">Dashboard</b-nav-item>
@@ -103,35 +103,6 @@ export default {
       setLang(lang);
       window.location.reload();
     },
-
-    // toAnchor(e) {
-    //   // 获取目标元素的 ID
-    //   const targetId = e.target.getAttribute('href').slice(1);
-
-    //   if (targetId === 'History') {
-    //     return;
-    //   }
-    //   const targetElement = document.getElementById(targetId);
-    //   let targetPosition = 0;
-    //   if (targetElement) {
-    //     targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
-    //   }
-
-    //   // 使用 window.scrollTo 滚动到目标位置
-    //   window.scrollTo({
-    //     top: targetPosition + 100,
-    //     behavior: 'smooth',
-    //   });
-
-    //   setTimeout(() => {
-    //     // 滚动完成后执行的操作
-    //     if (targetElement) {
-    //       this.active = targetId;
-    //     } else {
-    //       this.active = 'Home';
-    //     }
-    //   }, 500);
-    // },
 
     ...mapActions(['showComingSoon']),
 
