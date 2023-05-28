@@ -64,10 +64,12 @@ export default {
 .page-container {
   background: url(~./assets/bg.png) 50% 50% / cover no-repeat;
   width: 100vw;
-  height: 100vh;
   padding-left: 40px;
   padding-right: 40px;
   min-width: 1200px;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
 
   .top-nav {
     display: flex;
@@ -102,8 +104,10 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    padding-top: 250px;
+    padding-top: 20vh;
     color: #fff;
+    z-index: 999;
+    position: relative;
 
       .title {
         font-family: "ChillPixels Maximal";
@@ -128,6 +132,9 @@ export default {
     position: absolute;
     top: 0%;
     right: 15%;
+    // & img {
+    //   width: 40vw;
+    // }
   }
 
   .social-btn {
