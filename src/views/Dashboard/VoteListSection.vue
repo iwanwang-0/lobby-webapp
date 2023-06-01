@@ -76,7 +76,10 @@
               <div class="label">Remaining claimable rewards</div>
               <div class="content">-</div>
             </div>
-            <div></div>
+            <div>
+              <div class="label">Rewards detail</div>
+              <div class="content">-</div>
+            </div>
             <div></div>
 
             <div class="expand-item">
