@@ -70,7 +70,7 @@
           <div class="row2">
             <div class="expand-item">
               <div class="label">Max reward per veCRV</div>
-              <div class="content">{{row.maxRewardPerScore / (10 ** row.tokenDecimals)}} USDT</div>
+              <div class="content">{{row.maxRewardPerScore / (10 ** row.tokenDecimals) | toFixed(8)}} USDT</div>
             </div>
             <div class="expand-item">
               <div class="label">Remaining claimable rewards</div>
@@ -110,7 +110,7 @@
               <div class="label">Contracts</div>
               <div class="content">
                 <a :href="`https://etherscan.io/address/${row.gaugeAddr}`">
-                  {{row.gaugeAddr}}
+                  {{row.gaugeAddr | ellipsis}}
                 </a>
               </div>
             </div>

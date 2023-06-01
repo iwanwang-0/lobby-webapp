@@ -40,7 +40,7 @@
       <template
         v-for="(row, rIdx) in list"
       >
-        <tr>
+        <tr :id="`choice-${row.choice}`" :key="`choice-${row.choice}`" >
           <td v-for="(head, hIdx) in cols">
 
             <template v-if="hIdx === 0">
@@ -124,6 +124,31 @@ export default {
       type: String,
     },
   },
+  data() {
+    return {
+      active: '',
+    }
+  },
+
+  watch: {
+    list: {
+      handler() {
+        const { choice } = this.$route.query;
+        if (choice) {
+          this.active = choice;
+          const targetElement = document.getElementById(`choice-${choice}`);
+          let targetPosition = 0;
+          if (targetElement) {
+            targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+          }
+          window.scrollTo({
+            top: targetPosition - 25,
+          });
+        }
+      },
+      immediate: true,
+    },
+  },
 
   data() {
     return {
@@ -156,7 +181,7 @@ export default {
     },
 
     onSub(e, row) {
-       if (!this.valueMap[row.pool]) {
+      if (!this.valueMap[row.pool]) {
         this.$set(this.valueMap, row.pool, 0);
       }
       if (!Number.isNaN(Number.parseInt(this.valueMap[row.pool], 10)) && this.valueMap[row.pool] >= 1) {
@@ -168,7 +193,7 @@ export default {
     },
 
     onPlus(e, row) {
-       if (!this.valueMap[row.pool]) {
+      if (!this.valueMap[row.pool]) {
         this.$set(this.valueMap, row.pool, 0);
       }
       const val = Number.parseInt(this.valueMap[row.pool], 10);
@@ -189,9 +214,6 @@ export default {
           this.percentMap[key] = (((parseInt(this.valueMap[key], 10) || 0) / total) * 100).toFixed(2);
         }
       });
-      console.log( this.list)
-      console.log( this.percentMap)
-      console.log( this.valueMap)
       this.$emit('change', this.list);
     },
   },

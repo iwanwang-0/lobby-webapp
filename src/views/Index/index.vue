@@ -21,7 +21,7 @@
         <p class="sub-title">curve voting aggregator</p>
         <button
           class="button launch-btn"
-          @click="$router.push('/home')"
+          @click="$router.push('/dashboard')"
         >Launch APP</button>
       </div>
 

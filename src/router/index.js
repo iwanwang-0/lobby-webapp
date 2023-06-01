@@ -16,11 +16,11 @@ const routes = [
     component: Layout,
     // redirect: '/home',
     children: [
-      {
-        path: '/home',
-        name: 'Home',
-        component: () => import('@/views/Home'),
-      },
+      // {
+      //   path: '/home',
+      //   name: 'Home',
+      //   component: () => import('@/views/Home'),
+      // },
       {
         path: '/dashboard',
         name: 'dashboard',

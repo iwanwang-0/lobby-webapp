@@ -31,7 +31,7 @@
           <CuButton
             variant="link"
             :disabled="submitting"
-            @click.stop="onVote"
+            @click.stop="onVote(row)"
           >
             Vote
           </CuButton>
@@ -111,7 +111,7 @@
                 <div class="label">Contracts</div>
                 <div class="content">
                   <a :href="`https://etherscan.io/address/${row.gaugeAddr}`">
-                    {{row.gaugeAddr}}
+                    {{row.gaugeAddr | ellipsis}}
                   </a>
                 </div>
               </div>
@@ -343,7 +343,8 @@ export default {
             loading: false,
             yourWeight: '',
             yourReward: '',
-            pool: item.name.shortName,
+            pool: item.name.name,
+            shortName: item.name.shortName,
             tokenSymbol: symbol,
             rewards: toFixed(BigNumber.from(item.tokenAmount.hex || 0) / (10 ** item.tokenDecimals), 4),
             // voteNumber: toFixed(BigNumber.from(totalScore || 0) / 10 ** 18, 4),
@@ -359,12 +360,12 @@ export default {
     onSort(sort) {
       this.sort = sort;
     },
-    onVote() {
-      // this.$router.push('/vote-edit');
+    onVote(row) {
+      console.log(row)
       if (this.voteType === 'VeCRV') {
-        this.$router.push(`/vote/VeCRV/${this.market}/${this.round}`);
+        this.$router.push(`/vote/VeCRV/${this.market}/${this.round}?gauge=${row.gaugeAddr}`);
       } else {
-        this.$router.push(`/vote/VlCVX/${this.market}/${this.round}`);
+        this.$router.push(`/vote/VlCVX/${this.market}/${this.round}?choice=${row.choice}`);
       }
       // const lint = `https://snapshot.org/#/iwan.eth/proposal/${this.proposal.id}`
       // window.open(lint);

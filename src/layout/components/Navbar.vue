@@ -2,7 +2,6 @@
   <b-navbar
     class="navbar"
   >
-
     <b-container fluid="lg">
       <b-navbar-brand href="/">
         <img class="logo" src="@/assets/img/logo@2x.png" alt="">
@@ -16,44 +15,46 @@
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="main-nav">
-          <b-nav-item :active="$route.path === '/'" @click="$router.push('/')">Home</b-nav-item>
+          <!-- <b-nav-item :active="$route.path === '/'" @click="$router.push('/')">Home</b-nav-item> -->
+          <b-nav-item :active="$route.path.startsWith('/dashboard')" @click="$router.push('/dashboard')">Dashboard</b-nav-item>
           <b-nav-item :active="$route.path.startsWith('/vote')" @click="$router.push('/vote')">Vote</b-nav-item>
           <!-- <b-nav-item :active="$route.path.startsWith('/bribe')" @click="$router.push('/bribe')">Bribe</b-nav-item> -->
           <!-- <b-nav-item :active="$route.path.startsWith('/lob')" @click="$router.push('/lob')">Earn</b-nav-item> -->
-          <b-nav-item :active="$route.path.startsWith('/dashboard')" @click="$router.push('/dashboard')">Dashboard</b-nav-item>
         </b-navbar-nav>
 
-      <div class="divider divider-middle"></div>
         <!-- Right aligned nav items -->
-        <b-navbar-nav >
-          <!-- <b-button variant="link"  class="history-btn"  @click.stop.prevent="$emit('history')">History</b-button> -->
-          <!-- <b-button class="lang-switch" variant="link">English</b-button> -->
-          <b-button
-            v-if="user.address"
-            class="reward-btn"
-            size="sm"
-            variant="link"
-            @click="$router.push('/reward')"
-          >
-            Reward
-          </b-button>
-          <span
-              v-if="user.address"
-              class="address-btn"
-            >
-              {{user.address | ellipsis}}
-            </span>
-           <b-button
-              v-else
-              size="sm"
-              class="sign-btn"
-              variant="link"
-              @click="unlock"
-            >
-            Connect Wallet</b-button>
-        </b-navbar-nav>
+        <div class="right-menu" >
+          <div class="divider divider-middle"></div>
+            <b-navbar-nav >
+              <!-- <b-button variant="link"  class="history-btn"  @click.stop.prevent="$emit('history')">History</b-button> -->
+              <!-- <b-button class="lang-switch" variant="link">English</b-button> -->
+              <!-- <b-button
+                v-if="user.address"
+                class="reward-btn"
+                size="sm"
+                variant="link"
+                @click="$router.push('/reward')"
+              >
+                Reward
+              </b-button> -->
+              <span
+                  v-if="user.address"
+                  class="address-btn"
+                >
+                  {{user.address | ellipsis}}
+                </span>
+              <b-button
+                  v-else
+                  size="sm"
+                  class="sign-btn"
+                  variant="link"
+                  @click="unlock"
+                >
+                Connect Wallet</b-button>
+            </b-navbar-nav>
+            <div class="divider divider-right"></div>
+        </div>
 
-        <div class="divider divider-right"></div>
       </b-collapse>
     </b-container>
   </b-navbar>
@@ -190,4 +191,14 @@ export default {
   margin-right: 30px;
 }
 
+.right-menu {
+  display: flex;
+
+  // width: 120px;
+  padding-left: 48px;
+
+  & .navbar-nav {
+    padding-left: 24px;
+  }
+}
 </style>

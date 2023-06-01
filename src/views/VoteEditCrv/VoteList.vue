@@ -40,7 +40,11 @@
       <template
         v-for="(row, rIdx) in list"
       >
-        <tr>
+        <tr
+          :key="row.address"
+          :id="row.address"
+          :class="{active: row.address === active}"
+        >
           <td v-for="(head, hIdx) in cols">
 
             <template v-if="hIdx === 0">
@@ -173,6 +177,27 @@ export default {
     ...mapState(['cvxChoices', 'proposal', 'crvChoices', 'marketOption']),
   },
 
+  watch: {
+    list: {
+      handler() {
+        const { gauge } = this.$route.query;
+        if (gauge) {
+          this.active = gauge;
+          const targetElement = document.getElementById(gauge);
+          let targetPosition = 0;
+          if (targetElement) {
+            targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+          }
+          window.scrollTo({
+            top: targetPosition - 25,
+          });
+        }
+
+      },
+      immediate: true,
+    }
+  },
+
   created() {
 
   },
@@ -238,6 +263,10 @@ export default {
   }
   & tr + tr {
     border-top: 1px dashed $border-color;
+  }
+
+  & tr.active {
+    background: #363537;
   }
 
   & td {
