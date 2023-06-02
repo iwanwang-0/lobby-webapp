@@ -6,23 +6,22 @@
           <div class="title">Delegate to Lobby</div>
          <div class="row1">Delegate to Lobby, after delegating your vlCVX voting rights, Lobby will automatically vote for you according to the best return </div>
         </div>
-        <div class="btn-row">
+        <!-- <div class="btn-row">
            <cu-button @click="onDelegate" class="link-btn" :loading="submitting">Delegate to Lobby</cu-button>
-        </div>
+        </div> -->
         <!-- <div class="title">Reward</div>
         <div class="desc">Each round of Reward will be distributed <em>48h</em> after the end of voting</div> -->
       </div>
       <div class="right">
         <div class="top">
           <div class="title">Compounding</div>
-
-        <div class="row1">Compounding: Lobby will automatically convert your rewards into your vlCVX shares, and you can also manually cancel the automatic investment function </div>
-        <div class="row2">Redem: The protocol stops converting rewards into vlCVX Voting power, you can claim rewards manually</div>
+          <div class="row1">Compounding: Lobby will automatically convert your rewards into your vlCVX shares, and you can also manually cancel the automatic investment function </div>
+          <div class="row2">Redem: The protocol stops converting rewards into vlCVX Voting power, you can claim rewards manually</div>
         </div>
-        <div class="btn-row">
+        <!-- <div class="btn-row">
            <cu-button class="link-btn">Compounding</cu-button>
            <cu-button class="link-btn">Redeem</cu-button>
-        </div>
+        </div> -->
       </div>
     </div>
   </b-container>

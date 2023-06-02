@@ -48,6 +48,7 @@ import toFixed from '@/filters/toFixed';
 
 import { getCvxVotes, getVotePower } from '@/api/snapshot';
 import { getCrvHistory } from '@/api/thegraph';
+import { CVX_START_SECONDS, WEEK_SECONDS } from '@/constants/time';
 
 export default {
   components: {
@@ -117,7 +118,6 @@ export default {
   watch: {
     roundOptions: {
       handler() {
-        console.log(this.roundOptions[0]);
         this.round = this.roundOptions[0].value;
       },
       immediate: true,
@@ -175,18 +175,11 @@ export default {
 
       const res = await getCvxVotes({
         voter: this.user.address,
+        start: this.round * WEEK_SECONDS,
+        end: this.round * WEEK_SECONDS + WEEK_SECONDS * 2,
       });
       this.loading = false;
 
-      // const resPower = await getVotePower({
-      //   // proposal: this.proposal.id,
-      //   voter: this.user.address,
-      // });
-
-      // let vp = 0;
-      // if (resPower?.data?.vp?.vp) {
-      //   vp = resPower?.data?.vp?.vp;
-      // }
 
       const list = [];
 

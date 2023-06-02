@@ -198,6 +198,10 @@ export default {
     border-top: 1px dashed $border-color;
   }
 
+  & tr:hover {
+    background: #363537;
+  }
+
   & td {
     padding: 8px;
     font-size: 18px;
@@ -207,7 +211,6 @@ export default {
       color: #1DD186;
     }
   }
-
 
   .edit-wrapper {
     display: inline-flex;

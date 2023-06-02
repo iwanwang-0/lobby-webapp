@@ -71,7 +71,7 @@
             <div class="row2">
               <div class="expand-item">
                 <div class="label">Max reward per veCRV</div>
-                <div class="content">{{row.maxRewardPerScore / (10 ** row.tokenDecimals)}} USDT</div>
+                <div class="content">{{row.maxRewardPerScore / (10 ** row.tokenDecimals) | toFixed(8)}} USDT</div>
               </div>
               <div class="expand-item">
                 <div class="label">Remaining claimable rewards</div>
@@ -226,15 +226,15 @@ export default {
             return `${text} <br/> <span style="font-size: 12px">${record.platform || '-'}</span>`;
           },
         },
-        {
-          title: 'Apr',
-          prop: 'apr',
-          sorter: true,
-          width: '120px',
-          render(text) {
-            return `${text}%`;
-          },
-        },
+        // {
+        //   title: 'Apr',
+        //   prop: 'apr',
+        //   sorter: true,
+        //   width: '120px',
+        //   render(text) {
+        //     return `${text}%`;
+        //   },
+        // },
         {
           title: this.voteType === 'VeCRV' ? '$/veCRV' : '$/vlCVX',
           prop: 'price',
@@ -297,10 +297,10 @@ export default {
   methods: {
 
     async onExpand(idx) {
-      const record = this.list[idx];
+      const index = this.pageSize * (this.page - 1) + idx;
+      const record = this.list[index];
       if (record.loaded !== true && record.loading !== true && this.user.address) {
         record.loading = true;
-        // console.log(this.user)
         const res = await fetchUserScore({
           round: record.week.hex * this.WEEK_SECONDS,
           gauge: record.gaugeAddr,
@@ -337,6 +337,7 @@ export default {
 
           const totalScore = +item.totalScore.hex;
 
+          console.log(totalScore > 0 ? toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / totalScore, 4) : 0)
           return {
             sort: idx + 1,
             ...item,

@@ -309,6 +309,12 @@ export default {
 
           const totalScore = +item.totalScore.hex;
 
+          // console.log(`tokenAmount${idx}`, item.tokenAmount.hex)
+          // console.log('totalScore', totalScore)
+          // console.log('tokenPrice', item.tokenPrice)
+          // console.log('result',  BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / totalScore)
+
+          // console.log(totalScore > 0 ? toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / totalScore, 4) : 0)
           return {
             sort: idx + 1,
             ...item,
@@ -350,10 +356,10 @@ export default {
     },
 
     async onExpand(idx) {
-      const record = this.list[idx];
+      const index = this.pageSize * (this.page - 1) + idx;
+      const record = this.list[index];
       if (record.loaded !== true && record.loading !== true && this.user.address) {
         record.loading = true;
-        // console.log(this.user)
         const res = await fetchUserScore({
           round: record.week.hex * this.WEEK_SECONDS,
           gauge: record.gaugeAddr,

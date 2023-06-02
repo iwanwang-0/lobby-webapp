@@ -22,7 +22,7 @@ export default {
   // gethServer: 'https://mainnet.infura.io/v3/6ef437a0bfc743d0bbfe73f72c90afd4', 主网
   // chainId: 1,
   githubToken: process.env.VUE_APP_GITHUB_TOKEN,
-  space: 'iwan.eth',
+  space: 'cvx.eth',
 
   curveUrl: 'https://api.curve.fi',
   browser: 'https://goerli.etherscan.io/',

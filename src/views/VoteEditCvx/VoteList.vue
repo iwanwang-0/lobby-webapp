@@ -250,6 +250,9 @@ export default {
   & tr + tr {
     border-top: 1px dashed $border-color;
   }
+  & tr.active {
+    background: #363537;
+  }
 
   & td {
     padding: 8px;

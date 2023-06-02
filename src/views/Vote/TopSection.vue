@@ -28,40 +28,88 @@
       <div class="left">
         <div class="row1">{{desc}}</div>
 
-        <div class="row2">Time Remaining to Vote:
+        <!-- <div class="row2">Time Remaining to Vote:
           <span class="remain-text">
-            <!-- <em>{{currentDur.date}}</em>d
-            <em>{{currentDur.hour}}</em>h
-            <em>{{currentDur.minute}}</em>min
-            <em>{{currentDur.second}}</em>s -->
             <template v-if="this.voteType === 'VeCRV'">
-              <em>{{currentDur.date}}</em>d
-              <em>{{currentDur.hour}}</em>h
-              <em>{{currentDur.minute}}</em>min
-              <em>{{currentDur.second}}</em>s
+              <em>{{currentDurEnd.date}}</em>d
+              <em>{{currentDurEnd.hour}}</em>h
+              <em>{{currentDurEnd.minute}}</em>min
+              <em>{{currentDurEnd.second}}</em>s
             </template>
-            <template v-else>
-              <em>{{cvxCurrentDur.date}}</em>d
-              <em>{{cvxCurrentDur.hour}}</em>h
-              <em>{{cvxCurrentDur.minute}}</em>min
-              <em>{{cvxCurrentDur.second}}</em>s
+
+            <template v-if="voteType === 'VlCRV' && proposal.end">
+              <em>{{cvxCurrentDurEnd.date}}</em>d
+              <em>{{cvxCurrentDurEnd.hour}}</em>h
+              <em>{{cvxCurrentDurEnd.minute}}</em>min
+              <em>{{cvxCurrentDurEnd.second}}</em>s
             </template>
           </span>
+        </div> -->
 
+        <template v-if="this.voteType === 'VeCRV'">
+          <div class="row2">Time Remaining to Vote:
+            <span class="remain-text">
+                <em>{{currentDurEnd.date}}</em>d
+                <em>{{currentDurEnd.hour}}</em>h
+                <em>{{currentDurEnd.minute}}</em>min
+                <em>{{currentDurEnd.second}}</em>s
+            </span>
+          </div>
+        </template>
+
+        <template v-if="voteType === 'VlCVX' && proposal.end">
+          <div class="row2">Time Remaining to Vote:
+            <span class="remain-text">
+                <em>{{cvxCurrentDurEnd.date}}</em>d
+                <em>{{cvxCurrentDurEnd.hour}}</em>h
+                <em>{{cvxCurrentDurEnd.minute}}</em>min
+                <em>{{cvxCurrentDurEnd.second}}</em>s
+            </span>
+          </div>
+        </template>
+        <template v-if="voteType === 'VlCVX' && !proposal.end">
+          <div class="row2">No vlCVX votes this week...</div>
+        </template>
+
+        <div class="row3">
+          Remaining time until the next round of voting：
+          <template v-if="this.voteType === 'VeCRV'">
+              <em>{{currentDurEnd.date}}</em>d
+              <em>{{currentDurEnd.hour}}</em>h
+              <em>{{currentDurEnd.minute}}</em>min
+              <em>{{currentDurEnd.second}}</em>s
+            </template>
+            <template v-else>
+              <em>{{cvxNextDurStart.date}}</em>d
+              <em>{{cvxNextDurStart.hour}}</em>h
+              <em>{{cvxNextDurStart.minute}}</em>min
+              <em>{{cvxNextDurStart.second}}</em>s
+            </template>
         </div>
-        <div class="row3">Deadline for the next round of voting：13d 13h 20min 36s</div>
         <!-- <div class="title">Reward</div>
         <div class="desc">Each round of Reward will be distributed <em>48h</em> after the end of voting</div> -->
       </div>
       <div class="right">
-        <div>You {{ voteType === 'VeCRV' ? 'veCRV' : 'vlCVX' }}/Voting Power:
+        <template v-if="voteType === 'VeCRV'">
+          <div>Your veCRV/Voting Power:
            <span class="power-text">
               <em>
-              {{voteType === 'VeCRV' ? crvBalance : cvxBalance}}
-            </em>
+              {{crvBalance}}
+              </em>
           </span>
         </div>
-        <div>You reward will be distributed <em>48h</em> after the voting</div>
+        </template>
+        <template v-if="voteType === 'VlCVX'">
+          <div>Your {{ proposal.end ? 'Voting Power' : 'vlCVX' }}:
+            <span class="power-text">
+                <em>
+                {{cvxBalance}}
+                </em>
+            </span>
+          </div>
+        </template>
+
+        <div>Your reward will be distributed <em>48h</em> after the voting</div>
         <!-- <div class="right-row">Claimable reward: <em>$123,456</em></div>
         <div class="right-row">Rewards received: <em>$123,456</em></div>
         <div class="right-row">Total Claimable Rewards: <em>$123,456</em></div>
@@ -74,12 +122,13 @@
 <script>
 import moment from 'moment';
 import { mapState } from 'vuex';
-import config from '@/config'
+import config from '@/config';
 import {
   getERC20Contract, getERC20Interface, provider,
   getProdERC20Contract,
 } from '@/eth/ethereum';
-import toFixed from '@/filters/toFixed'
+import toFixed from '@/filters/toFixed';
+import { CVX_START_SECONDS, WEEK_SECONDS } from '@/constants/time';
 
 export default {
   props: {
@@ -88,7 +137,6 @@ export default {
     },
   },
   data() {
-
     return {
       now: Date.now(),
       current: moment(),
@@ -97,22 +145,28 @@ export default {
       crvBalance: 0,
       cvxBalance: 0,
 
+      // crvRound: this.getCurrentCvxRound(),
+      // cvxRound: this.getCurrentCvxRound(),
     };
   },
 
   computed: {
     ...mapState(['user', 'cvxChoices', 'proposal', 'crvChoices']),
-    currentDur() {
+    currentDurEnd() {
       return this.getRemainTime(this.current);
     },
-    cvxCurrentDur() {
+    cvxCurrentDurEnd() {
+      return this.getRemainTime(this.cvxCurrent - 60 * 60 * 24 * 2);
+    },
+
+    cvxNextDurStart() {
       return this.getRemainTime(this.cvxCurrent);
     },
     desc() {
       return `The ${this.voteType === 'VeCRV' ? 'veCRV' : 'vlCVX'} Gauge voting award for the week of
       ${ (this.voteType === 'VeCRV' ? this.current : this.cvxCurrent).local().format('MMMM D HH:mm a')}
-      GMT ${(this.voteType === 'VeCRV' ? this.current : this.cvxCurrent).local().format('ZZ')}`
-    }
+      GMT ${(this.voteType === 'VeCRV' ? this.current : this.cvxCurrent).local().format('ZZ')}`;
+    },
   },
 
   watch: {
@@ -127,7 +181,7 @@ export default {
         }
       },
       immediate: true,
-    }
+    },
   },
 
   created() {
@@ -146,11 +200,25 @@ export default {
     },
 
     async getCvxBalance() {
-      const balance = await getERC20Contract(config.USDT).balanceOf(this.user.address);
-      this.cvxBalance = toFixed(balance / 1e18, 2);
+      if (this.proposal.snapshot) {
+        const balance = await provider.getBalance(this.user.address, this.proposal.snapshot);
+        this.cvxBalance = toFixed(balance / 1e18, 2);
+      } else {
+        const balance = await getERC20Contract(config.USDT).balanceOf(this.user.address);
+        this.cvxBalance = toFixed(balance / 1e18, 2);
+      }
     },
+
     changeVoteType(type) {
       this.$emit('changeType', type);
+    },
+
+    getCurrentCvxRound() {
+      let currentRoundStart = CVX_START_SECONDS;
+      while (currentRoundStart < this.now / 1000) {
+        currentRoundStart += WEEK_SECONDS * 2;
+      }
+      return currentRoundStart;
     },
 
     setTime() {
@@ -165,7 +233,7 @@ export default {
         this.nextNext = thursday.clone().add(21, 'day');
       }
 
-      const cvxThursday = moment(this.proposal.end * 1000).utc().startOf('day');
+      const cvxThursday = moment(this.getCurrentCvxRound() * 1000).utc().startOf('day');
 
       if (today.isBefore(cvxThursday)) {
         this.cvxCurrent = cvxThursday.clone();
@@ -187,6 +255,7 @@ export default {
         date,
       };
     },
+
     loopSetNow() {
       setTimeout(() => {
         this.now = Date.now();

@@ -30,7 +30,7 @@ export function getProposalListById(ids) {
         first: 100,
         skip: 0,
         where: {
-          space_in: ["iwan.eth"],
+          space_in: ["${config.space}"],
           id_in: ${JSON.stringify(ids)},
         },
         orderBy: "created",
@@ -72,17 +72,15 @@ export function getProposalListById(ids) {
     .catch((error) => console.error(error));
 }
 
-
 // eslint-disable-next-line import/prefer-default-export
 export function getProposal() {
-
   const query = `
     query {
       proposals(
         first: 1,
         skip: 0,
         where: {
-          space_in: ["iwan.eth"],
+          space_in: ["${config.space}"],
           title_contains: "Gauge Weight for Week of",
           state: "active"
         },
@@ -130,7 +128,7 @@ export function getProposal() {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export function getCvxVotes({ voter }) {
+export function getCvxVotes({ voter, start, end }) {
   // created_gt: 1681011582
   // created_lt: 1681048725
   const query = `
@@ -140,6 +138,8 @@ export function getCvxVotes({ voter }) {
         skip: 0
         where: {
           voter: "${voter}"
+          created_gt: ${start}
+          created_lt: ${end}
         }
         orderBy: "created"
         orderDirection: desc
@@ -176,13 +176,12 @@ export function getCvxVotes({ voter }) {
 
 // eslint-disable-next-line import/prefer-default-export
 export function getVotePower({ proposal, voter }) {
-  console.log( proposal, voter)
   // proposal: "${proposal}"
   const query = `
     query {
       vp (
         voter: "${voter}"
-        space: "iwan.eth"
+        space: "${config.space}"
       ) {
         vp
         vp_by_strategy

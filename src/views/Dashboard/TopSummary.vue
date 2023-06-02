@@ -17,7 +17,7 @@
         </div>
         <div>
           <div class="value">${{price | toFixed(4)}}</div>
-          <div class="label">$/veCRV</div>
+          <div class="label">{{ voteType === 'VeCRV' ? '$/veCRV' : '$/vlCVX' }}</div>
         </div>
         <div>
           <div class="value">{{deadline}}</div>
