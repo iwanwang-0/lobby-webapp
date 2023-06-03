@@ -52,7 +52,7 @@
                 <em>
                   <!-- 123,235 veCRV -->
                   <b-spinner v-if="row.loading"  variant="secondary" small label="Small Spinner"></b-spinner>
-                  <span  v-else>{{  row.yourReward  }} {{ row.tokenSymbol }} </span>
+                  <span  v-else>{{  row.yourReward  }} USDT </span>
                 </em>
               </div>
               <div>
@@ -70,15 +70,22 @@
             </div>
             <div class="row2">
               <div class="expand-item">
-                <div class="label">Max reward per veCRV</div>
-                <div class="content">{{row.maxRewardPerScore / (10 ** row.tokenDecimals) | toFixed(8)}} USDT</div>
+              <div class="label">Max reward per veCRV</div>
+              <div class="content">{{row.maxRewardPerScore | toFixed(4)}} USDT</div>
+            </div>
+            <div class="expand-item">
+              <div class="label">Remaining claimable rewards</div>
+              <div class="content">-</div>
+            </div>
+            <div>
+              <div class="label">Rewards detail</div>
+              <div class="content">
+                {{ row.rewardsDetail.map(item => {
+                  return `${item.amount} ${item.symbol}`
+                }).join(', ') }}
               </div>
-              <div class="expand-item">
-                <div class="label">Remaining claimable rewards</div>
-                <div class="content">-</div>
-              </div>
-              <div></div>
-              <div></div>
+            </div>
+            <div></div>
 
               <div class="expand-item">
                 <div class="label">Start at</div>
@@ -245,8 +252,8 @@ export default {
           title: 'Rewards',
           prop: 'rewards',
           width: '180px',
-          render(text, record) {
-            return `${text} ${record.tokenSymbol}`;
+          render(text) {
+            return `${text} USDT`;
           },
         },
 
@@ -332,26 +339,62 @@ export default {
       if (res.success) {
         this.total = res.data.length;
         this.list = res.data.map((item, idx) => {
-          const token = this.tokenMap[item.tokenAddr.toLowerCase()];
-          const symbol = token?.symbol ?? '-';
 
           const totalScore = +item.totalScore.hex;
 
-          console.log(totalScore > 0 ? toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / totalScore, 4) : 0)
+          const amountU = item.bribes.reduce((sum, bribe) => {
+            return sum + BigNumber.from(bribe.tokenAmount.hex || 0) / (10 ** bribe.tokenDecimals)  * bribe.tokenPrice
+          }, 0);
+          const maxRewardPerScore = item.bribes.reduce((sum, bribe) => {
+            return sum + BigNumber.from(bribe.maxRewardPerScore.hex || 0) / (10 ** bribe.tokenDecimals)  * bribe.tokenPrice
+          }, 0);
+
+          const rewardsDetail = [];
+
+          item.bribes.forEach((bribe) => {
+            const token = this.tokenMap[bribe.tokenAddr.toLowerCase()];
+            const symbol = token?.symbol ?? '-';
+            rewardsDetail.push({
+              amount: toFixed(bribe.tokenAmount.hex / 10 ** bribe.tokenDecimals, 4),
+              symbol,
+            });
+          }, 0);
+
           return {
             sort: idx + 1,
             ...item,
             loading: false,
             yourWeight: '',
             yourReward: '',
-            pool: item.name.name,
-            shortName: item.name.shortName,
-            tokenSymbol: symbol,
-            rewards: toFixed(BigNumber.from(item.tokenAmount.hex || 0) / (10 ** item.tokenDecimals), 4),
-            // voteNumber: toFixed(BigNumber.from(totalScore || 0) / 10 ** 18, 4),
+            pool: item.name.shortName,
+            maxRewardPerScore,
+            // tokenSymbol: symbol,
+            rewardsDetail,
+            rewards: toFixed(amountU, 4),
             voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
-            price: totalScore > 0 ? toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / totalScore, 4) : 0,
+            price: totalScore > 0 ? toFixed(amountU / (totalScore / 10 ** 18), 4) : 0,
           };
+
+          // const token = this.tokenMap[item.tokenAddr.toLowerCase()];
+          // const symbol = token?.symbol ?? '-';
+
+          // const totalScore = +item.totalScore.hex;
+
+          // console.log(totalScore > 0 ? toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / totalScore, 4) : 0)
+          // return {
+          //   sort: idx + 1,
+          //   ...item,
+          //   loading: false,
+          //   yourWeight: '',
+          //   yourReward: '',
+          //   pool: item.name.name,
+          //   shortName: item.name.shortName,
+          //   tokenSymbol: symbol,
+          //   rewards: toFixed(BigNumber.from(item.tokenAmount.hex || 0) / (10 ** item.tokenDecimals), 4),
+          //   // voteNumber: toFixed(BigNumber.from(totalScore || 0) / 10 ** 18, 4),
+          //   voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
+          //   price: totalScore > 0 ? toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / totalScore, 4) : 0,
+          // };
         });
       } else {
         this.list = [];
