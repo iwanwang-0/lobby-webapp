@@ -90,7 +90,7 @@ export default {
             }
           },
           position(point, params, dom, rect, size) {
-            return [point[0], point[1]];
+            return [point[0] + 16, point[1] + 16];
           },
         },
         grid: {
