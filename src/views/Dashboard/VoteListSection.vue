@@ -51,7 +51,7 @@
               <em>
                 <!-- 123,235 veCRV -->
                 <b-spinner v-if="row.loading"  variant="secondary" small label="Small Spinner"></b-spinner>
-                <span  v-else>{{  row.yourReward  }} $ </span>
+                <span  v-else>$ {{  row.yourReward  }}</span>
               </em>
             </div>
             <div>
@@ -70,7 +70,7 @@
           <div class="row2">
             <div class="expand-item">
               <div class="label">Max reward per veCRV</div>
-              <div class="content">{{row.maxRewardPerScore | toFixed(4)}} $</div>
+              <div class="content">$ {{row.maxRewardPerScore | toFixed(4)}}</div>
             </div>
             <div class="expand-item">
               <div class="label">Remaining claimable rewards</div>
@@ -214,7 +214,7 @@ export default {
           width: '180px',
           sorter: true,
           render(text) {
-            return `${text} $`;
+            return `$ ${text}`;
           },
         },
 
