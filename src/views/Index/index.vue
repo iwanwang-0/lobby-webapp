@@ -31,9 +31,10 @@
     </div>
 
     <div class="social-group">
-      <img class="social-btn" src="~./assets/discord.png" alt="">
-      <img class="social-btn" src="~./assets/twitter.png" alt="">
-      <img class="social-btn" src="~./assets/medium.png" alt="">
+      <!-- <img class="social-btn" src="~./assets/discord.png" alt=""> -->
+
+      <img class="social-btn" @click="linkTo('https://twitter.com/LobbyCRV')" src="~./assets/twitter.png" alt="">
+      <!-- <img class="social-btn" src="~./assets/medium.png" alt=""> -->
     </div>
 
   </div>
@@ -54,7 +55,9 @@ export default {
     unlock() {
       this.$store.dispatch('unlockByMetaMask');
     },
-
+    linkTo() {
+      window.open('https://twitter.com/LobbyCRV');
+    }
   },
 };
 </script>
@@ -116,7 +119,7 @@ export default {
         margin: 0;
       }
       .sub-title {
-        font-family: 'Inter';
+        // font-family: 'Inter';
         font-weight: 400;
         font-size: 50px;
         line-height: 61px;

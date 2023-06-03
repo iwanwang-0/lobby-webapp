@@ -4,10 +4,10 @@
       :voteType="voteType"
       @changeType="changeVoteType"
     ></TopSection>
-    <DelegateSection
+    <!-- <DelegateSection
       v-if="voteType !== 'VeCRV'"
 
-    ></DelegateSection>
+    ></DelegateSection> -->
     <VoteListSection
     :voteType="voteType"
     ></VoteListSection>

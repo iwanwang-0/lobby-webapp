@@ -73,10 +73,10 @@
               <div class="label">Max reward per veCRV</div>
               <div class="content">$ {{row.maxRewardPerScore | toFixed(4)}}</div>
             </div>
-            <div class="expand-item">
+            <!-- <div class="expand-item">
               <div class="label">Remaining claimable rewards</div>
               <div class="content">-</div>
-            </div>
+            </div> -->
             <div>
               <div class="label">Rewards detail</div>
               <div class="content">
@@ -85,6 +85,7 @@
                 }).join(', ') }}
               </div>
             </div>
+            <div></div>
             <div></div>
 
               <div class="expand-item">
@@ -244,13 +245,15 @@ export default {
         {
           title: this.voteType === 'VeCRV' ? '$/veCRV' : '$/vlCVX',
           prop: 'price',
-          width: '180px',
+          // width: '180px',
+          align: 'right',
           sorter: true,
         },
         {
           title: 'Rewards',
           prop: 'rewards',
-          width: '180px',
+          // width: '180px',
+          align: 'right',
           sorter: true,
           render(text) {
             return `$ ${text}`;
@@ -260,6 +263,7 @@ export default {
         {
           title: 'Vote number',
           prop: 'voteNumber',
+          align: 'right',
           sorter: true,
         },
 
@@ -303,9 +307,10 @@ export default {
 
   methods: {
 
-    async onExpand(idx) {
-      const index = this.pageSize * (this.page - 1) + idx;
-      const record = this.list[index];
+    async onExpand(row) {
+      // const index = this.pageSize * (this.page - 1) + idx;
+      // const record = this.list[index];
+      const record = row;
       if (record.loaded !== true && record.loading !== true && this.user.address) {
         record.loading = true;
         const res = await fetchUserScore({

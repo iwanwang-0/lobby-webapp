@@ -6,6 +6,9 @@
         <th
           v-for="head in cols"
           :width="head.width"
+          :style="{
+            'text-align': head.align,
+          }"
           :key="head.prop"
         >
           <span class="header-cell-content">
@@ -55,9 +58,14 @@
       >
         <tr
           :class="{'expanded-row1': active === idx}"
-          @click="expand(idx)"
+          @click="expand(row, idx)"
         >
-          <td v-for="head in cols">
+          <td
+            v-for="head in cols"
+            :style="{
+              'text-align': head.align,
+            }"
+          >
             <template v-if="head.prop === 'operation' && $scopedSlots.operation">
               <slot name="operation" :row="row"></slot>
             </template>
@@ -114,6 +122,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    rowKey: {
+      type: String,
+      default: 'id',
+    },
   },
 
   data() {
@@ -127,15 +139,20 @@ export default {
       },
     };
   },
+  watch: {
+    list() {
+      this.active = '';
+    }
+  },
 
   methods: {
-    expand(idx) {
+    expand(row, idx) {
       if (!this.isExpand) return;
       if (idx === this.active) {
         this.active = '';
       } else {
         this.active = idx;
-        this.$emit('expand', this.active);
+        this.$emit('expand', row);
       }
     },
     onSort(prop) {
@@ -144,6 +161,8 @@ export default {
         this.sort.order = 'none';
         this.sort.img = sortDefault;
       }
+
+      // this.active = '';
       // this.sort.prop = prop;
       // if (this.sort.order === 'none') {
       //   this.sort.order = 'asc';
