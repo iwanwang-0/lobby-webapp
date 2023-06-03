@@ -51,7 +51,7 @@
               <em>
                 <!-- 123,235 veCRV -->
                 <b-spinner v-if="row.loading"  variant="secondary" small label="Small Spinner"></b-spinner>
-                <span  v-else>{{  row.yourReward  }} USDT </span>
+                <span  v-else>{{  row.yourReward  }} $ </span>
               </em>
             </div>
             <div>
@@ -70,7 +70,7 @@
           <div class="row2">
             <div class="expand-item">
               <div class="label">Max reward per veCRV</div>
-              <div class="content">{{row.maxRewardPerScore | toFixed(4)}} USDT</div>
+              <div class="content">{{row.maxRewardPerScore | toFixed(4)}} $</div>
             </div>
             <div class="expand-item">
               <div class="label">Remaining claimable rewards</div>
@@ -99,13 +99,12 @@
                 {{ (row.week.hex * (WEEK_SECONDS) + (WEEK_SECONDS))  * 1000 | formatTime('MMMM D, yyyy h:mm a') }}
               </div>
             </div>
-            <div class="expand-item">
+            <!-- <div class="expand-item">
               <div class="label">First week of claim</div>
               <div class="content">
                 -
-                <!-- February 16, 2023 8:00 am -->
               </div>
-            </div>
+            </div> -->
             <!-- <div class="expand-item">
               <div class="label">Last week of claim</div>
               <div class="content">
@@ -194,15 +193,15 @@ export default {
             return `${text} <br/> <span style="font-size: 12px">${record.platform || '-'}</span>`;
           },
         },
-        {
-          title: 'Apr',
-          prop: 'apr',
-          width: '120px',
-          sorter: true,
-          render(text) {
-            return `${text}%`;
-          },
-        },
+        // {
+        //   title: 'Apr',
+        //   prop: 'apr',
+        //   width: '120px',
+        //   sorter: true,
+        //   render(text) {
+        //     return `${text}%`;
+        //   },
+        // },
         {
           title: this.voteType === 'VeCRV' ? '$/veCRV' : '$/vlCVX',
           prop: 'price',
@@ -213,8 +212,9 @@ export default {
           title: 'Rewards',
           prop: 'rewards',
           width: '180px',
+          sorter: true,
           render(text) {
-            return `${text} USDT`;
+            return `${text} $`;
           },
         },
 

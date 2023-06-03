@@ -145,15 +145,16 @@ export default {
         this.sort.img = sortDefault;
       }
       // this.sort.prop = prop;
-      if (this.sort.order === 'none') {
-        this.sort.order = 'asc';
-        this.sort.img = sortAsc;
-      } else if (this.sort.order === 'asc') {
+      // if (this.sort.order === 'none') {
+      //   this.sort.order = 'asc';
+      //   this.sort.img = sortAsc;
+      // } else
+      if (this.sort.order === 'asc') {
         this.sort.order = 'desc';
         this.sort.img = sortDesc;
       } else {
-        this.sort.order = 'none';
-        this.sort.img = sortDefault;
+        this.sort.order = 'asc';
+        this.sort.img = sortAsc;
       }
       this.$emit('sort', this.sort);
     },
