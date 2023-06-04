@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import moment from 'moment';
 import createPersistedState from 'vuex-persistedstate';
 import config from '@/config';
 import { getProposal } from '@/api/snapshot';
@@ -30,7 +31,7 @@ export default new Vuex.Store({
   },
   state: {
 
-    totalRound: Math.floor(Date.now() / 1000 / WEEK_SECONDS),
+    totalRound: Math.floor(moment.utc().unix() / WEEK_SECONDS),
 
     cvxTotalRound: Math.floor(Date.now() / 1000 / HOUR_SECONDS),
     proposal: {},

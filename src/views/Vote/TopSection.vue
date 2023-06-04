@@ -219,7 +219,7 @@ export default {
       while (currentRoundStart < this.now / 1000) {
         currentRoundStart += WEEK_SECONDS * 2;
       }
-      return currentRoundStart + 8 * 60 * 60;
+      return currentRoundStart;
     },
 
     setTime() {
