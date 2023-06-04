@@ -10,6 +10,8 @@ const getters = {
   crvRoundOptions: (state) => new Array(state.totalRound).fill(0)
     .map((item, idx) => {
       const crvStartRound = Math.floor(CRV_START_SECONDS / WEEK_SECONDS);
+
+      console.log('crvStartRound', CRV_START_SECONDS / WEEK_SECONDS)
       return {
         label: state.totalRound - idx - crvStartRound,
         value: state.totalRound - idx,
