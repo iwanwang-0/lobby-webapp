@@ -96,7 +96,6 @@ export default {
 
   methods: {
     onChange(round) {
-      console.log(round);
       this.$emit('round-change', round);
     },
   },
