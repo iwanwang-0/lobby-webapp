@@ -339,6 +339,26 @@
             "label":"flux-usdc",
             "symbol":"fUSDC",
             "decimals":8
+        },
+        "0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d":{
+            "label":"liquity",
+            "symbol":"LQTY",
+            "decimals":18
+        },
+        "0x85b6acaba696b9e4247175274f8263f99b4b9180":{
+            "label":"",
+            "symbol":"SPR",
+            "decimals":18
+        },
+        "0xa0d69e286b938e21cbf7e51d71f6a4c8918f482f":{
+            "label":"",
+            "symbol":"eUSD",
+            "decimals":18
+        },
+        "0x402f878bdd1f5c66fdaf0fababcf74741b68ac36":{
+            "label":"",
+            "symbol":"sdFXS",
+            "decimals":18
         }
     },
     "goerli": {

@@ -219,7 +219,7 @@ export default {
       while (currentRoundStart < this.now / 1000) {
         currentRoundStart += WEEK_SECONDS * 2;
       }
-      return currentRoundStart;
+      return currentRoundStart + 8 * 60 * 60;
     },
 
     setTime() {
@@ -234,10 +234,11 @@ export default {
         this.nextNext = thursday.clone().add(21, 'day');
       }
 
-      const cvxThursday = moment.utc(this.getCurrentCvxRound() * 1000).startOf('day');
+      const cvxThursday = moment(this.getCurrentCvxRound() * 1000);
 
-      console.log(moment.utc(CVX_START_SECONDS * 1000).format('YYYY-MM-DD dd HH:mm:ss Z'));
-      console.log(cvxThursday.format('YYYY-MM-DD dd HH:mm:ss Z'));
+      console.log(moment(cvxThursday).format('YYYY-MM-DD dd HH:mm:ss Z'));
+      console.log(moment((CVX_START_SECONDS) * 1000).format('YYYY-MM-DD dd HH:mm:ss Z'));
+      // console.log(cvxThursday.format('YYYY-MM-DD dd HH:mm:ss Z'));
       if (today.isBefore(cvxThursday)) {
         this.cvxCurrent = cvxThursday.clone();
       } else {

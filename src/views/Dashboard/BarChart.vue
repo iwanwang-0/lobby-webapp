@@ -183,9 +183,9 @@ export default {
                 value: toFixed(tokenAddrMap[tokenAddr].hex / 10 ** decimals, 4),
               };
             });
-          const guageName = this.guageNameMap[key.toLowerCase()].shortName;
+          const guageName = this.voteType === 'VeCRV' ? this.guageNameMap[key.toLowerCase()].shortName : key;
           this.total += tokenAddrMap.totalValue;
-          this.totalScore += +tokenAddrMap.totalScore.hex
+          this.totalScore += +tokenAddrMap.totalScore.hex;
           return {
             guage: key,
             guageNameShort: `${guageName.slice(0, 10)}...${guageName.slice(-10)}`,
