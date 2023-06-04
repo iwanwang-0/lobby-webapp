@@ -130,6 +130,7 @@ import {
 import toFixed from '@/filters/toFixed';
 import { CVX_START_SECONDS, WEEK_SECONDS } from '@/constants/time';
 
+console.log(CVX_START_SECONDS)
 export default {
   props: {
     voteType: {
@@ -233,8 +234,10 @@ export default {
         this.nextNext = thursday.clone().add(21, 'day');
       }
 
-      const cvxThursday = moment(this.getCurrentCvxRound() * 1000).utc().startOf('day');
+      const cvxThursday = moment.utc(this.getCurrentCvxRound() * 1000).startOf('day');
 
+      console.log(moment.utc(CVX_START_SECONDS * 1000).format('YYYY-MM-DD dd HH:mm:ss Z'));
+      console.log(cvxThursday.format('YYYY-MM-DD dd HH:mm:ss Z'));
       if (today.isBefore(cvxThursday)) {
         this.cvxCurrent = cvxThursday.clone();
       } else {

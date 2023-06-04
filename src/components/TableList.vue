@@ -11,7 +11,12 @@
           }"
           :key="head.prop"
         >
-          <span class="header-cell-content">
+          <span
+            class="header-cell-content"
+            :style="{
+              'justify-content': head.align === 'right' ? 'flex-end' : 'space-between',
+            }"
+          >
             {{ head.title }}
             <!-- <span  v-if="head.sorter">
               {{ head.prop === sort.prop ? sort.order : 'none'  }}

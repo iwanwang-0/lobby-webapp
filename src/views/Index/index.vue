@@ -55,8 +55,8 @@ export default {
     unlock() {
       this.$store.dispatch('unlockByMetaMask');
     },
-    linkTo() {
-      window.open('https://twitter.com/LobbyCRV');
+    linkTo(link) {
+      window.open(link);
     }
   },
 };

@@ -69,7 +69,7 @@
           </div>
           <div class="row2">
             <div class="expand-item">
-              <div class="label">Max reward per veCRV</div>
+              <div class="label">Max reward per {{voteType === 'VeCRV' ? 'veCRV' : 'vlCVX'}}</div>
               <div class="content">$ {{row.maxRewardPerScore | toFixed(4)}}</div>
             </div>
             <!-- <div class="expand-item">
@@ -340,6 +340,7 @@ export default {
             yourWeight: '',
             yourReward: '',
             pool: item.name.shortName,
+            name: item.name.name,
             maxRewardPerScore,
             // tokenSymbol: symbol,
             rewardsDetail,
@@ -380,7 +381,7 @@ export default {
         record.loading = true;
         const res = await fetchUserScore({
           round: record.week.hex * this.WEEK_SECONDS,
-          gauge: record.gaugeAddr,
+          gauge: this.voteType === 'VeCRV' ? record.gaugeAddr : record.name,
           witch: this.voteType === 'VeCRV' ? 'crv' : 'cvx',
           user: this.user.address,
         });
