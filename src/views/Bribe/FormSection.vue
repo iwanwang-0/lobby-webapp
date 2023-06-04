@@ -133,7 +133,6 @@ import { mapState } from 'vuex';
 import { debounce } from 'lodash';
 import config from '@/config';
 import { BigNumber, utils } from 'ethers';
-import sendTransaction from '@/common/sendTransaction';
 import {
   getERC20Contract, getERC20Interface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
   VotiumBribeCVXContract,
@@ -305,7 +304,7 @@ export default {
       try {
         let approveTxHash;
         if (this.voteType === 'VeCRV') {
-          approveTxHash = await sendTransaction({
+          approveTxHash = await __wallet__.sendTransaction({
             to: this.tokenAddress,
             gas: 80000,
             // gasPrice: 18000000000,
@@ -315,7 +314,7 @@ export default {
             ]),
           });
         } else {
-          approveTxHash = await sendTransaction({
+          approveTxHash = await __wallet__.sendTransaction({
             to: this.tokenAddress,
             gas: 80000,
             // gasPrice: 18000000000,
@@ -390,7 +389,7 @@ export default {
       try {
         let buyTxHash;
         if (this.voteType === 'VeCRV') {
-          buyTxHash = await sendTransaction({
+          buyTxHash = await __wallet__.sendTransaction({
             to: config.VotiumVeCRV,
             gas: 640000,
             data: VotiumVeCRVInterface.encodeFunctionData('depositReward', [
@@ -407,7 +406,7 @@ export default {
             this.proposal.id,
             this.gauge,
           ]);
-          buyTxHash = await sendTransaction({
+          buyTxHash = await __wallet__.sendTransaction({
             to: config.VotiumBribeCVX,
             gas: 640000,
             data: VotiumBribeCVXInterface.encodeFunctionData('depositBribe', [

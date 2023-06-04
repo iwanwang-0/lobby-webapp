@@ -16,7 +16,8 @@ import '@/filters';
 import '@/styles/font.scss';
 import '@/styles/theme-overrides/index.scss';
 
-import './initMetamask';
+// import './initMetamask';
+import './initWallet';
 
 Vue.use(vClickOutside);
 Vue.use(BootstrapVue);

@@ -109,7 +109,7 @@ export default {
     justify-content: center;
     padding-top: 20vh;
     color: #fff;
-    z-index: 999;
+    z-index: 2;
     position: relative;
 
       .title {

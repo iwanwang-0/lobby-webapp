@@ -24,9 +24,10 @@ export default {
   githubToken: process.env.VUE_APP_GITHUB_TOKEN,
   space: 'cvx.eth',
 
+  label: 'Ethereum Mainnet',
   curveUrl: 'https://api.curve.fi',
-  browser: 'https://goerli.etherscan.io/',
-  gethServer: 'https://goerli.infura.io/v3/800d17c94bfb46c8b0296a5770703215',
+  browser: 'https://etherscan.io/',
+  gethServer: 'https://mainnet.infura.io/v3/800d17c94bfb46c8b0296a5770703215',
   chainId: '0x5',
   prodGethServer: 'https://mainnet.infura.io/v3/800d17c94bfb46c8b0296a5770703215',
   prodChainId: '0x1',

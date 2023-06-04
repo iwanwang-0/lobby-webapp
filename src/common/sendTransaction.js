@@ -23,7 +23,6 @@ const sendTransaction = async ({
     chainId: config.chainId, // Used to prevent transaction reuse across blockchains. Auto-filled by MetaMask.
   };
 
-  console.log(transactionParameters)
 
   // txHash is a hex string
   // As with any RPC call, it may throw an error

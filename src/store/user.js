@@ -82,7 +82,7 @@ const user = {
         });
       } else if (accounts[0] !== state.address) {
         commit('UPDATE_STATE', {
-          address: accounts[0],
+          address: accounts[0].address,
           chainId,
           loaded: true,
         });
@@ -91,24 +91,25 @@ const user = {
     },
 
     unlockByMetaMask({ dispatch }) {
-      if (typeof window.ethereum === 'undefined') {
-        throw Error('MetaMask is not installed!');
-      }
+      __wallet__.connect();
+      // if (typeof window.ethereum === 'undefined') {
+      //   throw Error('MetaMask is not installed!');
+      // }
 
-      window.ethereum
-        .request({ method: 'eth_requestAccounts' })
-        .then((accounts) => {
-          dispatch('handleAccountsChanged', accounts);
-        })
-        .catch((err) => {
-          if (err.code === 4001) {
-            // EIP-1193 userRejectedRequest error
-            // If this happens, the user rejected the connection request.
-            console.log('Please connect to MetaMask.');
-          } else {
-            console.error(err);
-          }
-        });
+      // window.ethereum
+      //   .request({ method: 'eth_requestAccounts' })
+      //   .then((accounts) => {
+      //     dispatch('handleAccountsChanged', accounts);
+      //   })
+      //   .catch((err) => {
+      //     if (err.code === 4001) {
+      //       // EIP-1193 userRejectedRequest error
+      //       // If this happens, the user rejected the connection request.
+      //       console.log('Please connect to MetaMask.');
+      //     } else {
+      //       console.error(err);
+      //     }
+      //   });
     },
 
     async getBalances({ commit, state }) {
@@ -125,11 +126,12 @@ const user = {
 
 
     // // 登出
-    // async LogOut({ commit }) {
-    //   await logout();
-    //   commit('RESET_STATE');
-    //   window.location.href = '/login';
-    // },
+    async LogOut({ commit }) {
+      // await logout();
+      window.__wallet__.disconnect();
+      commit('RESET_STATE');
+      window.location.reload();
+    },
 
     // LoginByUsername({ commit }, payload) {
     //   return new Promise((resolve, reject) => {
