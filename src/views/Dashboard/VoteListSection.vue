@@ -333,14 +333,15 @@ export default {
             });
           }, 0);
 
+
           return {
             sort: idx + 1,
             ...item,
             loading: false,
             yourWeight: '',
             yourReward: '',
-            pool: item.name.shortName,
-            name: item.name.name,
+            pool: item.name,
+            name: item.name,
             maxRewardPerScore,
             // tokenSymbol: symbol,
             rewardsDetail,
