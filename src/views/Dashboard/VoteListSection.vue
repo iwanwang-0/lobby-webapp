@@ -312,7 +312,6 @@ export default {
       if (res.success) {
         this.total = res.data.length;
         this.list = res.data.map((item, idx) => {
-
           const totalScore = +item.totalScore.hex;
 
           const amountU = item.bribes.reduce((sum, bribe) => {
@@ -335,7 +334,6 @@ export default {
 
 
           return {
-            sort: idx + 1,
             ...item,
             loading: false,
             yourWeight: '',
@@ -349,7 +347,14 @@ export default {
             voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
             price: totalScore > 0 ? toFixed(amountU / (totalScore / 10 ** 18), 4) : 0,
           };
-        });
+        })
+          .sort((a, b) => b.rewards - a.rewards)
+          .map((item, idx) => {
+            return {
+              ...item,
+              sort: idx + 1,
+            };
+          });
       } else {
         this.list = [];
       }

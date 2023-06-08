@@ -401,7 +401,14 @@ export default {
           //   voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
           //   price: totalScore > 0 ? toFixed(BigNumber.from(item.tokenAmount.hex || 0) * item.tokenPrice / totalScore, 4) : 0,
           // };
-        });
+        })
+          .sort((a, b) => b.rewards - a.rewards)
+          .map((item, idx) => {
+            return {
+              ...item,
+              sort: idx + 1,
+            };
+          });
       } else {
         this.list = [];
       }
