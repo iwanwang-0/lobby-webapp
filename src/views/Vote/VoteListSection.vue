@@ -123,6 +123,19 @@
                   </a>
                 </div>
               </div>
+
+              <div class="expand-item black-list" v-if="row.blackList.length">
+              <div class="label">Black List</div>
+              <div class="content">
+                <div v-for="(item, idx) in row.blackList.slice(0, row.blackListExpanded ? row.blackList.length : 5)">
+                  {{ item }}
+                  <a v-if="row.blackList.length > 5 && row.blackListExpanded ? idx === row.blackList.length - 1  :  idx === 4" class="more-btn" @click="onMoreAddress(row)">
+                    {{ row.blackListExpanded ? 'Hide Address' : 'More Address' }}
+                    <!-- <i class="icon-button-arrow"></i> -->
+                  </a>
+                </div>
+              </div>
+            </div>
             </div>
           </div>
         </template>
@@ -306,7 +319,10 @@ export default {
   },
 
   methods: {
-
+    onMoreAddress(record) {
+      console.log(record);
+      record.blackListExpanded = !record.blackListExpanded;
+    },
     async onExpand(row) {
       // const index = this.pageSize * (this.page - 1) + idx;
       // const record = this.list[index];
@@ -355,7 +371,7 @@ export default {
           }, 0);
 
           const rewardsDetail = [];
-
+          const blackList = [];
           item.bribes.forEach((bribe) => {
             const token = this.tokenMap[bribe.tokenAddr.toLowerCase()];
             const symbol = token?.symbol ?? '-';
@@ -363,6 +379,7 @@ export default {
               amount: toFixed(bribe.tokenAmount.hex / 10 ** bribe.tokenDecimals, 4),
               symbol,
             });
+            blackList.push(...bribe.blackList);
           }, 0);
 
           return {
@@ -374,11 +391,15 @@ export default {
             pool: item.name,
             name: item.name,
             maxRewardPerScore,
+            blackList,
             // tokenSymbol: symbol,
             rewardsDetail,
             rewards: toFixed(amountU, 4),
             voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
             price: totalScore > 0 ? toFixed(amountU / (totalScore / 10 ** 18), 4) : 0,
+
+            blackListExpanded: false,
+
           };
 
           // const token = this.tokenMap[item.tokenAddr.toLowerCase()];
@@ -644,6 +665,26 @@ export default {
       }
     }
 
+    .black-list {
+      grid-column-start: 1;
+      grid-column-end: 4;
+      & ::v-deep .more-btn {
+        color: #1DD186;
+        font-size: 12px;
+        cursor: pointer;
+        margin-left: 12px;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        &:hover {
+          text-decoration: none;
+        }
+      }
+      & i {
+        font-size: 12px;
+        margin-left: 8px;
+      }
+    }
   }
 }
 

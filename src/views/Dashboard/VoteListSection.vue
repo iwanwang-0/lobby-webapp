@@ -100,12 +100,12 @@
                 {{ (row.week.hex * (WEEK_SECONDS) + (WEEK_SECONDS))  * 1000 | formatTime('MMMM D, yyyy h:mm a') }}
               </div>
             </div>
-            <!-- <div class="expand-item">
+            <div class="expand-item">
               <div class="label">First week of claim</div>
               <div class="content">
                 -
               </div>
-            </div> -->
+            </div>
             <!-- <div class="expand-item">
               <div class="label">Last week of claim</div>
               <div class="content">
@@ -119,6 +119,19 @@
                 <a :href="`https://etherscan.io/address/${row.gaugeAddr}`">
                   {{row.gaugeAddr | ellipsis}}
                 </a>
+              </div>
+            </div>
+
+            <div class="expand-item black-list" v-if="row.blackList.length">
+              <div class="label">Black List</div>
+              <div class="content">
+                <div v-for="(item, idx) in row.blackList.slice(0, row.blackListExpanded ? row.blackList.length : 5)">
+                  {{ item }}
+                  <a v-if="row.blackList.length > 5 && row.blackListExpanded ? idx === row.blackList.length - 1  :  idx === 4" class="more-btn" @click="onMoreAddress(row)">
+                    {{ row.blackListExpanded ? 'Hide Address' : 'More Address' }}
+                    <!-- <i class="icon-button-arrow"></i> -->
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -153,6 +166,7 @@ import config from '@/config';
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
 import { fetchBribeList, fetchUserScore } from '@/api/dashbord';
 import toFixed from '@/filters/toFixed';
+import ellipsis from '@/filters/ellipsis';
 import {
   getERC20Contract, MultiMerkleStashContract, MultiMerkleStashInterface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
 } from '@/eth/ethereum';
@@ -296,6 +310,10 @@ export default {
   },
 
   methods: {
+    onMoreAddress(record) {
+      console.log(record);
+      record.blackListExpanded = !record.blackListExpanded;
+    },
     async getList() {
       this.loading = true;
       const roundTime = this.round * this.WEEK_SECONDS;
@@ -322,7 +340,7 @@ export default {
           }, 0);
 
           const rewardsDetail = [];
-
+          const blackList = [];
           item.bribes.forEach((bribe) => {
             const token = this.tokenMap[bribe.tokenAddr.toLowerCase()];
             const symbol = token?.symbol ?? '-';
@@ -330,8 +348,8 @@ export default {
               amount: toFixed(bribe.tokenAmount.hex / 10 ** bribe.tokenDecimals, 4),
               symbol,
             });
+            blackList.push(...bribe.blackList);
           }, 0);
-
 
           return {
             ...item,
@@ -341,11 +359,14 @@ export default {
             pool: item.name,
             name: item.name,
             maxRewardPerScore,
+            blackList,
             // tokenSymbol: symbol,
             rewardsDetail,
             rewards: toFixed(amountU, 4),
             voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
             price: totalScore > 0 ? toFixed(amountU / (totalScore / 10 ** 18), 4) : 0,
+
+            blackListExpanded: false,
           };
         })
           .sort((a, b) => b.rewards - a.rewards)
@@ -410,7 +431,6 @@ export default {
       for (const [i, v] of tree.entries()) {
         if (v[0] === round && v[1].toLowerCase() === this.user.address.toLowerCase()) {
           const proof = tree.getProof(i);
-          console.log(proof);
           return proof;
           // return tree.getProof(i);
         }
@@ -612,6 +632,26 @@ export default {
       }
     }
 
+  }
+  .black-list {
+    grid-column-start: 1;
+    grid-column-end: 4;
+    & ::v-deep .more-btn {
+      color: #1DD186;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: 12px;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+    & i {
+      font-size: 12px;
+      margin-left: 8px;
+    }
   }
 }
 
