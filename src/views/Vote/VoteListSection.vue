@@ -324,8 +324,6 @@ export default {
       record.blackListExpanded = !record.blackListExpanded;
     },
     async onExpand(row) {
-      // const index = this.pageSize * (this.page - 1) + idx;
-      // const record = this.list[index];
       const record = row;
       if (record.loaded !== true && record.loading !== true && this.user.address) {
         record.loading = true;
@@ -340,10 +338,13 @@ export default {
           const { score } = res.data;
           record.yourWeight = toFixed(score.hex / record.totalScore.hex, 2);
           record.yourReward = toFixed(score.hex / record.totalScore.hex * record.rewards, 4);
+          record.loaded = true;
+        } else {
+          record.yourWeight = 0;
+          record.yourReward = 0;
         }
 
         record.loading = false;
-        record.loaded = true;
       }
     },
 
@@ -379,7 +380,7 @@ export default {
               amount: toFixed(bribe.tokenAmount.hex / 10 ** bribe.tokenDecimals, 4),
               symbol,
             });
-            blackList.push(...bribe.blackList);
+            blackList.push(...(bribe.blackList || []));
           }, 0);
 
           return {
