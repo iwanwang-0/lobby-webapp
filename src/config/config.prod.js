@@ -28,7 +28,7 @@ export default {
   curveUrl: 'https://api.curve.fi',
   browser: 'https://etherscan.io/',
   gethServer: 'https://mainnet.infura.io/v3/800d17c94bfb46c8b0296a5770703215',
-  chainId: '0x5',
+  chainId: '0x1',
   prodGethServer: 'https://mainnet.infura.io/v3/800d17c94bfb46c8b0296a5770703215',
   prodChainId: '0x1',
   addressZero: '0x0000000000000000000000000000000000000000',
@@ -44,8 +44,8 @@ export default {
   // fundraisingToken: 'CER',
   // appDownload: '这是下载二维码',
 
-  USDT: '0x811B9dB74373878f7f05C66C24Ff28c0bCD61c8C',
-  USDC: '0xdBEB7e5cacfA3B7754651ccC67F4e98bF23fb9BC',
+  USDT: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+  USDC: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
 
   VeCRV: '0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2',
 

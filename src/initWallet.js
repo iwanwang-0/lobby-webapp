@@ -33,8 +33,8 @@ const onboard = Onboard({
   },
 });
 
-const state = onboard.state.select();
-state.subscribe((update) => console.log('state update: ', update));
+// const state = onboard.state.select();
+// state.subscribe((update) => console.log('state update: ', update));
 
 const walletsState = onboard.state.select('wallets');
 

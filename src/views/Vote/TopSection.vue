@@ -91,7 +91,7 @@
       </div>
       <div class="right">
         <template v-if="voteType === 'VeCRV'">
-          <div>Your veCRV/Voting Power:
+          <div>Your veCRV Voting Power:
            <span class="power-text">
               <em>
               {{crvBalance}}
@@ -142,6 +142,7 @@ export default {
       now: Date.now(),
       current: moment(),
       cvxCurrent: moment(),
+      cvxCurrentEnd: moment(),
 
       crvBalance: 0,
       cvxBalance: 0,
@@ -157,7 +158,7 @@ export default {
       return this.getRemainTime(this.current);
     },
     cvxCurrentDurEnd() {
-      return this.getRemainTime(this.cvxCurrent - 60 * 60 * 24 * 2);
+      return this.getRemainTime(this.cvxCurrentEnd);
     },
 
     cvxNextDurStart() {
@@ -238,15 +239,18 @@ export default {
 
       console.log(moment(cvxThursday).format('YYYY-MM-DD dd HH:mm:ss Z'));
       console.log(moment((CVX_START_SECONDS) * 1000).format('YYYY-MM-DD dd HH:mm:ss Z'));
-      // console.log(cvxThursday.format('YYYY-MM-DD dd HH:mm:ss Z'));
+
       if (today.isBefore(cvxThursday)) {
         this.cvxCurrent = cvxThursday.clone();
+        this.cvxCurrentEnd = cvxThursday.clone().subtract(2, 'day');
       } else {
         this.cvxCurrent = thursday.clone().add(14, 'day');
+        this.cvxCurrentEnd = thursday.clone().add(14, 'day').subtract(2, 'day');
       }
     },
 
     getRemainTime(targetTime) {
+      // console.log(targetTime)
       const duration = targetTime.diff(this.now, 'seconds');
       const second = duration % 60;
       const minute = Math.floor(duration / 60) % 60;

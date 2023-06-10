@@ -159,12 +159,15 @@ export default {
     },
 
     cvxCurrentDur() {
+      console.log(this.cvxCurrent)
       return this.getRemainTime(this.cvxCurrent);
     },
     cvxNextDur() {
+      console.log(this.cvxNext)
       return this.getRemainTime(this.cvxNext);
     },
     cvxNextNextDur() {
+      console.log(this.cvxNextNext)
       return this.getRemainTime(this.cvxNextNext);
     },
   },
@@ -219,7 +222,6 @@ export default {
       }
     },
 
-
     getRemainTime(targetTime) {
       const duration = targetTime.diff(this.now, 'seconds');
       const second = duration % 60;
@@ -233,6 +235,7 @@ export default {
         date,
       };
     },
+
     loopSetNow() {
       setTimeout(() => {
         this.now = Date.now();
