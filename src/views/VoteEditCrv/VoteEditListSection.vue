@@ -211,7 +211,6 @@ export default {
     async onVote(record) {
       const newWeight = Number.parseFloat(this.valueMap[record.pool]);
 
-      console.log(record)
       if (!newWeight) {
         this.showError('Please input vote weight');
         return;
@@ -225,17 +224,12 @@ export default {
 
       this.submitting = true;
       try {
-        // const proof = await this.getProof(tAddr, round);
-        // console.log([
-        //   this.allGauges[record.pool].gauge,
-        //   newWeight * 1000,
-        // ])
         const txHash = await sendTransaction({
           to: config.GaugeController,
           gas: 640000,
           data: GaugeControllerInterface.encodeFunctionData('vote_for_gauge_weights', [
             record.address,
-            newWeight * 1000,
+            newWeight * 100,
           ]),
         });
 
@@ -255,6 +249,7 @@ export default {
           });
         }
       } catch (error) {
+        this.showError(error.message);
         console.error(error);
       }
       this.submitting = false;

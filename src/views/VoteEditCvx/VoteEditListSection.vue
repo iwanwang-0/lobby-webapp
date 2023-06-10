@@ -279,6 +279,7 @@ export default {
         //   });
         // }
       } catch (error) {
+        this.showError(error.message);
         console.error(error);
       }
       this.submitting = false;

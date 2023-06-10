@@ -44,7 +44,6 @@ walletsState.subscribe((update) => {
     store.dispatch('handleAccountsChanged', update[0].accounts);
   } else {
     store.dispatch('handleAccountsChanged', []);
-    // window.location.reload();
   }
 });
 
@@ -88,8 +87,16 @@ window.__wallet__ = {
         chainId: config.chainId, // Used to prevent transaction reuse across blockchains. Auto-filled by MetaMask.
       };
 
-      const txn = await signer.sendTransaction(transactionParameters);
-      return txn.hash;
+      try {
+        const txn = await signer.sendTransaction(transactionParameters);
+        return txn.hash;
+      } catch (error) {
+        if (error.code === 4001) {
+
+        } else {
+          throw error;
+        }
+      }
     }
   },
 };

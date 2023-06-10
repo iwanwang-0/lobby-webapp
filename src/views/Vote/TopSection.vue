@@ -130,7 +130,6 @@ import {
 import toFixed from '@/filters/toFixed';
 import { CVX_START_SECONDS, WEEK_SECONDS } from '@/constants/time';
 
-console.log(CVX_START_SECONDS)
 export default {
   props: {
     voteType: {

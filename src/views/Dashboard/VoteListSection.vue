@@ -335,12 +335,17 @@ export default {
           const amountU = item.bribes.reduce((sum, bribe) => {
             return sum + BigNumber.from(bribe.tokenAmount.hex || 0) / (10 ** bribe.tokenDecimals)  * bribe.tokenPrice
           }, 0);
-          const maxRewardPerScore = item.bribes.reduce((sum, bribe) => {
-            return sum + BigNumber.from(bribe.maxRewardPerScore.hex || 0) / (10 ** bribe.tokenDecimals)  * bribe.tokenPrice
-          }, 0);
+          // const maxRewardPerScore = item.bribes.reduce((sum, bribe) => {
+          //   return sum + BigNumber.from(bribe.maxRewardPerScore.hex || 0) / (10 ** bribe.tokenDecimals)  * bribe.tokenPrice
+          // }, 0);
 
           const rewardsDetail = [];
           const blackList = [];
+
+          const calcPrice = totalScore > 0 ? toFixed(amountU / (totalScore / 10 ** 18), 4) : 0;
+          let receivePrice = 0;
+          let maxRewardPerScore = 0;
+
           item.bribes.forEach((bribe) => {
             const token = this.tokenMap[bribe.tokenAddr.toLowerCase()];
             const symbol = token?.symbol ?? '-';
@@ -349,6 +354,12 @@ export default {
               symbol,
             });
             blackList.push(...(bribe.blackList || []));
+
+            maxRewardPerScore += (BigNumber.from(bribe.maxRewardPerScore.hex || 0) / (10 ** bribe.tokenDecimals) * bribe.tokenPrice);
+
+            const rewardPerScore = +(bribe?.rewardPerScore?.hex) || 0;
+            receivePrice += rewardPerScore ? rewardPerScore / (10 ** bribe.tokenDecimals) * bribe.tokenPrice : 0;
+
           }, 0);
 
           return {
@@ -364,7 +375,7 @@ export default {
             rewardsDetail,
             rewards: toFixed(amountU, 4),
             voteNumber: toFixed(BigNumber.from(item.totalScore.hex || 0) / 10 ** 18, 4),
-            price: totalScore > 0 ? toFixed(amountU / (totalScore / 10 ** 18), 4) : 0,
+            price: receivePrice || calcPrice,
 
             blackListExpanded: false,
           };
@@ -415,8 +426,9 @@ export default {
 
         if (res.success) {
           const { score } = res.data;
-          record.yourWeight = toFixed(score.hex / record.totalScore.hex, 2);
-          record.yourReward = toFixed(score.hex / record.totalScore.hex * record.rewards, 4);
+          const totalScore = parseInt(record.totalScore.hex, 10);
+          record.yourWeight = totalScore > 0 ? toFixed(score.hex / totalScore, 2) : 0;
+          record.yourReward = totalScore > 0 ? toFixed(score.hex / totalScore * record.rewards, 4) : 0;
           record.loaded = true;
         } else {
           record.yourWeight = 0;
