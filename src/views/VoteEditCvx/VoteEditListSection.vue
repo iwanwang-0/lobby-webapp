@@ -87,6 +87,8 @@ import {
   VotiumVeCRVContract, VotiumVeCRVInterface,
 } from '@/eth/ethereum';
 import VoteList from './VoteList';
+import toFixed from '@/filters/toFixed';
+import { fetchBribeList, fetchUserScore } from '@/api/dashbord';
 
 export default {
   components: {
@@ -104,8 +106,21 @@ export default {
   },
 
   data() {
+
+    const { platform, round } = this.$route.params;
+
+
     return {
       WEEK_SECONDS: 7 * 24 * 60 * 60,
+
+      // WEEK_SECONDS: 7 * 24 * 60 * 60,
+
+      // valueMap: {},
+
+      // market: platform,
+
+      round,
+
 
       valueMap: {},
       labelChoiceMap: {},
@@ -152,6 +167,8 @@ export default {
       submitting: false,
       loading: false,
 
+      guageRewardsMap: {},
+
     };
   },
 
@@ -160,6 +177,10 @@ export default {
     ...mapGetters(['roundOptions']),
     ...mapState(['cvxChoices', 'proposal', 'marketOption']),
     voteList() {
+      // console.log(JSON.stringify(this.guageRewardsMap))
+      // console.log(JSON.stringify(this.cvxChoices))
+
+      // console.log(this.cvxChoices)
       const list = this.cvxChoices.map((item, idx) => ({
         choice: idx + 1,
         // sort: idx,
@@ -167,10 +188,13 @@ export default {
         weight: 0,
         newWeight: 0,
         percent: 0,
+        rewards: this.guageRewardsMap[idx]?.rewards || 0,
       }));
 
-      const topList = list.filter((item) => this.user.cvxFavPoolMap[item.pool]);
-      const otherList = list.filter((item) => !this.user.cvxFavPoolMap[item.pool]);
+      const topList = list.filter((item) => this.user.cvxFavPoolMap[item.pool])
+        .sort((a, b) => b.rewards - a.rewards);
+      const otherList = list.filter((item) => !this.user.cvxFavPoolMap[item.pool])
+        .sort((a, b) => b.rewards - a.rewards);
 
       return [
         ...topList,
@@ -192,6 +216,7 @@ export default {
   },
 
   created() {
+    this.getList();
     // this.getReward();
   },
 
@@ -199,6 +224,38 @@ export default {
     selectChange() {
       this.getReward();
     },
+
+    async getList() {
+      this.loading = true;
+      const roundTime = this.round * this.WEEK_SECONDS;
+
+      const res = await fetchBribeList({
+        witch: this.voteType === 'VeCRV' ? 'crv' : 'cvx',
+        platform: this.market.toLowerCase(),
+        round: this.voteType === 'VlCVX' && config.debug ? this.hourStart : roundTime,
+      });
+      this.loading = false;
+      if (res.success) {
+        this.total = res.data.length;
+        const guageRewardsMap = {};
+        this.list = res.data.forEach((item, idx) => {
+          const amountU = item.bribes.reduce((sum, bribe) => {
+            return sum + BigNumber.from(bribe.tokenAmount.hex || 0) / (10 ** bribe.tokenDecimals)  * bribe.tokenPrice
+          }, 0);
+          guageRewardsMap[item.choice] = {
+            rewards: toFixed(amountU, 4),
+            name: item.name,
+          };
+        });
+
+        // console.log(guageRewardsMap)
+
+        this.guageRewardsMap = guageRewardsMap;
+      } else {
+        this.guageRewardsMap = {};
+      }
+    },
+
 
     async onVoteAll() {
       this.submitting = true;
@@ -245,23 +302,6 @@ export default {
           tx: result,
         });
 
-        // const proof = await this.getProof(tAddr, round);
-
-        // const txHash = await sendTransaction({
-        //   to: config.MultiMerkleStash,
-        //   gas: 640000,
-        //   data: MultiMerkleStashInterface.encodeFunctionData('claim', [
-        //     tAddr,
-        //     round,
-        //     this.user.address,
-        //     amount,
-        //     proof,
-        //   ]),
-        // });
-
-        // this.showPending('Pending', {
-        //   tx: txHash,
-        // });
 
         // const buyTx = await provider.waitForTransaction(txHash);
 

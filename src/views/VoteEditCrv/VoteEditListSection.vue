@@ -110,7 +110,6 @@ export default {
       WEEK_SECONDS: 7 * 24 * 60 * 60,
 
       valueMap: {},
-      // labelChoiceMap: {},
 
       market: platform,
 
@@ -120,6 +119,8 @@ export default {
       loading: false,
 
       historyMap: {},
+
+      guageRewardsMap: {},
     };
   },
 
@@ -134,12 +135,13 @@ export default {
         address: item.address,
         weight: this.historyMap[item.address.toLowerCase()]?.weight || 0,
         newWeight: 0,
-        // percent: 0,
-        // apr: item.apr,
+        rewards: this.guageRewardsMap[item.address.toLowerCase()] || 0,
       }));
 
-      const topList = list.filter((item) => this.user.crvFavPoolMap[item.pool]);
-      const otherList = list.filter((item) => !this.user.crvFavPoolMap[item.pool]);
+      const topList = list.filter((item) => this.user.crvFavPoolMap[item.pool])
+        .sort((a, b) => b.rewards - a.rewards);
+      const otherList = list.filter((item) => !this.user.crvFavPoolMap[item.pool])
+        .sort((a, b) => b.rewards - a.rewards);
 
       return [
         ...topList,
@@ -159,7 +161,8 @@ export default {
     // },
   },
 
-  created() {
+  async created() {
+     this.getList();
     this.getCrvHistory();
   },
 
@@ -206,6 +209,33 @@ export default {
         this.showError(error.error_description || error.message);
       }
       this.submitting = false;
+    },
+
+
+    async getList() {
+      this.loading = true;
+      const roundTime = this.round * this.WEEK_SECONDS;
+
+      const res = await fetchBribeList({
+        witch: this.voteType === 'VeCRV' ? 'crv' : 'cvx',
+        platform: this.market.toLowerCase(),
+        round: this.voteType === 'VlCVX' && config.debug ? this.hourStart : roundTime,
+      });
+      this.loading = false;
+      if (res.success) {
+        this.total = res.data.length;
+        const guageRewardsMap = {};
+        this.list = res.data.forEach((item, idx) => {
+          const amountU = item.bribes.reduce((sum, bribe) => {
+            return sum + BigNumber.from(bribe.tokenAmount.hex || 0) / (10 ** bribe.tokenDecimals)  * bribe.tokenPrice
+          }, 0);
+          guageRewardsMap[item.gaugeAddr] = toFixed(amountU, 4);
+        });
+
+        this.guageRewardsMap = guageRewardsMap;
+      } else {
+        this.guageRewardsMap = {};
+      }
     },
 
     async onVote(record) {

@@ -40,7 +40,11 @@
       <template
         v-for="(row, rIdx) in list"
       >
-        <tr :id="`choice-${row.choice}`" :key="`choice-${row.choice}`" >
+        <tr
+          :id="`choice-${row.choice -1 }`"
+          :key="`choice-${row.choice - 1}`"
+          :class="{active: (row.choice - 1) == active}"
+        >
           <td v-for="(head, hIdx) in cols">
 
             <template v-if="hIdx === 0">
@@ -127,35 +131,32 @@ export default {
   data() {
     return {
       active: '',
+      percentMap: {},
     }
   },
 
   watch: {
     list: {
       handler() {
-        const { choice } = this.$route.query;
-        if (choice) {
-          this.active = choice;
-          const targetElement = document.getElementById(`choice-${choice}`);
-          let targetPosition = 0;
-          if (targetElement) {
-            targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+        setTimeout(() => {
+          const { choice } = this.$route.query;
+          if (choice) {
+            this.active = choice;
+            const targetElement = document.getElementById(`choice-${choice}`);
+            let targetPosition = 0;
+            if (targetElement) {
+              targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+            }
+            window.scrollTo({
+              top: targetPosition,
+            });
           }
-          window.scrollTo({
-            top: targetPosition - 25,
-          });
-        }
+        }, 50);
       },
       immediate: true,
     },
   },
 
-  data() {
-    return {
-      active: '',
-      percentMap: {},
-    };
-  },
 
   created() {
 
