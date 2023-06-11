@@ -167,7 +167,8 @@ export default {
       submitting: false,
       loading: false,
 
-      guageRewardsMap: {},
+      rewardMapLoaded: false,
+      guageRewardMap: {},
 
     };
   },
@@ -177,10 +178,14 @@ export default {
     ...mapGetters(['roundOptions']),
     ...mapState(['cvxChoices', 'proposal', 'marketOption']),
     voteList() {
-      // console.log(JSON.stringify(this.guageRewardsMap))
+      // console.log(JSON.stringify(this.guageRewardMap))
       // console.log(JSON.stringify(this.cvxChoices))
 
       // console.log(this.cvxChoices)
+
+      if (!this.rewardMapLoaded) {
+        return [];
+      }
       const list = this.cvxChoices.map((item, idx) => ({
         choice: idx + 1,
         // sort: idx,
@@ -188,7 +193,7 @@ export default {
         weight: 0,
         newWeight: 0,
         percent: 0,
-        rewards: this.guageRewardsMap[idx]?.rewards || 0,
+        rewards: this.guageRewardMap[idx]?.rewards || 0,
       }));
 
       const topList = list.filter((item) => this.user.cvxFavPoolMap[item.pool])
@@ -235,24 +240,25 @@ export default {
         round: this.voteType === 'VlCVX' && config.debug ? this.hourStart : roundTime,
       });
       this.loading = false;
+      this.rewardMapLoaded = true;
       if (res.success) {
         this.total = res.data.length;
-        const guageRewardsMap = {};
+        const guageRewardMap = {};
         this.list = res.data.forEach((item, idx) => {
           const amountU = item.bribes.reduce((sum, bribe) => {
             return sum + BigNumber.from(bribe.tokenAmount.hex || 0) / (10 ** bribe.tokenDecimals)  * bribe.tokenPrice
           }, 0);
-          guageRewardsMap[item.choice] = {
+          guageRewardMap[item.choice] = {
             rewards: toFixed(amountU, 4),
             name: item.name,
           };
         });
 
-        // console.log(guageRewardsMap)
+        // console.log(guageRewardMap)
 
-        this.guageRewardsMap = guageRewardsMap;
+        this.guageRewardMap = guageRewardMap;
       } else {
-        this.guageRewardsMap = {};
+        this.guageRewardMap = {};
       }
     },
 

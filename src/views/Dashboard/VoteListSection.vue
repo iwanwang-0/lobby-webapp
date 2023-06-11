@@ -220,14 +220,15 @@ export default {
         {
           title: this.voteType === 'VeCRV' ? '$/veCRV' : '$/vlCVX',
           prop: 'price',
-          // width: '180px',
           align: 'right',
           sorter: true,
+          render(text) {
+            return toFixed(text, 4);
+          },
         },
         {
           title: 'Rewards',
           prop: 'rewards',
-          // width: '180px',
           align: 'right',
           sorter: true,
           render(text) {
@@ -311,7 +312,6 @@ export default {
 
   methods: {
     onMoreAddress(record) {
-      console.log(record);
       record.blackListExpanded = !record.blackListExpanded;
     },
     async getList() {
@@ -356,10 +356,8 @@ export default {
             blackList.push(...(bribe.blackList || []));
 
             maxRewardPerScore += (BigNumber.from(bribe.maxRewardPerScore.hex || 0) / (10 ** bribe.tokenDecimals) * bribe.tokenPrice);
-
             const rewardPerScore = +(bribe?.rewardPerScore?.hex) || 0;
             receivePrice += rewardPerScore ? rewardPerScore / (10 ** bribe.tokenDecimals) * bribe.tokenPrice : 0;
-
           }, 0);
 
           return {

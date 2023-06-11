@@ -130,9 +130,11 @@ export default {
       submitting: false,
       loading: false,
 
+
       historyMap: {},
 
-      guageRewardsMap: {},
+      rewardMapLoaded: false,
+      guageRewardMap: {},
 
       crvBalance: 0,
       userPower: 0,
@@ -144,13 +146,16 @@ export default {
     ...mapGetters(['roundOptions']),
     ...mapState(['crvList', 'proposal', 'allGauges', 'marketOption']),
     voteList() {
+      if (!this.rewardMapLoaded) {
+        return [];
+      }
       const list = this.crvList.map((item, idx) => ({
         choice: idx + 1,
         pool: item.name,
         address: item.address,
         weight: this.historyMap[item.address.toLowerCase()]?.weight || 0,
         newWeight: 0,
-        rewards: this.guageRewardsMap[item.address.toLowerCase()] || 0,
+        rewards: this.guageRewardMap[item.address.toLowerCase()] || 0,
       }));
 
       const topList = list.filter((item) => this.user.crvFavPoolMap[item.pool])
@@ -166,18 +171,6 @@ export default {
   },
 
   watch: {
-    // crvList: {
-    //   handler() {
-    //     this.crvList.forEach((item, idx) => {
-    //       this.labelChoiceMap[item.label] = idx + 1;
-    //     });
-    //   },
-    //   immediate: true,
-    // },
-    // 'user.address': function () {
-    //   this.getMyVote();
-    // },
-
     user: {
       handler() {
         if (this.user.address) {
@@ -192,7 +185,6 @@ export default {
 
   async created() {
     this.getList();
-    // this.getMyVote();
   },
 
   methods: {
@@ -259,17 +251,18 @@ export default {
         round: this.voteType === 'VlCVX' && config.debug ? this.hourStart : roundTime,
       });
       this.loading = false;
+      this.rewardMapLoaded = true;
       if (res.success) {
         this.total = res.data.length;
-        const guageRewardsMap = {};
+        const guageRewardMap = {};
         this.list = res.data.forEach((item, idx) => {
           const amountU = item.bribes.reduce((sum, bribe) => sum + BigNumber.from(bribe.tokenAmount.hex || 0) / (10 ** bribe.tokenDecimals) * bribe.tokenPrice, 0);
-          guageRewardsMap[item.gaugeAddr] = toFixed(amountU, 4);
+          guageRewardMap[item.gaugeAddr] = toFixed(amountU, 4);
         });
 
-        this.guageRewardsMap = guageRewardsMap;
+        this.guageRewardMap = guageRewardMap;
       } else {
-        this.guageRewardsMap = {};
+        this.guageRewardMap = {};
       }
     },
 
@@ -353,8 +346,8 @@ export default {
     .header-right {
       display: flex;
       align-items: center;
-
-
+      align-self: end;
+      margin-bottom: 12px;
       & .tip {
         font-size: 16px;
         align-self: baseline;
