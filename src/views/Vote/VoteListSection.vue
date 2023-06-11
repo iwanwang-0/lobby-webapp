@@ -48,9 +48,8 @@
                 </em>
               </div>
               <div>
-                Your reward :
+                Estimated rewards:
                 <em>
-                  <!-- 123,235 veCRV -->
                   <b-spinner v-if="row.loading"  variant="secondary" small label="Small Spinner"></b-spinner>
                   <span  v-else>$ {{  row.yourReward  }}</span>
                 </em>

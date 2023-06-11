@@ -68,7 +68,6 @@
               <slot name="operation" :row="row"></slot>
             </template>
 
-
             <template v-if="head.isEdit">
               <template>
                 <div class="edit-wrapper">
