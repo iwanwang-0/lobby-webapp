@@ -307,8 +307,8 @@ export default {
           });
         }
       } catch (error) {
-        this.showError(error.message);
-        console.error(error);
+        this.showError(error.reason || error.message);
+        console.dir(error);
       }
       this.submitting = false;
     },

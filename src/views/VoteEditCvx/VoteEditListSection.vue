@@ -11,7 +11,7 @@
           variant="link"
           :loading="submitting"
           @click="onVoteAll"
-
+          :disabled="!voteDisabled"
         >
           Vote All
         </CuButton>
@@ -86,9 +86,9 @@ import {
   MultiMerkleStashInterface, provider,
   VotiumVeCRVContract, VotiumVeCRVInterface,
 } from '@/eth/ethereum';
-import VoteList from './VoteList';
 import toFixed from '@/filters/toFixed';
 import { fetchBribeList, fetchUserScore } from '@/api/dashbord';
+import VoteList from './VoteList';
 
 export default {
   components: {
@@ -106,9 +106,7 @@ export default {
   },
 
   data() {
-
     const { platform, round } = this.$route.params;
-
 
     return {
       WEEK_SECONDS: 7 * 24 * 60 * 60,
@@ -120,7 +118,6 @@ export default {
       // market: platform,
 
       round,
-
 
       valueMap: {},
       labelChoiceMap: {},
@@ -178,17 +175,11 @@ export default {
     ...mapGetters(['roundOptions']),
     ...mapState(['cvxChoices', 'proposal', 'marketOption']),
     voteList() {
-      // console.log(JSON.stringify(this.guageRewardMap))
-      // console.log(JSON.stringify(this.cvxChoices))
-
-      // console.log(this.cvxChoices)
-
       if (!this.rewardMapLoaded) {
         return [];
       }
       const list = this.cvxChoices.map((item, idx) => ({
         choice: idx + 1,
-        // sort: idx,
         pool: item.label.replace(/\(.*\)/, ''),
         weight: 0,
         newWeight: 0,
@@ -207,6 +198,12 @@ export default {
       ];
     },
 
+    voteDisabled() {
+      return Object.keys(this.valueMap).reduce((sum, key, idx) => {
+        const value = Number.parseInt(this.valueMap[key], 10) || 0;
+        return sum + value;
+      }, 0);
+    },
   },
 
   watch: {
@@ -245,9 +242,7 @@ export default {
         this.total = res.data.length;
         const guageRewardMap = {};
         this.list = res.data.forEach((item, idx) => {
-          const amountU = item.bribes.reduce((sum, bribe) => {
-            return sum + BigNumber.from(bribe.tokenAmount.hex || 0) / (10 ** bribe.tokenDecimals)  * bribe.tokenPrice
-          }, 0);
+          const amountU = item.bribes.reduce((sum, bribe) => sum + BigNumber.from(bribe.tokenAmount.hex || 0) / (10 ** bribe.tokenDecimals) * bribe.tokenPrice, 0);
           guageRewardMap[item.choice] = {
             rewards: toFixed(amountU, 4),
             name: item.name,
@@ -261,7 +256,6 @@ export default {
         this.guageRewardMap = {};
       }
     },
-
 
     async onVoteAll() {
       this.submitting = true;
@@ -282,7 +276,7 @@ export default {
         });
         this.showSuccess('Succeeded');
       } catch (error) {
-        this.showError(error.error_description || error.message);
+        this.showError(error.reason || error.message);
       }
       this.submitting = false;
     },
@@ -308,7 +302,6 @@ export default {
           tx: result,
         });
 
-
         // const buyTx = await provider.waitForTransaction(txHash);
 
         // if (buyTx.status === 1) {
@@ -325,12 +318,11 @@ export default {
         //   });
         // }
       } catch (error) {
-        this.showError(error.message);
-        console.error(error);
+        this.showError(error.data.message);
+        console.error(error.data.message);
       }
       this.submitting = false;
     },
-
 
     openForward() {
       this.$refs['my-modal'].show();

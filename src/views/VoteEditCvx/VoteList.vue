@@ -9,9 +9,9 @@
         >
           {{ head.title }}
           <b-button
+            v-if="head.opBtn"
             style="margin-left: 8px"
             variant="outline-primary"
-            v-if="head.opBtn"
             @click="head.opClick"
           >
             {{ head.opBtn }}
