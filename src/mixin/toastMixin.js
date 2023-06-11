@@ -71,10 +71,12 @@ export default {
     },
 
     showPending(msg, options) {
-      this.showToast(msg, 'pending', options);
+      const content = msg.slice(0, 1).toUpperCase() + msg.slice(1);
+      this.showToast(content, 'pending', options);
     },
     showError(msg, options) {
-      this.showToast(msg, 'error', options);
+      const content = msg.slice(0, 1).toUpperCase() + msg.slice(1);
+      this.showToast(content, 'error', options);
     },
   },
 };
