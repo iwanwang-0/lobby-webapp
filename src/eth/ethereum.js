@@ -8,7 +8,7 @@ import VotiumVeCRVAbi from '@/eth/abi/VotiumVeCRV.json';
 import MultiMerkleStashForCVXAbi from '@/eth/abi/MultiMerkleStashForCVX.json';
 import VotiumBribeCVXAbi from '@/eth/abi/VotiumBribeCVX.json';
 import GaugeControllerAbi from '@/eth/abi/GaugeController.json';
-import DelegateRegistryAbi from '@/eth/abi/DelegateRegistry';
+import DelegateRegistryAbi from '@/eth/abi/DelegateRegistry.json';
 
 
 

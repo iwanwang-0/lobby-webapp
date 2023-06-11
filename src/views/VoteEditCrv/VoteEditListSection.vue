@@ -28,6 +28,12 @@
           :options="marketOption"
           v-model="market"
         /> -->
+        <div class="tip">
+          Total voting power :
+          <em>{{ crvBalance }} veCRV</em>
+          （used <em>{{crvBalance ? userPower / crvBalance * 100 : 0  | toFixed(2)}}%</em> ,
+          unallocated <em>{{(crvBalance ? (crvBalance - userPower) / crvBalance * 100 : 0) | toFixed(2)}}%</em>）
+        </div>
       </div>
     </div>
 
@@ -81,10 +87,16 @@ import { fetchBribeList, fetchUserScore } from '@/api/dashbord';
 import toFixed from '@/filters/toFixed';
 import { getCrvHistory } from '@/api/thegraph';
 
+// import {
+//   getERC20Contract, getERC20Interface, provider,
+//   getProdERC20Contract,
+// } from '@/eth/ethereum';
+
 import {
   GaugeControllerContract,
   GaugeControllerInterface,
-  getERC20Contract, MultiMerkleStashContract, MultiMerkleStashInterface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
+  getProdERC20Contract,
+  provider,
 } from '@/eth/ethereum';
 import VoteList from './VoteList';
 
@@ -121,6 +133,9 @@ export default {
       historyMap: {},
 
       guageRewardsMap: {},
+
+      crvBalance: 0,
+      userPower: 0,
     };
   },
 
@@ -159,24 +174,48 @@ export default {
     //   },
     //   immediate: true,
     // },
+    // 'user.address': function () {
+    //   this.getMyVote();
+    // },
+
+    user: {
+      handler() {
+        if (this.user.address) {
+          this.getCrvBalance();
+          this.getMyVote();
+          this.getCrvHistory();
+        }
+      },
+      immediate: true,
+    },
   },
 
   async created() {
-     this.getList();
-    this.getCrvHistory();
+    this.getList();
+    // this.getMyVote();
   },
 
   methods: {
     selectChange() {
       this.getReward();
     },
+
+    async getCrvBalance() {
+      const balance = await getProdERC20Contract(config.VeCRV).balanceOf(this.user.address);
+      this.crvBalance = toFixed(balance / 1e18, 2);
+    },
+
+    async getMyVote() {
+      if (this.user.address) {
+        const userPower = await GaugeControllerContract.vote_user_power(this.user.address);
+        this.userPower = toFixed(userPower / 1e18, 2);
+      }
+    },
     async getCrvHistory() {
-      // this.loading = true;
       const data = await getCrvHistory({
         round: this.round,
         user: this.user.address,
       });
-      // this.loading = false;
       this.historyMap = data.reduce((map, item) => {
         // eslint-disable-next-line no-param-reassign
         map[item.gauge] = item;
@@ -205,12 +244,10 @@ export default {
 
         this.showSuccess('Succeeded');
       } catch (error) {
-        // console.error(error);
         this.showError(error.error_description || error.message);
       }
       this.submitting = false;
     },
-
 
     async getList() {
       this.loading = true;
@@ -226,9 +263,7 @@ export default {
         this.total = res.data.length;
         const guageRewardsMap = {};
         this.list = res.data.forEach((item, idx) => {
-          const amountU = item.bribes.reduce((sum, bribe) => {
-            return sum + BigNumber.from(bribe.tokenAmount.hex || 0) / (10 ** bribe.tokenDecimals)  * bribe.tokenPrice
-          }, 0);
+          const amountU = item.bribes.reduce((sum, bribe) => sum + BigNumber.from(bribe.tokenAmount.hex || 0) / (10 ** bribe.tokenDecimals) * bribe.tokenPrice, 0);
           guageRewardsMap[item.gaugeAddr] = toFixed(amountU, 4);
         });
 
@@ -319,6 +354,15 @@ export default {
       display: flex;
       align-items: center;
 
+
+      & .tip {
+        font-size: 16px;
+        align-self: baseline;
+        em {
+          color: #1DD186;
+          font-style: normal;
+        }
+      }
       .link-btn {
         margin-right: 30px;
         height: 50px;

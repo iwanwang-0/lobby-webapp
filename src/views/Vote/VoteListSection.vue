@@ -353,6 +353,9 @@ export default {
       this.loading = true;
       const roundTime = this.round * this.WEEK_SECONDS;
 
+      if (!roundTime) {
+        return;
+      }
       const res = await fetchBribeList({
         witch: this.voteType === 'VeCRV' ? 'crv' : 'cvx',
         platform: this.market.toLowerCase(),

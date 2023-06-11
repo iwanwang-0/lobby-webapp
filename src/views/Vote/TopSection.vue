@@ -188,10 +188,6 @@ export default {
   created() {
     this.setTime();
     this.loopSetNow();
-    // if (this.user.address) {
-    //   this.getCrvBalance();
-    //   this.getCvxBalance();
-    // }
   },
 
   methods: {
@@ -202,7 +198,7 @@ export default {
 
     async getCvxBalance() {
       if (this.proposal.snapshot) {
-        const balance = await provider.getBalance(this.user.address, this.proposal.snapshot);
+        const balance = await provider.getBalance(this.user.address, +this.proposal.snapshot);
         this.cvxBalance = toFixed(balance / 1e18, 2);
       } else {
         const balance = await getERC20Contract(config.USDT).balanceOf(this.user.address);
@@ -236,8 +232,8 @@ export default {
 
       const cvxThursday = moment(this.getCurrentCvxRound() * 1000);
 
-      console.log(moment(cvxThursday).format('YYYY-MM-DD dd HH:mm:ss Z'));
-      console.log(moment((CVX_START_SECONDS) * 1000).format('YYYY-MM-DD dd HH:mm:ss Z'));
+      // console.log(moment(cvxThursday).format('YYYY-MM-DD dd HH:mm:ss Z'));
+      // console.log(moment((CVX_START_SECONDS) * 1000).format('YYYY-MM-DD dd HH:mm:ss Z'));
 
       if (today.isBefore(cvxThursday)) {
         this.cvxCurrent = cvxThursday.clone();
