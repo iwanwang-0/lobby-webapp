@@ -100,13 +100,13 @@
                   {{ (row.week.hex * (WEEK_SECONDS) + (WEEK_SECONDS))  * 1000 | formatTime('MMMM D, yyyy h:mm a') }}
                 </div>
               </div>
-              <div class="expand-item">
+              <!-- <div class="expand-item">
                 <div class="label">First week of claim</div>
                 <div class="content">
                   -
-                  <!-- February 16, 2023 8:00 am -->
+                  February 16, 2023 8:00 am
                 </div>
-              </div>
+              </div> -->
               <!-- <div class="expand-item">
                 <div class="label">Last week of claim</div>
                 <div class="content">
