@@ -130,7 +130,6 @@ export default {
       submitting: false,
       loading: false,
 
-
       historyMap: {},
 
       rewardMapLoaded: false,
@@ -171,8 +170,9 @@ export default {
   },
 
   watch: {
-    user: {
+    'user.address': {
       handler() {
+        console.log(this.user.address);
         if (this.user.address) {
           this.getCrvBalance();
           this.getMyVote();
@@ -191,15 +191,19 @@ export default {
     selectChange() {
       this.getReward();
     },
-
+    // '0x3F2708A3e4BC67f1053d5195201540994EF27776'
     async getCrvBalance() {
       const balance = await getProdERC20Contract(config.VeCRV).balanceOf(this.user.address);
+      console.log(balance)
       this.crvBalance = toFixed(balance / 1e18, 2);
     },
 
     async getMyVote() {
+      console.log('getmyvote');
       if (this.user.address) {
         const userPower = await GaugeControllerContract.vote_user_power(this.user.address);
+
+        console.log(userPower);
         this.userPower = toFixed(userPower / 1e18, 2);
       }
     },
