@@ -31,8 +31,8 @@
         <div class="tip">
           Total voting power :
           <em>{{ crvBalance }} veCRV</em>
-          （used <em>{{crvBalance ? userPower / crvBalance * 100 : 0  | toFixed(2)}}%</em> ,
-          unallocated <em>{{(crvBalance ? (crvBalance - userPower) / crvBalance * 100 : 0) | toFixed(2)}}%</em>）
+          （used <em>{{crvBalance ? userPowerPercent * 100 : 0  | toFixed(2)}}%</em> ,
+          unallocated <em>{{(crvBalance ? (1 - userPowerPercent) * 100 : 0) | toFixed(2)}}%</em>）
         </div>
       </div>
     </div>
@@ -136,7 +136,7 @@ export default {
       guageRewardMap: {},
 
       crvBalance: 0,
-      userPower: 0,
+      userPowerPercent: 0,
     };
   },
 
@@ -194,17 +194,14 @@ export default {
     // '0x3F2708A3e4BC67f1053d5195201540994EF27776'
     async getCrvBalance() {
       const balance = await getProdERC20Contract(config.VeCRV).balanceOf(this.user.address);
-      console.log(balance)
       this.crvBalance = toFixed(balance / 1e18, 2);
     },
 
     async getMyVote() {
-      console.log('getmyvote');
       if (this.user.address) {
         const userPower = await GaugeControllerContract.vote_user_power(this.user.address);
-
-        console.log(userPower);
-        this.userPower = toFixed(userPower / 1e18, 2);
+        console.log(userPower)
+        this.userPowerPercent = userPower / 10000;
       }
     },
     async getCrvHistory() {
