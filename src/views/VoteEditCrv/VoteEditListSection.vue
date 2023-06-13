@@ -200,7 +200,6 @@ export default {
     async getMyVote() {
       if (this.user.address) {
         const userPower = await GaugeControllerContract.vote_user_power(this.user.address);
-        console.log(userPower)
         this.userPowerPercent = userPower / 10000;
       }
     },
