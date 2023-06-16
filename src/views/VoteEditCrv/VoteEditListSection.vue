@@ -150,7 +150,7 @@ export default {
       }
       const list = this.crvList.map((item, idx) => ({
         choice: idx + 1,
-        pool: item.name,
+        pool: item.name || '-',
         address: item.address,
         weight: this.historyMap[item.address.toLowerCase()]?.weight || 0,
         newWeight: 0,

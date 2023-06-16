@@ -183,13 +183,18 @@ export default {
                 value: toFixed(tokenAddrMap[tokenAddr].hex / 10 ** decimals, 4),
               };
             });
-          const guageName = this.voteType === 'VeCRV' ? this.guageNameMap[key.toLowerCase()].shortName : key;
+            // console.log(key.toLowerCase())
+          let guageName = this.voteType === 'VeCRV' ? this.guageNameMap[key.toLowerCase()]?.shortName : key;
           this.total += tokenAddrMap.totalValue;
           this.totalScore += +tokenAddrMap.totalScore.hex;
+          // console.log(key, guageName)
+          if (!guageName) {
+            guageName = key;
+          }
           return {
             guage: key,
-            guageNameShort: `${guageName.slice(0, 10)}...${guageName.slice(-10)}`,
-            guageName,
+            guageNameShort: guageName ? `${guageName.slice(0, 10)}...${guageName.slice(-10)}` : '-',
+            guageName: guageName ?? '-',
             total: tokenAddrMap.totalValue,
             list: tokenList,
           };
