@@ -6,23 +6,40 @@
           <div class="title">Delegate to Lobby</div>
          <div class="row1">Delegate to Lobby, after delegating your vlCVX voting rights, Lobby will automatically vote for you according to the best return </div>
         </div>
-        <!-- <div class="btn-row">
-           <cu-button @click="onDelegate" class="link-btn" :loading="submitting">Delegate to Lobby</cu-button>
-        </div> -->
+        <div
+          class="btn-row"
+          v-if="!user.address"
+        >
+           <cu-button
+            @click="unlock"
+            class="link-btn"
+          >Wallet Connect</cu-button>
+        </div>
+
+        <div
+          class="btn-row"
+          v-if="user.address && !isDelegate"
+        >
+           <cu-button
+            @click="onDelegate"
+            class="link-btn"
+            :loading="submitting"
+          >Delegate to Lobby</cu-button>
+        </div>
         <!-- <div class="title">Reward</div>
         <div class="desc">Each round of Reward will be distributed <em>48h</em> after the end of voting</div> -->
       </div>
-      <div class="right">
+      <!-- <div class="right">
         <div class="top">
           <div class="title">Compounding</div>
           <div class="row1">Compounding: Lobby will automatically convert your rewards into your vlCVX shares, and you can also manually cancel the automatic investment function </div>
           <div class="row2">Redem: The protocol stops converting rewards into vlCVX Voting power, you can claim rewards manually</div>
         </div>
-        <!-- <div class="btn-row">
+        <div class="btn-row">
            <cu-button class="link-btn">Compounding</cu-button>
            <cu-button class="link-btn">Redeem</cu-button>
-        </div> -->
-      </div>
+        </div>
+      </div> -->
     </div>
   </b-container>
 </template>
@@ -32,7 +49,7 @@ import { mapState } from 'vuex';
 import CuButton from '@/components/CuButton';
 import sendTransaction from '@/common/sendTransaction';
 import {
-  provider, DelegateRegistryInterface,
+  provider, DelegateRegistryInterface, DelegateRegistryContract
 } from '@/eth/ethereum';
 import { BigNumber, utils } from 'ethers';
 
@@ -45,14 +62,32 @@ export default {
   data() {
     return {
       submitting: false,
+      isDelegate: false,
     };
   },
 
   computed: {
     ...mapState(['user']),
   },
+  created() {
+    this.getDelegate();
+  },
   methods: {
+    unlock() {
+      this.$store.dispatch('unlockByMetaMask');
+    },
 
+    async getDelegate() {
+      const address = await DelegateRegistryContract.delegation(
+        this.user.address,
+        utils.formatBytes32String('iwan.eth'),
+      );
+      if (address && address !== '0x0000000000000000000000000000000000000000') {
+        this.isDelegate = true;
+      } else {
+        this.isDelegate = false;
+      }
+    },
     async onDelegate() {
       if (!this.user.address) {
         this.showError('Please connect metamask');
@@ -103,13 +138,14 @@ export default {
   border-right: 1px solid $border-color;
   border-bottom: 1px solid $border-color;
   // grid-template-rows: 130px 180px;
-  height: 340px;
+  height: 240px;
   // display: grid;
 }
 
 .content {
   display: grid;
-  grid-template-columns: 469px 729px;
+  // grid-template-columns: 469px 729px;
+  grid-template-columns: 100%;
   height: 100%;
 
   color: #CCCCCC;;
