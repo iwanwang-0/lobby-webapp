@@ -8,8 +8,8 @@
 
         <b-col cols="12" lg="6" class="social-wrapper">
           <!-- <img class="social-icon" src="@/assets/img/icon-reddit@2x.png" alt=""> -->
-          <!-- <img class="social-icon" src="@/assets/img/icon-telegram@2x.png" alt=""> -->
-          <img class="social-icon" @click="linkTo('https://twitter.com/LobbyCRV')" src="@/assets/img/icon-twitter@2x.png" alt="">
+          <img class="social-icon" @click="linkTo('https://t.me/LobbyDAO_page')" src="@/assets/img/icon-telegram@2x.png" alt="">
+          <img class="social-icon" @click="linkTo('https://twitter.com/LobbyPage')" src="@/assets/img/icon-twitter@2x.png" alt="">
         </b-col>
       </b-row>
       <b-row class="copyright-bar" align-h="left" align-v="center">

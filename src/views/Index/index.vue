@@ -32,7 +32,6 @@
 
     <div class="social-group">
       <!-- <img class="social-btn" src="~./assets/discord.png" alt=""> -->
-
       <img class="social-btn" @click="linkTo('https://twitter.com/LobbyCRV')" src="~./assets/twitter.png" alt="">
       <!-- <img class="social-btn" src="~./assets/medium.png" alt=""> -->
     </div>
