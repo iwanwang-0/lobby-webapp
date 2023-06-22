@@ -227,7 +227,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['user', 'marketOption', 'tokenMap']),
+    ...mapState(['user', 'marketOption', 'tokenMap', 'guageNameMap']),
     ...mapState(['cvxChoices', 'crvChoices', 'proposal']),
 
     cols() {
@@ -392,14 +392,16 @@ export default {
             receivePrice += rewardPerScore ? rewardPerScore / (10 ** bribe.tokenDecimals) * bribe.tokenPrice : 0;
           }, 0);
 
+          const guageName = this.voteType === 'VeCRV' ? this.guageNameMap[item.gaugeAddr.toLowerCase()]?.shortName : item.name;
+
           return {
             sort: idx + 1,
             ...item,
             loading: false,
             yourWeight: '',
             yourReward: '',
-            pool: item.name || '-',
-            name: item.name || '-',
+            pool: guageName ?? item.name ?? '-',
+            name: guageName ?? item.name ?? '-',
             maxRewardPerScore,
             blackList,
             // tokenSymbol: symbol,

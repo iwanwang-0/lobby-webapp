@@ -270,7 +270,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['user', 'marketOption', 'tokenMap', 'totalRound']),
+    ...mapState(['user', 'marketOption', 'tokenMap', 'guageNameMap', 'totalRound']),
     ...mapState(['cvxChoices', 'crvChoices', 'proposal']),
 
     voteList() {
@@ -329,7 +329,7 @@ export default {
       this.loading = false;
       if (res.success) {
         this.total = res.data.length;
-        this.list = res.data.map((item, idx) => {
+        const list = res.data.map((item, idx) => {
           const totalScore = +item.totalScore.hex;
 
           const amountU = item.bribes.reduce((sum, bribe) => {
@@ -360,13 +360,15 @@ export default {
             receivePrice += rewardPerScore ? rewardPerScore / (10 ** bribe.tokenDecimals) * bribe.tokenPrice : 0;
           }, 0);
 
+          const guageName = this.voteType === 'VeCRV' ? this.guageNameMap[item.gaugeAddr.toLowerCase()]?.shortName : item.name;
+
           return {
             ...item,
             loading: false,
             yourWeight: '',
             yourReward: '',
-            pool: item.name ?? '-',
-            name: item.name ?? '-',
+            pool: item.name ?? guageName ?? '-',
+            name: item.name ?? guageName ?? '-',
             maxRewardPerScore,
             blackList,
             // tokenSymbol: symbol,
@@ -385,6 +387,8 @@ export default {
               sort: idx + 1,
             };
           });
+          console.log(list)
+          this.list = list;
       } else {
         this.list = [];
       }
