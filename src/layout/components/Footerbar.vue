@@ -8,8 +8,12 @@
 
         <b-col cols="12" lg="6" class="social-wrapper">
           <!-- <img class="social-icon" src="@/assets/img/icon-reddit@2x.png" alt=""> -->
-          <img class="social-icon" @click="linkTo('https://t.me/LobbyDAO_page')" src="@/assets/img/icon-telegram@2x.png" alt="">
-          <img class="social-icon" @click="linkTo('https://twitter.com/LobbyPage')" src="@/assets/img/icon-twitter@2x.png" alt="">
+          <div class="social-icon-wrapper">
+            <img class="social-icon" @click="linkTo('https://t.me/LobbyDAO_page')" src="@/assets/img/icon-telegram@2x.png" alt="">
+          </div>
+          <div class="social-icon-wrapper">
+            <img class="social-icon" @click="linkTo('https://twitter.com/LobbyPage')" src="@/assets/img/icon-twitter@2x.png" alt="">
+          </div>
         </b-col>
       </b-row>
       <b-row class="copyright-bar" align-h="left" align-v="center">
@@ -52,12 +56,22 @@ export default {
   .social-wrapper {
     text-align: right;
   }
-  .social-icon {
+
+  .social-icon-wrapper {
     width: 36px;
-    cursor: pointer;
-    & + .social-icon {
+    height: 36px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255,255, 0.08);
+    border-radius: 50%;
+    & + .social-icon-wrapper {
       margin-left: 40px;
     }
+  }
+  .social-icon {
+    width: 24px;
+    cursor: pointer;
   }
 
 }

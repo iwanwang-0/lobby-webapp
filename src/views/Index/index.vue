@@ -31,8 +31,22 @@
     </div>
 
     <div class="social-group">
+      <div @click="linkTo('https://t.me/LobbyDAO_page')">
+        <div class="social-icon-wrapper">
+          <img class="social-icon" src="@/assets/img/icon-telegram@2x.png" alt="">
+        </div>
+        Telegram
+      </div>
+      <div @click="linkTo('https://twitter.com/LobbyPage')">
+        <div class="social-icon-wrapper">
+          <img class="social-icon" src="@/assets/img/icon-twitter@2x.png" alt="">
+        </div>
+        Twitter
+
+      </div>
+
       <!-- <img class="social-btn" src="~./assets/discord.png" alt=""> -->
-      <img class="social-btn" @click="linkTo('https://twitter.com/LobbyCRV')" src="~./assets/twitter.png" alt="">
+      <!-- <img class="social-btn" @click="linkTo('https://twitter.com/LobbyCRV')" src="~./assets/twitter.png" alt=""> -->
       <!-- <img class="social-btn" src="~./assets/medium.png" alt=""> -->
     </div>
 
@@ -148,6 +162,33 @@ export default {
   .social-group {
     position: absolute;
     bottom: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    & > div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+  }
+
+  .social-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255,255, 0.1);
+    border-radius: 4px;
+    margin-right: 8px;
+    & + .social-icon-wrapper {
+      margin-left: 40px;
+    }
+  }
+  .social-icon {
+    width: 32px;
   }
   // display: grid;
   // grid-template-columns: 700px 500px;

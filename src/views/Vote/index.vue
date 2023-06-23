@@ -6,7 +6,6 @@
     ></TopSection>
     <DelegateSection
       v-if="voteType !== 'VeCRV'"
-
     ></DelegateSection>
     <VoteListSection
     :voteType="voteType"
