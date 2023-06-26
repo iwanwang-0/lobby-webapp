@@ -79,6 +79,9 @@
                     @input=" onInput($event, row, head.prop)"
                    />
                   <span class="suffix">%</span>
+                  <span class="vote-amount">
+                    ≈ {{ unallocated * crvBalance * valueMap[row.pool] / 10000 || 0 }}
+                  </span>
                 </div>
               </template>
             </template>
@@ -122,6 +125,12 @@ export default {
     },
     voteType: {
       type: String,
+    },
+    unallocated: {
+      type: Number,
+    },
+    crvBalance: {
+      type: Number,
     },
   },
 
@@ -280,6 +289,16 @@ export default {
   .edit-wrapper {
     display: inline-flex;
     width: 300px;
+    align-items: center;
+  }
+
+  .vote-amount {
+    width: 120px;
+    display: inline-block;
+    margin-left: 12px;
+    color: #ccc;
+    white-space: nowrap;
+
   }
   .edit-input {
     background: #1B191F;
@@ -288,6 +307,7 @@ export default {
     color: #ccc;
     outline: none;
     padding-left: 8px;
+    width: 200px;
   }
 
   .edit-input.vlcvx {

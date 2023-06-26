@@ -101,7 +101,7 @@ export default {
           to: config.DelegateRegistry,
           gas: 640000,
           data: DelegateRegistryInterface.encodeFunctionData('setDelegate', [
-            utils.formatBytes32String('iwan.eth'),
+            utils.formatBytes32String(config.space),
             '0xB2cbcB9FCcA1B1f8E11B042c3887A22b97B4EB52',
           ]),
         });
@@ -121,6 +121,9 @@ export default {
             tx: buyTxHash,
           });
         }
+      } catch (error) {
+        this.showError(error.reason || error.message);
+        console.dir(error);
       } finally {
         this.submitting = false;
       }

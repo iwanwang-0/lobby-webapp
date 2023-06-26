@@ -31,8 +31,8 @@
         <div class="tip">
           Total voting power :
           <em>{{ crvBalance }} veCRV</em>
-          （used <em>{{crvBalance ? userPowerPercent * 100 : 0  | toFixed(2)}}%</em> ,
-          unallocated <em>{{(crvBalance ? (1 - userPowerPercent) * 100 : 0) | toFixed(2)}}%</em>）
+          （used <em>{{used}}%</em> ,
+          unallocated <em>{{unallocated}}%</em>）
         </div>
       </div>
     </div>
@@ -45,6 +45,8 @@
         :list="voteList"
         :loading="loading"
         :submitting="submitting"
+        :unallocated="unallocated"
+        :crvBalance="crvBalance"
       >
         <template v-slot:operation="{ row }">
           <CuButton
@@ -144,6 +146,12 @@ export default {
     ...mapState(['user', 'tokenMap', 'guageNameMap']),
     ...mapGetters(['roundOptions']),
     ...mapState(['crvList', 'proposal', 'allGauges', 'marketOption']),
+    unallocated() {
+      return toFixed(this.crvBalance ? (1 - this.userPowerPercent) * 100 : 0, 2);
+    },
+    used() {
+      return toFixed(this.crvBalance ? this.userPowerPercent * 100 : 0, 2);
+    },
     voteList() {
       if (!this.rewardMapLoaded) {
         return [];

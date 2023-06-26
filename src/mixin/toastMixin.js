@@ -61,7 +61,7 @@ export default {
 
       __g_root__.$bvToast.toast(vNodesMsg, {
         noCloseButton: true,
-        autoHideDelay: 3000,
+        autoHideDelay: 2500,
         variant: type,
       });
     },

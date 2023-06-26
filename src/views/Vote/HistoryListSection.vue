@@ -48,7 +48,8 @@ import toFixed from '@/filters/toFixed';
 
 import { getCvxVotes, getVotePower } from '@/api/snapshot';
 import { getCrvHistory } from '@/api/thegraph';
-import { CVX_START_SECONDS, WEEK_SECONDS } from '@/constants/time';
+// import { CVX_START_SECONDS, WEEK_SECONDS } from '@/constants/time';
+import { WEEK_SECONDS, CRV_START_SECONDS, CVX_START_SECONDS } from '@/constants/time';
 
 export default {
   components: {
@@ -155,10 +156,12 @@ export default {
       this.loading = false;
 
       const list = [];
+      const crvStartRound = Math.floor(CRV_START_SECONDS / WEEK_SECONDS) - 1;
+
       if (data) {
         data.forEach((item) => {
           list.push({
-            round: this.round,
+            round: this.round - crvStartRound,
             pool: this.guageNameMap[item.gauge]?.name || item.gauge,
             quantity: toFixed(item.veCRV / 10 ** 18, 2),
             weight: item.weight,
@@ -180,7 +183,6 @@ export default {
       });
       this.loading = false;
 
-
       const list = [];
 
       if (res?.data?.votes) {
@@ -191,9 +193,11 @@ export default {
 
           const sumPower = choiceItemKey.reduce((sum, keyItem) => sum + choice[keyItem], 0);
 
+          const cvxStartRound = Math.floor(CVX_START_SECONDS / WEEK_SECONDS) - 1;
+
           choiceItemKey.forEach((keyItem) => {
             list.push({
-              round: this.round,
+              round: Math.ceil((this.round - cvxStartRound) / 2),
               pool: proposal.choices[keyItem - 1],
               quantity: item.vp * choice[keyItem] / sumPower,
               time: item.created,
