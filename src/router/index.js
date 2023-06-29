@@ -37,6 +37,11 @@ const routes = [
         name: 'vote',
         component: () => import('@/views/Vote'),
       },
+      {
+        path: '/profile',
+        name: 'profile',
+        component: () => import('@/views/Profile'),
+      },
 
       {
         path: '/lob',

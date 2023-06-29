@@ -6,23 +6,6 @@
       </span>
 
       <div class="header-right">
-        <!-- <b-button
-          class="link-btn"
-          :variant="voteType === 'VeCRV' ? 'primary' : 'outline-primary'"
-          size="lg"
-          @click="$emit('changeVoteType', 'VeCRV')"
-
-        >
-          VeCRV
-        </b-button>
-        <b-button
-          class="link-btn"
-          :variant="voteType === 'VlCVX' ? 'primary' : 'outline-primary'"
-          size="lg"
-          @click="$emit('changeVoteType', 'VlCVX')"
-        >
-          VlCVX
-        </b-button> -->
 
         <CuSelect
           class="type-select"

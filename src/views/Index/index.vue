@@ -66,7 +66,7 @@ export default {
   },
   methods: {
     unlock() {
-      this.$store.dispatch('unlockByMetaMask');
+      this.$store.dispatch('unlock');
     },
     linkTo(link) {
       window.open(link);

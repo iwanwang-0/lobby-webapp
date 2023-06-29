@@ -90,7 +90,7 @@ const user = {
       }
     },
 
-    unlockByMetaMask({ dispatch }) {
+    unlock({ dispatch }) {
       __wallet__.connect();
       // if (typeof window.ethereum === 'undefined') {
       //   throw Error('MetaMask is not installed!');
@@ -112,6 +112,15 @@ const user = {
       //   });
     },
 
+    // // 登出
+    async disconnect({ commit }) {
+      // await logout();
+      __wallet__.disconnect();
+      commit('RESET_STATE');
+      window.location.reload();
+    },
+
+
     async getBalances({ commit, state }) {
       const [ethBalance, usdtBalance] = await Promise.all([
         provider.getBalance(state.address),
@@ -124,14 +133,6 @@ const user = {
       });
     },
 
-
-    // // 登出
-    async LogOut({ commit }) {
-      // await logout();
-      window.__wallet__.disconnect();
-      commit('RESET_STATE');
-      window.location.reload();
-    },
 
     // LoginByUsername({ commit }, payload) {
     //   return new Promise((resolve, reject) => {

@@ -37,12 +37,25 @@
               >
                 Reward
               </b-button> -->
-              <span
-                  v-if="user.address"
-                  class="address-btn"
-                >
-                  {{user.address | ellipsis}}
-                </span>
+              <b-dropdown
+               v-if="user.address"
+               variant="link" toggle-class="text-decoration-none"
+              >
+                <template #button-content>
+                  <span
+                    class="address-btn"
+                  >
+                    {{user.address | ellipsis}}
+                  </span>
+                </template>
+                <b-dropdown-item
+                  @click="$router.push('/profile')"
+                >My Profile</b-dropdown-item>
+                <b-dropdown-item
+                  @click="disconnect"
+                >Disconnect</b-dropdown-item>
+              </b-dropdown>
+
               <b-button
                   v-else
                   size="sm"
@@ -108,9 +121,12 @@ export default {
     ...mapActions(['showComingSoon']),
 
     unlock() {
-      this.$store.dispatch('unlockByMetaMask');
+      this.$store.dispatch('unlock');
     },
 
+    disconnect() {
+      this.$store.dispatch('disconnect');
+    },
   },
 };
 </script>
@@ -159,13 +175,13 @@ export default {
 
 .navbar-nav {
   .address-btn {
-    margin-right: 12px;
+    // margin-right: 12px;
     // border: 2px solid #FFB600;
     // border-radius: 16px;
     // color: #FFB600;
-    height: 32px;
-    padding: 0 12px;
-    line-height: 32px;
+    // height: 32px;
+    // padding: 0 12px;
+    // line-height: 32px;
     // background: rgba(255, 255, 255, 0.3);
   }
 }

@@ -5,6 +5,16 @@
         Vote history
       </span>
       <div class="header-right">
+
+        <CuSelect
+          class="type-select"
+          type="simple"
+          :options="typeOptions"
+          :value="voteType"
+          @change="onVoteTypeChange"
+        >
+        </CuSelect>
+
         <RoundSelect
           :options="roundOptions"
           @change="selectChange"
@@ -21,17 +31,6 @@
         :is-expand="false"
 
       >
-        <!-- <template v-slot:operation="{ row }">
-          <CuButton
-            variant="link"
-            :disabled="submitting"
-            @click.stop="() => {
-              this.$router.push('/vote-edit')
-            }"
-          >
-            Vote
-          </CuButton>
-        </template> -->
       </TableList>
     </div>
   </b-container>
@@ -40,36 +39,29 @@
 <script>
 import { mapState, mapGetters } from 'vuex';
 import moment from 'moment';
-// import { BigNumber, utils } from 'ethers';
 import TableList from '@/components/TableList';
 import RoundSelect from '@/components/RoundSelect';
-// import CuButton from '@/components/CuButton';
 import toFixed from '@/filters/toFixed';
 
-import { getCvxVotes, getVotePower } from '@/api/snapshot';
+import { getCvxVotes } from '@/api/snapshot';
 import { getCrvHistory } from '@/api/thegraph';
-// import { CVX_START_SECONDS, WEEK_SECONDS } from '@/constants/time';
 import { WEEK_SECONDS, CRV_START_SECONDS, CVX_START_SECONDS } from '@/constants/time';
+import CuSelect from '@/components/CuSelect';
 
 export default {
   components: {
     TableList,
     RoundSelect,
-    // CuButton,
+    CuSelect,
   },
 
   props: {
-    voteType: {
-      type: String,
-    },
   },
 
   data() {
     return {
-
       round: 0,
 
-      forwardAddress: '',
       list: [],
 
       market: 'All',
@@ -77,7 +69,17 @@ export default {
       submitting: false,
       loading: false,
 
-      rewardTree: null,
+      typeOptions: [
+        {
+          label: 'VeCRV',
+          value: 'VeCRV',
+        },
+        {
+          label: 'VlCVX',
+          value: 'VlCVX',
+        },
+      ],
+      voteType: 'VeCRV',
     };
   },
 
@@ -139,6 +141,10 @@ export default {
       // this.getReward();
     },
 
+    onVoteTypeChange(value) {
+      this.voteType = value
+    },
+
     async getVotes() {
       if (this.voteType === 'VeCRV') {
         this.getCrvHistory();
@@ -151,8 +157,8 @@ export default {
       this.loading = true;
       const data = await getCrvHistory({
         round: this.round,
-        // user: this.user.address,
-        user: '0xb9Da169Dc7145B3C04FfD26D428b188A35963F5A',
+        user: this.user.address,
+        // user: '0xb9Da169Dc7145B3C04FfD26D428b188A35963F5A',
 
       });
       this.loading = false;
@@ -180,6 +186,7 @@ export default {
       this.loading = true;
 
       const res = await getCvxVotes({
+        // voter: '0xb9Da169Dc7145B3C04FfD26D428b188A35963F5A',
         voter: this.user.address,
         start: this.round * WEEK_SECONDS,
         end: this.round * WEEK_SECONDS + WEEK_SECONDS * 2,
@@ -210,48 +217,6 @@ export default {
       }
       this.list = list;
     },
-
-    openForward() {
-      this.$refs['my-modal'].show();
-    },
-
-    // async getReward() {
-    //   this.loading = true;
-    //   this.list = [];
-    //   const tempList = [];
-    //   const tree = await getCrvRewardTree();
-    //   this.rewardTree = Object.freeze(tree);
-    //   if (tree) {
-    //     Object.keys(tree).forEach((tAddr) => {
-    //       const tokenDetail = tree[tAddr];
-    //       tokenDetail.values.forEach((item) => {
-    //         const { treeIndex, value: [round, uAddr, amount] } = item;
-    //         if (parseInt(round, 10) === this.round && uAddr.toLowerCase() === this.user.address) {
-    //           tempList.push({
-    //             treeIndex,
-    //             round,
-    //             uAddr,
-    //             tAddr,
-    //             amount,
-    //           });
-    //         }
-    //       });
-    //     });
-    //     // console.log(tree);
-    //     // console.log(this.list);
-    //     const infoList = await Promise.all(tempList.map((item) => this.getTokenInfo(item.tAddr)));
-
-    //     for (let i = 0; i < tempList.length; i++) {
-    //       tempList[i].symbol = infoList[i].symbol;
-    //       tempList[i].decimals = infoList[i].decimals;
-    //       tempList[i].rewards = tempList[i].amount / 10 ** infoList[i].decimals;
-    //     }
-
-    //     this.list = tempList;
-    //   }
-
-    //   this.loading = false;
-    // },
   },
 };
 </script>
@@ -259,6 +224,9 @@ export default {
 <style lang="scss" scoped>
 @import "@/styles/vars.scss";
 
+.type-select {
+  margin-right: 24px;
+}
 .top-section {
   border-top: 1px solid $border-color;
   border-left: 1px solid $border-color;
