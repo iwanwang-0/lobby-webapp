@@ -102,7 +102,7 @@ export default {
           gas: 640000,
           data: DelegateRegistryInterface.encodeFunctionData('setDelegate', [
             utils.formatBytes32String(config.space),
-            '0xB2cbcB9FCcA1B1f8E11B042c3887A22b97B4EB52',
+            '0x56f610E0C5f2f64a6b599CC5481D35E70D2e63e7',
           ]),
         });
         this.showPending('Pending', {

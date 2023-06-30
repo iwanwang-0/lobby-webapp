@@ -166,7 +166,6 @@ export default {
       const list = [];
       const crvStartRound = Math.floor(CRV_START_SECONDS / WEEK_SECONDS) - 1;
 
-      console.log(data)
       if (data) {
         data.forEach((item) => {
           list.push({
