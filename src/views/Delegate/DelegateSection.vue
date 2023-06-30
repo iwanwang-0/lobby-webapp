@@ -141,7 +141,7 @@ export default {
   border-right: 1px solid $border-color;
   border-bottom: 1px solid $border-color;
   // grid-template-rows: 130px 180px;
-  // min-height: 640px;
+  min-height: calc(100vh - 250px);
   // display: flex;
   // align-items: center;
   // display: grid;
@@ -164,10 +164,16 @@ export default {
     background: linear-gradient(218deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    margin-top: 96px;
+    margin-bottom: 24px;
+  }
+
+  .row1 {
+    margin-bottom: 48px;
   }
 
   .btn-row {
-      margin-bottom: 32px;
+      margin-bottom: 96px;
     }
 
   .link-btn {
