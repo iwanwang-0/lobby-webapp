@@ -18,6 +18,7 @@
           <!-- <b-nav-item :active="$route.path === '/'" @click="$router.push('/')">Home</b-nav-item> -->
           <b-nav-item :active="$route.path.startsWith('/dashboard')" @click="$router.push('/dashboard')">Dashboard</b-nav-item>
           <b-nav-item :active="$route.path.startsWith('/vote')" @click="$router.push('/vote')">Vote</b-nav-item>
+          <b-nav-item :active="$route.path.startsWith('/delegate')" @click="$router.push('/delegate')">Delegate</b-nav-item>
           <!-- <b-nav-item :active="$route.path.startsWith('/bribe')" @click="$router.push('/bribe')">Bribe</b-nav-item> -->
           <!-- <b-nav-item :active="$route.path.startsWith('/lob')" @click="$router.push('/lob')">Earn</b-nav-item> -->
         </b-navbar-nav>
@@ -67,7 +68,6 @@
             </b-navbar-nav>
             <div class="divider divider-right"></div>
         </div>
-
       </b-collapse>
     </b-container>
   </b-navbar>

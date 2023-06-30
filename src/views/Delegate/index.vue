@@ -1,19 +1,18 @@
 <template>
   <div class="page-container">
-    <TopSection
+    <!-- <TopSection
       :voteType="voteType"
       @changeType="changeVoteType"
-    ></TopSection>
-    <!-- <DelegateSection
-      v-if="voteType !== 'VeCRV'"
-    ></DelegateSection> -->
-    <VoteListSection
+    ></TopSection> -->
+    <DelegateSection
+    ></DelegateSection>
+    <!-- <VoteListSection
     :voteType="voteType"
     ></VoteListSection>
     <HistoryListSection
       :voteType="voteType"
       :key="voteType"
-    ></HistoryListSection>
+    ></HistoryListSection> -->
   </div>
 </template>
 
