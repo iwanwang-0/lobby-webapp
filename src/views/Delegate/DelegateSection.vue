@@ -109,8 +109,8 @@ export default {
     async getDelegate() {
       console.log('delegate');
       const address = await DelegateRegistryContract.delegation(
-        '0x0AeB03b3c5Ce641AF2C560909303C3DfdBE636ec',
-        // this.user.address,
+        // '0x0AeB03b3c5Ce641AF2C560909303C3DfdBE636ec',
+        this.user.address,
         utils.formatBytes32String(config.space),
       );
       console.log('xxxx', address);
