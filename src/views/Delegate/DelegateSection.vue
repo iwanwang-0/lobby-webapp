@@ -37,7 +37,7 @@
           class="btn-row"
           v-if="user.address && isDelegate"
         >
-          <div class="delete-tip">Your vlCVX will is delegating to {{delegateTo || '-'}}</div>
+          <div class="delete-tip">You have already delegated to <em>{{delegateTo || '-'}}</em> </div>
         </div>
         <!-- <div class="title">Reward</div>
         <div class="desc">Each round of Reward will be distributed <em>48h</em> after the end of voting</div> -->
@@ -109,8 +109,8 @@ export default {
     async getDelegate() {
       console.log('delegate');
       const address = await DelegateRegistryContract.delegation(
-        // '0x0AeB03b3c5Ce641AF2C560909303C3DfdBE636ec',
-        this.user.address,
+        '0x0AeB03b3c5Ce641AF2C560909303C3DfdBE636ec',
+        // this.user.address,
         utils.formatBytes32String(config.space),
       );
       console.log('xxxx', address);
@@ -231,6 +231,10 @@ export default {
 
     .delete-tip {
       font-size: 14px;
+
+      & em {
+        color: #1DD186;
+      }
     }
 
   .link-btn {
