@@ -165,7 +165,7 @@ export default {
     },
     desc() {
       return `The ${this.voteType === 'VeCRV' ? 'veCRV' : 'vlCVX'} Gauge voting award for the week of
-      ${ (this.voteType === 'VeCRV' ? this.current : this.cvxCurrent).local().format('MMMM D HH:mm a')}
+      ${ (this.voteType === 'VeCRV' ? this.current : this.cvxCurrent).local().format('MMMM Do HH:mm a')}
       GMT ${(this.voteType === 'VeCRV' ? this.current : this.cvxCurrent).local().format('ZZ')}`;
     },
   },
