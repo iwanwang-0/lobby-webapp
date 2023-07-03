@@ -9,7 +9,7 @@
           </div>
 
         <div class="title">Delegate to Lobby</div>
-         <div class="row1">Delegate to Lobby, after delegating your vlCVX voting rights, Lobby will automatically vote for you according to the best return </div>
+         <div class="row1">Delegate to Lobby, after delegating your vlCVX voting rights, Lobby will vote for you according to the best return </div>
         </div>
         <div
           class="btn-row"
@@ -230,8 +230,7 @@ export default {
     }
 
     .delete-tip {
-      font-size: 12px;
-      color: #999;
+      font-size: 14px;
     }
 
   .link-btn {
