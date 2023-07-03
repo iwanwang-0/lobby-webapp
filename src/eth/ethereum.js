@@ -47,7 +47,6 @@ const DelegateRegistryContract = new ethers.Contract(
   config.DelegateRegistry, DelegateRegistryAbi, provider,
 );
 
-
 const MultiMerkleStashInterface = new ethers.utils.Interface(MultiMerkleStashAbi.abi);
 const VotiumVeCRVInterface = new ethers.utils.Interface(VotiumVeCRVAbi.abi);
 

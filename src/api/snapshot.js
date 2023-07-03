@@ -2,6 +2,8 @@ import client from '@/eth/snapshot';
 // import provider from '@/eth/provider';
 import config from '@/config';
 import { Web3Provider } from '@ethersproject/providers';
+import snapshot from '@snapshot-labs/snapshot.js';
+import provider from '@/eth/provider';
 
 // const client = new snapshot.Client712(hub);
 
@@ -21,9 +23,7 @@ import { Web3Provider } from '@ethersproject/providers';
 
 const hub = 'https://hub.snapshot.org';
 
-
 export function getProposalListById(ids) {
-
   const query = `
     query {
       proposals(
@@ -202,7 +202,6 @@ export function getVotePower({ proposal, voter }) {
     .catch((error) => console.error(error));
 }
 
-
 export async function vote({ account, proposal, choice }) {
   const web3 = new Web3Provider(window.ethereum);
   const receipt = await client.vote(web3, account, {
@@ -214,4 +213,44 @@ export async function vote({ account, proposal, choice }) {
   });
 
   return receipt;
+}
+
+export async function getTotalDelegate() {
+  const address = config.DelegateAddress;
+  const network = '1';
+  const strategies = [
+    {
+      name: 'erc20-balance-of',
+      network: '1',
+      params: {
+        symbol: 'CVX',
+        address: config.VlCVX,
+        decimals: 18,
+      },
+    },
+    {
+      name: 'erc20-balance-of-delegation',
+      network: '1',
+      params: {
+        symbol: 'CVX',
+        address: config.VlCVX,
+        decimals: 18,
+      },
+    },
+  ];
+
+  // Should get the current block number
+  // const blockNumber = 17597962;
+  const { space } = config;
+  const delegation = false;
+  const blockNumber = await provider.getBlockNumber();
+  console.log(blockNumber)
+  const vp = await snapshot.utils.getVp(address, network, strategies, blockNumber, space, delegation)
+
+  console.log('Voting Power', vp);
+  const myVp = vp.vp_by_strategy[0];
+  const totalVp = vp.vp_by_strategy[1];
+  const delegatedVp = totalVp - myVp;
+  // console.log("Delegated voting power: " + delegatedVp);
+  return delegatedVp;
 }

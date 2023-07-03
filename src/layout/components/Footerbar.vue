@@ -14,6 +14,10 @@
           <div class="social-icon-wrapper">
             <img class="social-icon" @click="linkTo('https://twitter.com/LobbyPage')" src="@/assets/img/icon-twitter@2x.png" alt="">
           </div>
+
+          <div class="social-icon-wrapper">
+            <img class="social-icon" @click="linkTo('https://lobbydao.gitbook.io/lobbydao-curve-bribery-aggregator/')" src="@/assets/img/icon-gitbook@2x.png" alt="">
+          </div>
         </b-col>
       </b-row>
       <b-row class="copyright-bar" align-h="left" align-v="center">

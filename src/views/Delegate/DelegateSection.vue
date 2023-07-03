@@ -2,8 +2,13 @@
    <b-container class="top-section" fluid="lg">
     <div class="content">
       <div class="left">
+
         <div class="top">
-          <div class="title">Delegate to Lobby</div>
+          <div class="total">
+            Total delegated: {{ delegatedVp | toFixed(2) }} vlCVX
+          </div>
+
+        <div class="title">Delegate to Lobby</div>
          <div class="row1">Delegate to Lobby, after delegating your vlCVX voting rights, Lobby will automatically vote for you according to the best return </div>
         </div>
         <div
@@ -25,6 +30,14 @@
             class="link-btn"
             :loading="submitting"
           >Delegate to Lobby</cu-button>
+          <div class="delete-tip">Your vlCVX will is not to delegate to any one</div>
+        </div>
+
+        <div
+          class="btn-row"
+          v-if="user.address && isDelegate"
+        >
+          <div class="delete-tip">Your vlCVX will is delegating to {{delegateTo || '-'}}</div>
         </div>
         <!-- <div class="title">Reward</div>
         <div class="desc">Each round of Reward will be distributed <em>48h</em> after the end of voting</div> -->
@@ -49,8 +62,9 @@ import { mapState } from 'vuex';
 import CuButton from '@/components/CuButton';
 import sendTransaction from '@/common/sendTransaction';
 import {
-  provider, DelegateRegistryInterface, DelegateRegistryContract
+  provider, DelegateRegistryInterface, DelegateRegistryContract,
 } from '@/eth/ethereum';
+import { getTotalDelegate } from '@/api/snapshot';
 import { BigNumber, utils } from 'ethers';
 
 import config from '@/config';
@@ -63,31 +77,62 @@ export default {
     return {
       submitting: false,
       isDelegate: false,
+      delegatedVp: 0,
+      delegateTo: '',
     };
   },
 
   computed: {
     ...mapState(['user']),
   },
+  watch: {
+    'user.address': {
+      handler() {
+        console.log('ddd');
+        if (this.user.address) {
+          this.getDelegate();
+        }
+      },
+      immediate: true,
+    },
+
+  },
   created() {
-    this.getDelegate();
+    this.getTotal();
   },
   methods: {
     unlock() {
       this.$store.dispatch('unlock');
     },
 
+    // 0x0AeB03b3c5Ce641AF2C560909303C3DfdBE636ec
     async getDelegate() {
+      console.log('delegate');
       const address = await DelegateRegistryContract.delegation(
+        // '0x0AeB03b3c5Ce641AF2C560909303C3DfdBE636ec',
         this.user.address,
-        utils.formatBytes32String('iwan.eth'),
+        utils.formatBytes32String(config.space),
       );
-      if (address && address !== '0x0000000000000000000000000000000000000000') {
+      console.log('xxxx', address);
+      if (address !== '0x0000000000000000000000000000000000000000') {
+        if (address.toLowerCase() === config.DelegateAddress.toLowerCase()) {
+          this.delegateTo = 'Lobby';
+        }
+
+        if (address.toLowerCase() === config.DelegateVotiumAddress.toLowerCase()) {
+          this.delegateTo = 'Votium';
+        }
         this.isDelegate = true;
       } else {
         this.isDelegate = false;
       }
     },
+
+    async getTotal() {
+      const total = await getTotalDelegate();
+      this.delegatedVp = total;
+    },
+
     async onDelegate() {
       if (!this.user.address) {
         this.showError('Please connect metamask');
@@ -102,7 +147,7 @@ export default {
           gas: 640000,
           data: DelegateRegistryInterface.encodeFunctionData('setDelegate', [
             utils.formatBytes32String(config.space),
-            '0x56f610E0C5f2f64a6b599CC5481D35E70D2e63e7',
+            config.DelegateAddress,
           ]),
         });
         this.showPending('Pending', {
@@ -147,6 +192,9 @@ export default {
   // display: grid;
 }
 
+.top {
+  margin-top: 96px;
+}
 .content {
   display: grid;
   // grid-template-columns: 469px 729px;
@@ -156,7 +204,6 @@ export default {
   font-size: 18px;
   .title {
     width: 328px;
-    margin-top: 40px;
     font-size: 36px;
     font-family: ChillPixels Maximal;
     font-weight: normal;
@@ -164,8 +211,14 @@ export default {
     background: linear-gradient(218deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-top: 96px;
     margin-bottom: 24px;
+  }
+
+  .total {
+    float: right;
+    margin-top: 16px;
+    font-size: 14px;
+    // color: #eee;
   }
 
   .row1 {
@@ -174,6 +227,11 @@ export default {
 
   .btn-row {
       margin-bottom: 96px;
+    }
+
+    .delete-tip {
+      font-size: 12px;
+      color: #999;
     }
 
   .link-btn {

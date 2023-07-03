@@ -3,12 +3,13 @@ import config from '@/config';
 
 const provider = new providers.JsonRpcProvider(
   config.gethServer,
-  parseInt(config.chainId, 10),
+  parseInt(config.chainId, 16),
 );
 
 export const prodProvider = new providers.JsonRpcProvider(
-  'https://mainnet.infura.io/v3/800d17c94bfb46c8b0296a5770703215',
+  config.prodGethServer,
   1,
 );
+
 
 export default provider;

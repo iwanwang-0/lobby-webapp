@@ -42,9 +42,14 @@
           <img class="social-icon" src="@/assets/img/icon-twitter@2x.png" alt="">
         </div>
         Twitter
-
       </div>
 
+      <div @click="linkTo('https://lobbydao.gitbook.io/lobbydao-curve-bribery-aggregator/')">
+        <div class="social-icon-wrapper">
+          <img class="social-icon" src="@/assets/img/icon-gitbook@2x.png" alt="">
+        </div>
+        Gitbook
+      </div>
       <!-- <img class="social-btn" src="~./assets/discord.png" alt=""> -->
       <!-- <img class="social-btn" @click="linkTo('https://twitter.com/LobbyCRV')" src="~./assets/twitter.png" alt=""> -->
       <!-- <img class="social-btn" src="~./assets/medium.png" alt=""> -->
