@@ -1,8 +1,4 @@
-// 1683763200 / (7 * 24 * 60 * 60)
-// 2784
-// 1684368000 / (7 * 24 * 60 * 60)
-// 2785
-const WEEK_SECONDS = 7 * 24 * 60 * 60;
+import { WEEK_SECONDS } from '@/constants/time';
 
 // eslint-disable-next-line import/prefer-default-export
 export function getCrvHistory({ round, user }) {
@@ -63,6 +59,9 @@ export function getCrvHistory({ round, user }) {
   return fetch('https://api.thegraph.com/subgraphs/name/pengiundev/curve-gaugecontroller-mainnet', {
     body: JSON.stringify(body),
     method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
   })
     .then((response) => response.json())
     .then((res) => {
@@ -71,6 +70,48 @@ export function getCrvHistory({ round, user }) {
         return myVotes;
         // const { gaugeVotes } = res.data;
         // return gaugeVotes;
+      }
+      return [];
+    })
+    .catch((error) => console.error(error));
+}
+
+// eslint-disable-next-line import/prefer-default-export
+export function getRewardHistory({user, market}) {
+  const body = {
+    query: `{
+      claimedRecords(
+        first: 10
+        where: {
+          user: "${user}"
+          ${market ? `platform: "${market}"` : ''}
+        }
+      ) {
+        user
+        rewardToken
+        amount
+        period
+        platform
+        blockNumber
+        blockTimestamp
+        transactionHash
+      }
+    }`,
+  };
+
+  //
+  // https://gateway.thegraph.com/api/d2c1164eea9b21ff78599b6e1d3d87c0/subgraphs/id/Ejw1Ce11rmQfv4iB6H8VDLhJnnNnZ5QVyxEFE9TTSkZv
+  return fetch('https://api.studio.thegraph.com/query/49331/lobby-subgraph/version/latest', {
+    body: JSON.stringify(body),
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
+  })
+    .then((response) => response.json())
+    .then((res) => {
+      if (res.data) {
+        return res.data;
       }
       return [];
     })

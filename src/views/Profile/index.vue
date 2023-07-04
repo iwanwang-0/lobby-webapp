@@ -4,6 +4,10 @@
       :voteType="voteType"
       :key="voteType"
     ></HistoryListSection>
+    <RewardListSection
+      :voteType="voteType"
+      :key="voteType"
+    ></RewardListSection>
   </div>
 </template>
 
@@ -11,11 +15,13 @@
 // @ is an alias to /src
 import { mapState } from 'vuex';
 import HistoryListSection from './HistoryListSection.vue';
+import RewardListSection from './RewardListSection.vue';
 
 export default {
   name: 'Home',
   components: {
     HistoryListSection,
+    RewardListSection,
   },
   data() {
     return {

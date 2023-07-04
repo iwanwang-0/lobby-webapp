@@ -10,10 +10,10 @@
     <VoteListSection
     :voteType="voteType"
     ></VoteListSection>
-    <HistoryListSection
+    <!-- <HistoryListSection
       :voteType="voteType"
       :key="voteType"
-    ></HistoryListSection>
+    ></HistoryListSection> -->
   </div>
 </template>
 

@@ -145,7 +145,6 @@ export default {
 
       crvBalance: 0,
       cvxBalance: 0,
-
       // crvRound: this.getCurrentCvxRound(),
       // cvxRound: this.getCurrentCvxRound(),
     };

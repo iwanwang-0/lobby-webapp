@@ -2,17 +2,15 @@
    <b-container class="top-section" fluid="lg">
     <div class="header">
       <span class="header-text">
-        List
+        Vote List
       </span>
       <div class="header-right">
-
         <CuSelect
           type="simple"
           class="cu-select"
           :options="marketOption"
           v-model="market"
         />
-
       </div>
     </div>
 
@@ -27,7 +25,6 @@
 
       >
         <template v-slot:operation="{ row }">
-          <!-- {{ row }} -->
           <CuButton
             variant="link"
             :disabled="submitting"
@@ -96,24 +93,10 @@
               <div class="expand-item">
                 <div class="label">End at</div>
                 <div class="content">
-                  <!-- March 30, 2023 8:00 am -->
                   {{ (row.week.hex * (WEEK_SECONDS) + (WEEK_SECONDS))  * 1000 | formatTime('MMMM D, yyyy h:mm a') }}
                 </div>
               </div>
-              <!-- <div class="expand-item">
-                <div class="label">First week of claim</div>
-                <div class="content">
-                  -
-                  February 16, 2023 8:00 am
-                </div>
-              </div> -->
-              <!-- <div class="expand-item">
-                <div class="label">Last week of claim</div>
-                <div class="content">
-                  -
-                  February 16, 2023 8:00 am
-                </div>
-              </div> -->
+
               <div class="expand-item">
                 <div class="label">Contracts</div>
                 <div class="content">
@@ -445,69 +428,6 @@ export default {
       this.page = page;
     },
 
-    // getProof(tAddr, round) {
-    //   const content = this.rewardTree[tAddr];
-    //   const tree = StandardMerkleTree.load(content);
-    //   // eslint-disable-next-line no-restricted-syntax
-    //   for (const [i, v] of tree.entries()) {
-    //     console.log([i, v]);
-    //     if (v[0] === round && v[1].toLowerCase() === this.user.address.toLowerCase()) {
-    //       const proof = tree.getProof(i);
-    //       console.log(proof);
-    //       return proof;
-    //       // return tree.getProof(i);
-    //     }
-    //   }
-    //   return '';
-    // },
-
-    // async onClaim({ amount, tAddr, round }) {
-    //   // const { tokenId } = this.$route.query;
-    //   // const { amount } = this;
-    //   // if (amount < this.min) {
-    //   //   this.showError(`The minimum claim is ${this.min} DOGE`);
-    //   //   return;
-    //   // }
-    //   this.submitting = true;
-    //   try {
-    //     const proof = await this.getProof(tAddr, round);
-
-    //     const txHash = await sendTransaction({
-    //       to: config.MultiMerkleStash,
-    //       gas: 640000,
-    //       data: MultiMerkleStashInterface.encodeFunctionData('claim', [
-    //         tAddr,
-    //         round,
-    //         this.user.address,
-    //         amount,
-    //         proof,
-    //       ]),
-    //     });
-
-    //     this.showPending('Pending', {
-    //       tx: txHash,
-    //     });
-
-    //     const buyTx = await provider.waitForTransaction(txHash);
-
-    //     if (buyTx.status === 1) {
-    //       this.showSuccess('Succeeded', {
-    //         tx: txHash,
-    //       });
-    //       this.getReward();
-    //       // this.$store.dispatch('getPosition');
-    //       // this.$store.dispatch('getWithdrawable');
-    //       // this.$store.dispatch('getBalances');
-    //     } else {
-    //       this.showError('Failed', {
-    //         tx: txHash,
-    //       });
-    //     }
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    //   this.submitting = false;
-    // },
     async getTokenInfo(tokenAddress) {
       try {
         const erc20Contract = getERC20Contract(tokenAddress);

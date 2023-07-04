@@ -69,6 +69,7 @@
             v-for="head in cols"
             :style="{
               'text-align': head.align,
+              'color': head.color
             }"
           >
             <template v-if="head.prop === 'operation' && $scopedSlots.operation">

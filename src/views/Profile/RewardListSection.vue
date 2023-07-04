@@ -2,23 +2,15 @@
    <b-container class="top-section" fluid="lg">
     <div class="header">
       <span class="header-text">
-        Vote history
+        Claimed Records
       </span>
       <div class="header-right">
 
         <CuSelect
-          class="type-select"
           type="simple"
-          :options="typeOptions"
-          :value="voteType"
-          @change="onVoteTypeChange"
-        >
-        </CuSelect>
-
-        <RoundSelect
-          :options="roundOptions"
-          @change="selectChange"
-          v-model="round"
+          class="cu-select"
+          :options="marketOption"
+          v-model="market"
         />
       </div>
     </div>
@@ -29,7 +21,6 @@
         :list="list"
         :loading="loading"
         :is-expand="false"
-
       >
       </TableList>
     </div>
@@ -42,9 +33,12 @@ import moment from 'moment';
 import TableList from '@/components/TableList';
 import RoundSelect from '@/components/RoundSelect';
 import toFixed from '@/filters/toFixed';
+import trimAddress from '@/filters/trimAddress';
+import hexToUtf8 from '@/filters/hexToUtf8';
+import utf8ToHex from '@/filters/utf8ToHex';
 
 import { getCvxVotes } from '@/api/snapshot';
-import { getCrvHistory } from '@/api/thegraph';
+import { getRewardHistory } from '@/api/thegraph';
 import { WEEK_SECONDS, CRV_START_SECONDS, CVX_START_SECONDS } from '@/constants/time';
 import CuSelect from '@/components/CuSelect';
 
@@ -60,8 +54,6 @@ export default {
 
   data() {
     return {
-      round: 0,
-
       list: [],
 
       market: 'All',
@@ -69,43 +61,32 @@ export default {
       submitting: false,
       loading: false,
 
-      typeOptions: [
-        {
-          label: 'VeCRV',
-          value: 'VeCRV',
-        },
-        {
-          label: 'VlCVX',
-          value: 'VlCVX',
-        },
-      ],
-      voteType: 'VeCRV',
     };
   },
 
   computed: {
-    ...mapState(['user', 'guageNameMap']),
-    ...mapGetters(['cvxRoundOptions', 'crvRoundOptions']),
-    roundOptions() {
-      if (this.voteType === 'VeCRV') {
-        return this.crvRoundOptions;
-      }
-      return this.cvxRoundOptions;
-    },
-    ...mapState(['proposal']),
+    ...mapState(['user', 'marketOption', 'tokenMap']),
     cols() {
       return [
         {
-          title: 'Round',
-          prop: 'round',
+          title: 'Platform',
+          prop: 'platform',
+          color: '#ccc',
         },
         {
-          title: 'Pool',
-          prop: 'pool',
+          title: 'Token',
+          prop: 'token',
         },
         {
-          title: this.voteType === 'VeCRV' ? 'Quantity VeCRV' : 'Quantity VlCVX',
-          prop: 'quantity',
+          title: 'Amount',
+          prop: 'amount',
+        },
+        {
+          title: 'TxHash',
+          prop: 'txHash',
+          render(text, record) {
+            return `<a href="https://etherscan.io/tx/${record.transactionHash}">${text}</a>`
+          },
         },
         {
           title: 'Time',
@@ -119,16 +100,17 @@ export default {
   },
 
   watch: {
-    roundOptions: {
+    market: {
       handler() {
-        this.round = this.roundOptions[0].value;
+        this.getRewardList();
       },
       immediate: true,
     },
-
-    round() {
-      this.list = [];
-      this.getVotes();
+    'user.address': {
+      handler() {
+        this.getRewardList();
+      },
+      immediate: true,
     },
   },
 
@@ -137,43 +119,41 @@ export default {
   },
 
   methods: {
-    selectChange() {
-      // this.getReward();
-    },
+
 
     onVoteTypeChange(value) {
       this.voteType = value;
     },
 
     async getVotes() {
-      if (this.voteType === 'VeCRV') {
-        this.getCrvHistory();
-      } else {
-        this.getCvxVotes();
-      }
+      this.getRewardList();
     },
 
-    async getCrvHistory() {
+    async getRewardList() {
+      if (!this.user.address) {
+        return;
+      }
       this.loading = true;
-      const data = await getCrvHistory({
-        round: this.round,
-        user: this.user.address,
-        // user: '0xb9Da169Dc7145B3C04FfD26D428b188A35963F5A',
+      this.list = [];
 
+      const data = await getRewardHistory({
+        address: this.user.address,
+        market: this.market === 'All' ? '' : utf8ToHex(this.market),
       });
       this.loading = false;
-
       const list = [];
-      const crvStartRound = Math.floor(CRV_START_SECONDS / WEEK_SECONDS) - 1;
-
-      if (data) {
-        data.forEach((item) => {
+      if (data?.claimedRecords) {
+        data.claimedRecords.forEach((item) => {
+          const token = this.tokenMap[item.rewardToken.toLowerCase()];
+          const symbol = token?.symbol ?? '-';
+          const decimal = token?.decimal ?? 18;
           list.push({
-            round: this.round - crvStartRound,
-            pool: this.guageNameMap[item.gauge]?.name || item.gauge,
-            quantity: toFixed((item.veCRV / 10 ** 18) * item.weight / 10000, 2),
-            weight: item.weight,
-            time: item.time,
+            amount: toFixed(item.amount / 10 ** decimal, 4),
+            time: item.blockTimestamp,
+            platform: hexToUtf8(item.platform),
+            token: symbol,
+            txHash: trimAddress(item.transactionHash),
+            transactionHash: item.transactionHash,
           });
         });
       }
@@ -185,7 +165,6 @@ export default {
       this.loading = true;
 
       const res = await getCvxVotes({
-        // voter: '0xb9Da169Dc7145B3C04FfD26D428b188A35963F5A',
         voter: this.user.address,
         start: this.round * WEEK_SECONDS,
         end: this.round * WEEK_SECONDS + WEEK_SECONDS * 2,
