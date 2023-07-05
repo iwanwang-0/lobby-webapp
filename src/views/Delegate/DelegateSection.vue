@@ -5,7 +5,10 @@
 
         <div class="top">
           <div class="total">
-            Total delegated: {{ delegatedVp | toFixed(2) }} vlCVX
+            Total delegated:
+            <b-spinner v-if="delegatedVpLoading" variant="secondary" small label="Small Spinner"></b-spinner>
+            <span v-else>{{ delegatedVp | toFixed(2) }} </span>
+            vlCVX
           </div>
 
         <div class="title">Delegate to Lobby</div>
@@ -83,8 +86,11 @@ export default {
     return {
       submitting: false,
       isDelegate: false,
+
+      delegatedVpLoading: false,
       delegatedVp: 0,
       delegateTo: '',
+
     };
   },
 
@@ -132,7 +138,9 @@ export default {
     },
 
     async getTotal() {
+      this.delegatedVpLoading = true;
       const total = await getTotalDelegate();
+      this.delegatedVpLoading = false;
       this.delegatedVp = total;
     },
 
