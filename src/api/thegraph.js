@@ -81,7 +81,7 @@ export function getRewardHistory({user, market}) {
   const body = {
     query: `{
       claimedRecords(
-        first: 10
+        first: 500
         where: {
           user: "${user}"
           ${market ? `platform: "${market}"` : ''}

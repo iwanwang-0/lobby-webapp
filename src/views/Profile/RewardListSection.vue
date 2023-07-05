@@ -136,8 +136,9 @@ export default {
       this.loading = true;
       this.list = [];
 
+      console.log(this.user)
       const data = await getRewardHistory({
-        address: this.user.address,
+        user: this.user.address,
         market: this.market === 'All' ? '' : utf8ToHex(this.market),
       });
       this.loading = false;

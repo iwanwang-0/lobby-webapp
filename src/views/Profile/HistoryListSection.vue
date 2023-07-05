@@ -161,6 +161,7 @@ export default {
         // user: '0xb9Da169Dc7145B3C04FfD26D428b188A35963F5A',
 
       });
+
       this.loading = false;
 
       const list = [];
