@@ -37,6 +37,12 @@
           class="btn-row"
           v-if="user.address && isDelegate"
         >
+          <cu-button
+            v-if="delegateTo !== 'Lobby'"
+            @click="onDelegate"
+            class="link-btn"
+            :loading="submitting"
+          >Delegate to Lobby</cu-button>
           <div class="delete-tip">You have already delegated to <em>{{delegateTo || '-'}}</em> </div>
         </div>
         <!-- <div class="title">Reward</div>
@@ -88,7 +94,6 @@ export default {
   watch: {
     'user.address': {
       handler() {
-        console.log('ddd');
         if (this.user.address) {
           this.getDelegate();
         }
@@ -107,13 +112,11 @@ export default {
 
     // 0x0AeB03b3c5Ce641AF2C560909303C3DfdBE636ec
     async getDelegate() {
-      console.log('delegate');
       const address = await DelegateRegistryContract.delegation(
         // '0x0AeB03b3c5Ce641AF2C560909303C3DfdBE636ec',
         this.user.address,
         utils.formatBytes32String(config.space),
       );
-      console.log('xxxx', address);
       if (address !== '0x0000000000000000000000000000000000000000') {
         if (address.toLowerCase() === config.DelegateAddress.toLowerCase()) {
           this.delegateTo = 'Lobby';
@@ -160,7 +163,7 @@ export default {
           this.showSuccess('Success', {
             tx: buyTxHash,
           });
-          this.amount = '';
+          this.getDelegate();
         } else {
           this.showError('Faild', {
             tx: buyTxHash,
@@ -168,7 +171,6 @@ export default {
         }
       } catch (error) {
         this.showError(error.reason || error.message);
-        console.dir(error);
       } finally {
         this.submitting = false;
       }

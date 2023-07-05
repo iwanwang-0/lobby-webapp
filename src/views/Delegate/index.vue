@@ -1,36 +1,19 @@
 <template>
   <div class="page-container">
-    <!-- <TopSection
-      :voteType="voteType"
-      @changeType="changeVoteType"
-    ></TopSection> -->
     <DelegateSection
     ></DelegateSection>
-    <!-- <VoteListSection
-    :voteType="voteType"
-    ></VoteListSection>
-    <HistoryListSection
-      :voteType="voteType"
-      :key="voteType"
-    ></HistoryListSection> -->
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import { mapState } from 'vuex';
-import TopSection from './TopSection.vue';
 import DelegateSection from './DelegateSection.vue';
-import VoteListSection from './VoteListSection.vue';
-import HistoryListSection from './HistoryListSection.vue';
 
 export default {
   name: 'Home',
   components: {
-    VoteListSection,
-    TopSection,
     DelegateSection,
-    HistoryListSection,
   },
   data() {
     return {
