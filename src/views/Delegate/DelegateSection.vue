@@ -4,7 +4,13 @@
       <div class="left">
 
         <div class="top">
+
           <div class="total">
+            vlCVX I delegated:
+            <b-spinner v-if="delegatedILoading" variant="secondary" small label="Small Spinner"></b-spinner>
+            <span v-else>{{ cvxBalance | toFixed(2) }} </span>
+            vlCVX
+            <br>
             Total delegated:
             <b-spinner v-if="delegatedVpLoading" variant="secondary" small label="Small Spinner"></b-spinner>
             <span v-else>{{ delegatedVp | toFixed(2) }} </span>
@@ -12,7 +18,7 @@
           </div>
 
         <div class="title">Delegate to Lobby</div>
-         <div class="row1">Delegate to Lobby, after delegating your vlCVX voting rights, Lobby will vote for you according to the best return </div>
+        <div class="row1">Delegate to Lobby, after delegating your vlCVX voting rights, Lobby will vote for you according to the best return </div>
         </div>
         <div
           class="btn-row"
@@ -33,7 +39,7 @@
             class="link-btn"
             :loading="submitting"
           >Delegate to Lobby</cu-button>
-          <div class="delete-tip">Your vlCVX will is not to delegate to any one</div>
+          <div class="delete-tip">Your vlCVX is not to delegate to any one</div>
         </div>
 
         <div
@@ -46,7 +52,10 @@
             class="link-btn"
             :loading="submitting"
           >Delegate to Lobby</cu-button>
-          <div class="delete-tip">You have already delegated to <em>{{delegateTo || '-'}}</em> </div>
+          <div class="delete-tip">
+            You have already delegated to <em>{{delegateTo || '-'}}</em>
+            {{ delegateAddress ? `(${delegateAddress})` : '' }}
+          </div>
         </div>
         <!-- <div class="title">Reward</div>
         <div class="desc">Each round of Reward will be distributed <em>48h</em> after the end of voting</div> -->
@@ -71,10 +80,11 @@ import { mapState } from 'vuex';
 import CuButton from '@/components/CuButton';
 import sendTransaction from '@/common/sendTransaction';
 import {
-  provider, DelegateRegistryInterface, DelegateRegistryContract,
+  provider, getERC20Contract, DelegateRegistryInterface, DelegateRegistryContract,
 } from '@/eth/ethereum';
 import { getTotalDelegate } from '@/api/snapshot';
 import { BigNumber, utils } from 'ethers';
+import toFixed from '@/filters/toFixed';
 
 import config from '@/config';
 
@@ -90,18 +100,23 @@ export default {
       delegatedVpLoading: false,
       delegatedVp: 0,
       delegateTo: '',
+      delegateAddress: '',
+
+      delegatedILoading: false,
+      cvxBalance: 0,
 
     };
   },
 
   computed: {
-    ...mapState(['user']),
+    ...mapState(['user', 'proposal']),
   },
   watch: {
     'user.address': {
       handler() {
         if (this.user.address) {
           this.getDelegate();
+          this.getCvxBalance();
         }
       },
       immediate: true,
@@ -116,6 +131,21 @@ export default {
       this.$store.dispatch('unlock');
     },
 
+    async getCvxBalance() {
+      this.delegatedILoading = true;
+      if (this.proposal.snapshot) {
+        // const balance = await provider.getBalance(this.user.address, +this.proposal.snapshot);
+        const balance = await getERC20Contract(config.VlCVX).balanceOf(this.user.address, {
+          blockTag: +this.proposal.snapshot,
+        });
+        this.cvxBalance = toFixed(balance / 1e18, 2);
+      } else {
+        const balance = await getERC20Contract(config.VlCVX).balanceOf(this.user.address);
+        this.cvxBalance = toFixed(balance / 1e18, 2);
+      }
+      this.delegatedILoading = false;
+    },
+
     // 0x0AeB03b3c5Ce641AF2C560909303C3DfdBE636ec
     async getDelegate() {
       const address = await DelegateRegistryContract.delegation(
@@ -126,10 +156,12 @@ export default {
       if (address !== '0x0000000000000000000000000000000000000000') {
         if (address.toLowerCase() === config.DelegateAddress.toLowerCase()) {
           this.delegateTo = 'Lobby';
+          this.delegateAddress = config.DelegateAddress;
         }
 
         if (address.toLowerCase() === config.DelegateVotiumAddress.toLowerCase()) {
           this.delegateTo = 'Votium';
+          this.delegateAddress = config.DelegateVotiumAddress;
         }
         this.isDelegate = true;
       } else {

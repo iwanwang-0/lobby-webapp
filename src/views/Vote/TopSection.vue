@@ -197,7 +197,10 @@ export default {
 
     async getCvxBalance() {
       if (this.proposal.snapshot) {
-        const balance = await provider.getBalance(this.user.address, +this.proposal.snapshot);
+        // const balance = await provider.getBalance(this.user.address, +this.proposal.snapshot);
+        const balance = await getERC20Contract(config.VlCVX).balanceOf(this.user.address, {
+          blockTag: +this.proposal.snapshot,
+        });
         this.cvxBalance = toFixed(balance / 1e18, 2);
       } else {
         const balance = await getERC20Contract(config.VlCVX).balanceOf(this.user.address);
