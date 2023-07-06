@@ -39,7 +39,7 @@
             class="link-btn"
             :loading="submitting"
           >Delegate to Lobby</cu-button>
-          <div class="delete-tip">Your vlCVX is not to delegate to any one</div>
+          <!-- <div class="delete-tip">Your vlCVX is not to delegate to any one</div> -->
         </div>
 
         <div
