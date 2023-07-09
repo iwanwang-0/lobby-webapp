@@ -60,7 +60,7 @@ export default {
 
   data() {
     return {
-      round: 0,
+      round: 'all',
 
       list: [],
 
@@ -88,9 +88,21 @@ export default {
     ...mapGetters(['cvxRoundOptions', 'crvRoundOptions']),
     roundOptions() {
       if (this.voteType === 'VeCRV') {
-        return this.crvRoundOptions;
+        return [
+          {
+            value: 'all',
+            label: 'All',
+          },
+          ...this.crvRoundOptions,
+        ];
       }
-      return this.cvxRoundOptions;
+      return [
+        {
+          value: 'all',
+          label: 'All',
+        },
+        ...this.cvxRoundOptions,
+      ];
     },
     ...mapState(['proposal']),
     cols() {

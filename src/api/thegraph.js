@@ -6,8 +6,8 @@ export function getCrvHistory({ round, user }) {
     query: `{
       gaugeVotes(
         where: {
-          time_gt: ${WEEK_SECONDS * round},
-          time_lt: ${WEEK_SECONDS * round + WEEK_SECONDS}
+          ${round !== 'all' ? `time_gt: ${WEEK_SECONDS * round}` : ''}
+          ${round !== 'all' ? `time_lt: ${WEEK_SECONDS * round + WEEK_SECONDS}` : ''}
         },
         orderBy: time,
         orderDirection: desc
@@ -55,6 +55,7 @@ export function getCrvHistory({ round, user }) {
       }`,
     variables: {},
   };
+  console.log(body)
 
   return fetch('https://api.thegraph.com/subgraphs/name/pengiundev/curve-gaugecontroller-mainnet', {
     body: JSON.stringify(body),

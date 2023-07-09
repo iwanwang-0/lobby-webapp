@@ -6,7 +6,6 @@
       </span>
 
       <div class="header-right">
-
         <CuSelect
           class="type-select"
           type="simple"
@@ -14,9 +13,7 @@
           :value="voteType"
           @change="(val) => $emit('changeVoteType', val)"
         >
-
         </CuSelect>
-
         <CuSelect
           type="simple"
           class="cu-select"
@@ -68,8 +65,6 @@ export default {
   data() {
     return {
       WEEK_SECONDS: 7 * 24 * 60 * 60,
-      // voteType: 'VeCRV',
-      // market: 'Lobby',
 
       typeOptions: [
         {

@@ -2,11 +2,11 @@
   <div class="page-container">
     <HistoryListSection
       :voteType="voteType"
-      :key="voteType"
+      :key="voteType + 'history'"
     ></HistoryListSection>
     <RewardListSection
       :voteType="voteType"
-      :key="voteType"
+      :key="voteType + 'reward'"
     ></RewardListSection>
   </div>
 </template>

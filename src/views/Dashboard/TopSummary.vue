@@ -52,12 +52,11 @@ export default {
     },
     voteType: {
       type: String,
-    }
+    },
   },
   data() {
     return {
       WEEK_SECONDS: 7 * 24 * 60 * 60,
-      // round: 1,
     };
   },
   computed: {
@@ -72,7 +71,10 @@ export default {
       return this.roundOptions.find((item) => item.value === this.round)?.label || '-';
     },
     deadline() {
-      return moment((this.round * this.WEEK_SECONDS + this.WEEK_SECONDS) * 1000).format('yyyy/MM/DD');
+      if (this.voteType === 'VeCRV') {
+        return moment((this.round * this.WEEK_SECONDS + this.WEEK_SECONDS) * 1000).format('yyyy/MM/DD');
+      }
+      return moment((this.round * this.WEEK_SECONDS + this.WEEK_SECONDS) * 1000).subtract(2, 'day').format('yyyy/MM/DD');
     },
 
     formatTotal() {

@@ -21,17 +21,13 @@
 // @ is an alias to /src
 import { mapState } from 'vuex';
 import TopSection from './TopSection.vue';
-import DelegateSection from './DelegateSection.vue';
 import VoteListSection from './VoteListSection.vue';
-import HistoryListSection from './HistoryListSection.vue';
 
 export default {
   name: 'Home',
   components: {
     VoteListSection,
     TopSection,
-    DelegateSection,
-    HistoryListSection,
   },
   data() {
     return {

@@ -71,7 +71,7 @@
           <div class="row2">No vlCVX votes this week...</div>
         </template>
 
-        <div class="row3">
+        <!-- <div class="row3">
           Remaining time until the next round of voting：
           <template v-if="this.voteType === 'VeCRV'">
               <em>{{currentDurEnd.date}}</em>d
@@ -85,7 +85,7 @@
               <em>{{cvxNextDurStart.minute}}</em>min
               <em>{{cvxNextDurStart.second}}</em>s
             </template>
-        </div>
+        </div> -->
         <!-- <div class="title">Reward</div>
         <div class="desc">Each round of Reward will be distributed <em>48h</em> after the end of voting</div> -->
       </div>
@@ -156,7 +156,9 @@ export default {
       return this.getRemainTime(this.current);
     },
     cvxCurrentDurEnd() {
-      return this.getRemainTime(this.cvxCurrentEnd);
+      // console.log((this.getCurrentCvxRound()))
+      // console.log(moment((this.getCurrentCvxRound() - WEEK_SECONDS) * 1000).subtract(2, 'day'));
+      return this.getRemainTime(moment((this.getCurrentCvxRound() - WEEK_SECONDS) * 1000).subtract(2, 'day'));
     },
 
     cvxNextDurStart() {
@@ -197,7 +199,6 @@ export default {
 
     async getCvxBalance() {
       if (this.proposal.snapshot) {
-        // const balance = await provider.getBalance(this.user.address, +this.proposal.snapshot);
         const balance = await getERC20Contract(config.VlCVX).balanceOf(this.user.address, {
           blockTag: +this.proposal.snapshot,
         });
@@ -247,8 +248,15 @@ export default {
     },
 
     getRemainTime(targetTime) {
-      // console.log(targetTime)
       const duration = targetTime.diff(this.now, 'seconds');
+      if (duration <= 0) {
+        return {
+          second: 0,
+          minute: 0,
+          hour: 0,
+          date: 0,
+        };
+      }
       const second = duration % 60;
       const minute = Math.floor(duration / 60) % 60;
       const hour = Math.floor(duration / 60 / 60) % 24;
