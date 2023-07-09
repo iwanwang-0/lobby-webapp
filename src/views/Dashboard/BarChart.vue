@@ -156,7 +156,7 @@ export default {
     async getList() {
       this.loading = true;
       this.total = 0;
-
+      this.totalScore = 0;
       const roundTime = this.round * this.WEEK_SECONDS;
       const hourRoundTime = moment().startOf('hour').subtract(this.totalRound - this.round, 'hour').unix();
 
