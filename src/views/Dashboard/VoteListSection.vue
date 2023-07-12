@@ -158,7 +158,6 @@ import { BigNumber, utils } from 'ethers';
 import TableList from '@/components/TableList';
 import CuButton from '@/components/CuButton';
 import CuPagination from '@/components/CuPagination';
-import CuSelect from '@/components/CuSelect';
 
 import { getCrvRewardTree } from '@/api/common';
 import sendTransaction from '@/common/sendTransaction';
@@ -168,7 +167,7 @@ import { fetchBribeList, fetchUserScore } from '@/api/dashbord';
 import toFixed from '@/filters/toFixed';
 import ellipsis from '@/filters/ellipsis';
 import {
-  getERC20Contract, MultiMerkleStashContract, MultiMerkleStashInterface, provider, VotiumVeCRVContract, VotiumVeCRVInterface,
+  getERC20Contract, MultiMerkleStashInterface, provider
 } from '@/eth/ethereum';
 
 export default {
@@ -186,7 +185,6 @@ export default {
   components: {
     TableList,
     CuButton,
-    CuSelect,
     CuPagination,
   },
 
@@ -194,7 +192,32 @@ export default {
     return {
       WEEK_SECONDS: 7 * 24 * 60 * 60,
       forwardAddress: '',
-      cols: [
+      list: [],
+
+      // voteList: [],
+
+      pageSize: 10,
+      page: 1,
+      total: 0,
+
+      submitting: false,
+      loading: false,
+
+      rewardTree: null,
+
+      sort: {
+        order: '',
+        prop: '',
+      },
+    };
+  },
+
+  computed: {
+    ...mapState(['user', 'marketOption', 'tokenMap', 'guageNameMap', 'totalRound']),
+    ...mapState(['cvxChoices', 'crvChoices', 'proposal']),
+
+    cols() {
+      return [
         {
           title: 'Sort',
           prop: 'sort',
@@ -248,31 +271,8 @@ export default {
         //   prop: 'operation',
         //   width: '160px',
         // },
-      ],
-      list: [],
-
-      // voteList: [],
-
-      pageSize: 10,
-      page: 1,
-      total: 0,
-
-      submitting: false,
-      loading: false,
-
-      rewardTree: null,
-
-      sort: {
-        order: '',
-        prop: '',
-      },
-    };
-  },
-
-  computed: {
-    ...mapState(['user', 'marketOption', 'tokenMap', 'guageNameMap', 'totalRound']),
-    ...mapState(['cvxChoices', 'crvChoices', 'proposal']),
-
+      ]
+    },
     voteList() {
       return this.list.slice()
         .sort((a, b) => {
