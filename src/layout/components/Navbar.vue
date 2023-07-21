@@ -140,7 +140,7 @@ export default {
 
   & .nav-item {
     // margin-right: 50px;
-    margin-right: 36px;
+    margin-right: 18px;
     font-size: 18px;
     line-height: 14px;
     .nav-link {
@@ -182,8 +182,7 @@ export default {
 .sign-btn {
   height: 40px;
   font-weight: bold;
-  margin-left: 46px;
-  margin-right: 46px;
+  margin-right: 8px;
   font-size: 18px;
   letter-spacing: 1px;
   // width: 100%
@@ -200,10 +199,10 @@ export default {
   display: flex;
 
   // width: 120px;
-  padding-left: 48px;
+  padding-left: 16px;
 
   & .navbar-nav {
-    padding-left: 24px;
+    padding-left: 4px;
   }
 }
 </style>

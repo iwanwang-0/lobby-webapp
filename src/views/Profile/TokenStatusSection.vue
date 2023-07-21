@@ -70,8 +70,11 @@ export default {
         const res = await getTokenBalance({
           owner: this.$route.params.tokenOwner || this.user.address,
         });
+
         res.data.forEach((t) => {
-          this[t.token] = t.amount;
+          if (Number(t.amount) > 0) {
+            this[t.token] = Number(t.amount).toFixed(2);
+          } else this[t.token] = Number(t.amount);
         });
       } catch (error) {
         console.log(error);

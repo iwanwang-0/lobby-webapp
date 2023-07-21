@@ -122,7 +122,7 @@ export function getGaugeNameMap() {
  */
 export function getTokenBalance(params) {
   return axios({
-    baseURL: "https://test.lobby.page/lobby-bribe",
+    baseURL: "/",
     url: "/user_token_balance",
     method: "GET",
     params,
@@ -131,7 +131,7 @@ export function getTokenBalance(params) {
 
 export function fetchVoteHistory(params) {
   return axios({
-    baseURL: "https://test.lobby.page/lobby-bribe",
+    baseURL: "/",
     url: "/vote_history",
     method: "GET",
     params,
