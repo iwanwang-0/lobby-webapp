@@ -1,1 +1,1 @@
-const snapshot = require('@snapshot-labs/snapshot.js');
+const snapshot = require("@snapshot-labs/snapshot.js");

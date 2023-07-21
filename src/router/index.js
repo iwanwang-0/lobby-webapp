@@ -1,17 +1,17 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
-import Layout from '@/layout';
+import Vue from "vue";
+import VueRouter from "vue-router";
+import Layout from "@/layout";
 
 Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
-    name: 'Index',
-    component: () => import('@/views/Index'),
+    path: "/",
+    name: "Index",
+    component: () => import("@/views/Index"),
   },
   {
-    path: '/',
+    path: "/",
     // name: 'Home',
     component: Layout,
     // redirect: '/home',
@@ -22,52 +22,52 @@ const routes = [
       //   component: () => import('@/views/Home'),
       // },
       {
-        path: '/dashboard',
-        name: 'dashboard',
-        component: () => import('@/views/Dashboard'),
+        path: "/dashboard",
+        name: "dashboard",
+        component: () => import("@/views/Dashboard"),
       },
       {
-        path: '/bribe',
-        name: 'bribe',
-        component: () => import('@/views/Bribe'),
-      },
-
-      {
-        path: '/vote',
-        name: 'vote',
-        component: () => import('@/views/Vote'),
+        path: "/bribe",
+        name: "bribe",
+        component: () => import("@/views/Bribe"),
       },
 
       {
-        path: '/delegate',
-        name: 'delegate',
-        component: () => import('@/views/Delegate'),
-      },
-      {
-        path: '/profile',
-        name: 'profile',
-        component: () => import('@/views/Profile'),
+        path: "/vote",
+        name: "vote",
+        component: () => import("@/views/Vote"),
       },
 
       {
-        path: '/lob',
-        name: 'lob',
-        component: () => import('@/views/Lob'),
+        path: "/delegate",
+        name: "delegate",
+        component: () => import("@/views/Delegate"),
       },
       {
-        path: '/reward',
-        name: 'reward',
-        component: () => import('@/views/Reward'),
+        path: "/profile/:tokenOwner?",
+        name: "profile",
+        component: () => import("@/views/Profile"),
+      },
+
+      {
+        path: "/lob",
+        name: "lob",
+        component: () => import("@/views/Lob"),
       },
       {
-        path: '/vote/VeCRV/:platform/:round',
-        name: 'vote-edit',
-        component: () => import('@/views/VoteEditCrv'),
+        path: "/reward",
+        name: "reward",
+        component: () => import("@/views/Reward"),
       },
       {
-        path: '/vote/VlCVX/:platform/:round',
-        name: 'vote-edit',
-        component: () => import('@/views/VoteEditCvx'),
+        path: "/vote/VeCRV/:platform/:round",
+        name: "vote-edit",
+        component: () => import("@/views/VoteEditCrv"),
+      },
+      {
+        path: "/vote/VlCVX/:platform/:round",
+        name: "vote-edit",
+        component: () => import("@/views/VoteEditCvx"),
       },
     ],
   },
@@ -75,10 +75,10 @@ const routes = [
 ];
 
 const router = new VueRouter({
-  mode: 'hash',
+  mode: "hash",
   routes,
   scrollBehavior() {
-    const scrolls = document.getElementsByClassName('layout-content-scroll');
+    const scrolls = document.getElementsByClassName("layout-content-scroll");
     if (scrolls.length > 0) scrolls[0].scrollTop = 0;
   },
 });

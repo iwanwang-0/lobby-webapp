@@ -1,13 +1,13 @@
-import axios from '@/common/axios';
-import config from '@/config';
+import axios from "@/common/axios";
+import config from "@/config";
 
 /**
  * 登录
  */
 export function login(params) {
   return axios({
-    url: '/account/login',
-    method: 'POST',
+    url: "/account/login",
+    method: "POST",
     data: params,
   });
 }
@@ -25,8 +25,8 @@ export function getUser() {
   //   },
   // };
   return axios({
-    url: '/account/userinfo',
-    method: 'GET',
+    url: "/account/userinfo",
+    method: "GET",
   });
 }
 
@@ -36,8 +36,8 @@ export function getUser() {
  */
 export function logout() {
   return axios({
-    url: '/account/logout',
-    method: 'GET',
+    url: "/account/logout",
+    method: "GET",
   });
 }
 
@@ -47,22 +47,21 @@ export function logout() {
  */
 export async function getCrvRewardTree() {
   const data = await fetch(
-    'https://api.github.com/repos/iwanwang-0/lobby-merkledata/contents/vecrv/amount.json',
+    "https://api.github.com/repos/iwanwang-0/lobby-merkledata/contents/vecrv/amount.json",
     {
       headers: {
         Authorization: `token ${config.githubToken}`,
       },
-    },
+    }
   )
     .then((d) => d.json())
-    .then((d) => fetch(
-      `https://api.github.com/repos/iwanwang-0/lobby-merkledata/git/blobs/${d.sha}`,
-      {
+    .then((d) =>
+      fetch(`https://api.github.com/repos/iwanwang-0/lobby-merkledata/git/blobs/${d.sha}`, {
         headers: {
           Authorization: `token ${config.githubToken}`,
         },
-      },
-    ))
+      })
+    )
     .then((d) => d.json())
     .then((d) => JSON.parse(atob(d.content)));
 
@@ -75,22 +74,21 @@ export async function getCrvRewardTree() {
  */
 export async function getCvxRewardTree() {
   const data = await fetch(
-    'https://api.github.com/repos/iwanwang-0/lobby-merkledata/contents/vlcvx/amount.json',
+    "https://api.github.com/repos/iwanwang-0/lobby-merkledata/contents/vlcvx/amount.json",
     {
       headers: {
         Authorization: `token ${config.githubToken}`,
       },
-    },
+    }
   )
     .then((d) => d.json())
-    .then((d) => fetch(
-      `https://api.github.com/repos/iwanwang-0/lobby-merkledata/git/blobs/${d.sha}`,
-      {
+    .then((d) =>
+      fetch(`https://api.github.com/repos/iwanwang-0/lobby-merkledata/git/blobs/${d.sha}`, {
         headers: {
           Authorization: `token ${config.githubToken}`,
         },
-      },
-    ))
+      })
+    )
     .then((d) => d.json())
     .then((d) => JSON.parse(atob(d.content)));
 
@@ -102,9 +100,9 @@ export async function getCvxRewardTree() {
  */
 export function getTokenMap() {
   return axios({
-    baseURL: '/',
-    url: '/tokenMap.json',
-    method: 'GET',
+    baseURL: "/",
+    url: "/tokenMap.json",
+    method: "GET",
   });
 }
 
@@ -113,8 +111,29 @@ export function getTokenMap() {
  */
 export function getGaugeNameMap() {
   return axios({
-    baseURL: '/',
-    url: '/gaugeNameMap.json',
-    method: 'GET',
+    baseURL: "/",
+    url: "/gaugeNameMap.json",
+    method: "GET",
+  });
+}
+
+/**
+ * @param {*}
+ */
+export function getTokenBalance(params) {
+  return axios({
+    baseURL: "https://test.lobby.page/lobby-bribe",
+    url: "/user_token_balance",
+    method: "GET",
+    params,
+  });
+}
+
+export function fetchVoteHistory(params) {
+  return axios({
+    baseURL: "https://test.lobby.page/lobby-bribe",
+    url: "/vote_history",
+    method: "GET",
+    params,
   });
 }

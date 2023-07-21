@@ -1,13 +1,13 @@
-import { WEEK_SECONDS } from '@/constants/time';
+import { WEEK_SECONDS } from "@/constants/time";
 
 // eslint-disable-next-line import/prefer-default-export
 export function getCrvHistory({ round, user }) {
   const body = {
     query: `{
       gaugeVotes(
-        where: {
-          ${round !== 'all' ? `time_gt: ${WEEK_SECONDS * round}` : ''}
-          ${round !== 'all' ? `time_lt: ${WEEK_SECONDS * round + WEEK_SECONDS}` : ''}
+     where: {
+          ${round !== "all" ? `time_gt: ${WEEK_SECONDS * round}` : ""}
+          ${round !== "all" ? `time_lt: ${WEEK_SECONDS * round + WEEK_SECONDS}` : ""}
         },
         orderBy: time,
         orderDirection: desc
@@ -31,8 +31,8 @@ export function getCrvHistory({ round, user }) {
       myVotes: gaugeVotes(
           where: {
             user: "${user}",
-            time_gt: ${WEEK_SECONDS * round},
-            time_lt: ${WEEK_SECONDS * round + WEEK_SECONDS}
+            ${round !== "all" ? `time_gt: ${WEEK_SECONDS * round}` : ""}
+          ${round !== "all" ? `time_lt: ${WEEK_SECONDS * round + WEEK_SECONDS}` : ""}
           },
           orderBy: time,
           orderDirection: desc
@@ -55,17 +55,18 @@ export function getCrvHistory({ round, user }) {
       }`,
     variables: {},
   };
-  console.log(body)
+  console.log(body.query);
 
-  return fetch('https://api.thegraph.com/subgraphs/name/pengiundev/curve-gaugecontroller-mainnet', {
+  return fetch("https://api.thegraph.com/subgraphs/name/pengiundev/curve-gaugecontroller-mainnet", {
     body: JSON.stringify(body),
-    method: 'POST',
+    method: "POST",
     headers: {
-      'content-type': 'application/json',
+      "content-type": "application/json",
     },
   })
     .then((response) => response.json())
     .then((res) => {
+      console.log(res);
       if (res.data) {
         const { myVotes } = res.data;
         return myVotes;
@@ -78,14 +79,14 @@ export function getCrvHistory({ round, user }) {
 }
 
 // eslint-disable-next-line import/prefer-default-export
-export function getRewardHistory({user, market}) {
+export function getRewardHistory({ user, market }) {
   const body = {
     query: `{
       claimedRecords(
         first: 500
         where: {
           user: "${user}"
-          ${market ? `platform: "${market}"` : ''}
+          ${market ? `platform: "${market}"` : ""}
         }
       ) {
         user
@@ -102,11 +103,11 @@ export function getRewardHistory({user, market}) {
 
   //
   // https://gateway.thegraph.com/api/d2c1164eea9b21ff78599b6e1d3d87c0/subgraphs/id/Ejw1Ce11rmQfv4iB6H8VDLhJnnNnZ5QVyxEFE9TTSkZv
-  return fetch('https://api.studio.thegraph.com/query/49331/lobby-subgraph/version/latest', {
+  return fetch("https://api.studio.thegraph.com/query/49331/lobby-subgraph/version/latest", {
     body: JSON.stringify(body),
-    method: 'POST',
+    method: "POST",
     headers: {
-      'content-type': 'application/json',
+      "content-type": "application/json",
     },
   })
     .then((response) => response.json())

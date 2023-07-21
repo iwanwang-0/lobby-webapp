@@ -1,46 +1,32 @@
 <template>
-   <b-container class="top-section" fluid="lg">
+  <b-container class="top-section" fluid="lg">
     <div class="header">
-      <span class="header-text">
-        Claimed Records
-      </span>
+      <span class="header-text"> Claimed Records </span>
       <div class="header-right">
-
-        <CuSelect
-          type="simple"
-          class="cu-select"
-          :options="marketOption"
-          v-model="market"
-        />
+        <CuSelect type="simple" class="cu-select" :options="marketOption" v-model="market" />
       </div>
     </div>
 
     <div class="content">
-      <TableList
-        :cols="cols"
-        :list="list"
-        :loading="loading"
-        :is-expand="false"
-      >
-      </TableList>
+      <TableList :cols="cols" :list="list" :loading="loading" :is-expand="false"> </TableList>
     </div>
   </b-container>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
-import moment from 'moment';
-import TableList from '@/components/TableList';
-import RoundSelect from '@/components/RoundSelect';
-import toFixed from '@/filters/toFixed';
-import trimAddress from '@/filters/trimAddress';
-import hexToUtf8 from '@/filters/hexToUtf8';
-import utf8ToHex from '@/filters/utf8ToHex';
+import { mapState, mapGetters } from "vuex";
+import moment from "moment";
+import TableList from "@/components/TableList";
+import RoundSelect from "@/components/RoundSelect";
+import toFixed from "@/filters/toFixed";
+import trimAddress from "@/filters/trimAddress";
+import hexToUtf8 from "@/filters/hexToUtf8";
+import utf8ToHex from "@/filters/utf8ToHex";
 
-import { getCvxVotes } from '@/api/snapshot';
-import { getRewardHistory } from '@/api/thegraph';
-import { WEEK_SECONDS, CRV_START_SECONDS, CVX_START_SECONDS } from '@/constants/time';
-import CuSelect from '@/components/CuSelect';
+import { getCvxVotes } from "@/api/snapshot";
+import { getRewardHistory } from "@/api/thegraph";
+import { WEEK_SECONDS, CRV_START_SECONDS, CVX_START_SECONDS } from "@/constants/time";
+import CuSelect from "@/components/CuSelect";
 
 export default {
   components: {
@@ -49,50 +35,51 @@ export default {
     CuSelect,
   },
 
-  props: {
-  },
+  props: {},
 
   data() {
     return {
       list: [],
 
-      market: 'All',
+      market: "All",
 
       submitting: false,
       loading: false,
-
     };
   },
 
   computed: {
-    ...mapState(['user', 'marketOption', 'tokenMap']),
+    currentAddress() {
+      return this.$route.params.tokenOwner;
+    },
+    ...mapState(["user", "marketOption", "tokenMap"]),
     cols() {
       return [
         {
-          title: 'Platform',
-          prop: 'platform',
-          color: '#ccc',
+          title: "Platform",
+          prop: "platform",
+          color: "#ccc",
         },
         {
-          title: 'Token',
-          prop: 'token',
+          title: "Token",
+          prop: "token",
         },
         {
-          title: 'Amount',
-          prop: 'amount',
+          title: "Amount",
+          prop: "amount",
         },
         {
-          title: 'TxHash',
-          prop: 'txHash',
+          title: "TxHash",
+          prop: "txHash",
           render(text, record) {
-            return `<a href="https://etherscan.io/tx/${record.transactionHash}">${text}</a>`
+            return `<a href="https://etherscan.io/tx/${record.transactionHash}">${text}</a>`;
           },
         },
         {
-          title: 'Time',
-          prop: 'time',
+          title: "Time",
+          prop: "time",
           render(text) {
-            return moment(text * 1000).format('yyyy-MM-DD HH:mm');
+            return moment(text * 1000).format("yyyy-MM-DD HH:mm");
           },
         },
       ];
@@ -106,7 +93,13 @@ export default {
       },
       immediate: true,
     },
-    'user.address': {
+    "user.address": {
+      handler() {
+        this.getRewardList();
+      },
+      immediate: true,
+    },
+    currentAddress: {
       handler() {
         this.getRewardList();
       },
@@ -119,8 +112,6 @@ export default {
   },
 
   methods: {
-
-
     onVoteTypeChange(value) {
       this.voteType = value;
     },
@@ -130,23 +121,24 @@ export default {
     },
 
     async getRewardList() {
-      if (!this.user.address) {
+      const address = this.$route.params.tokenOwner || this.user.address;
+      if (!address) {
         return;
       }
       this.loading = true;
       this.list = [];
 
-      console.log(this.user)
+      console.log(this.user);
       const data = await getRewardHistory({
-        user: this.user.address,
-        market: this.market === 'All' ? '' : utf8ToHex(this.market),
+        user: address,
+        market: this.market === "All" ? "" : utf8ToHex(this.market),
       });
       this.loading = false;
       const list = [];
       if (data?.claimedRecords) {
         data.claimedRecords.forEach((item) => {
           const token = this.tokenMap[item.rewardToken.toLowerCase()];
-          const symbol = token?.symbol ?? '-';
+          const symbol = token?.symbol ?? "-";
           const decimal = token?.decimal ?? 18;
           list.push({
             amount: toFixed(item.amount / 10 ** decimal, 4),
@@ -166,7 +158,7 @@ export default {
       this.loading = true;
 
       const res = await getCvxVotes({
-        voter: this.user.address,
+        voter: this.$route.params.tokenOwner || this.user.address,
         start: this.round * WEEK_SECONDS,
         end: this.round * WEEK_SECONDS + WEEK_SECONDS * 2,
       });
@@ -188,7 +180,7 @@ export default {
             list.push({
               round: Math.ceil((this.round - cvxStartRound) / 2),
               pool: proposal.choices[keyItem - 1],
-              quantity: item.vp * choice[keyItem] / sumPower,
+              quantity: (item.vp * choice[keyItem]) / sumPower,
               time: item.created,
             });
           });
@@ -222,7 +214,7 @@ export default {
     padding-left: 10px;
     padding-right: 10px;
     .header-text {
-      background: linear-gradient(218deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
+      background: linear-gradient(218deg, #ff460e 0%, #eca13f 44%, #00dd59 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -237,7 +229,6 @@ export default {
         height: 50px;
       }
     }
-
   }
   .content {
     font-family: "ChillPixels Maximal";
@@ -252,7 +243,7 @@ export default {
         margin-right: 40px;
       }
       em {
-        color: #1DD186;
+        color: #1dd186;
         font-style: normal;
       }
       & .claim-btn {
@@ -274,7 +265,7 @@ export default {
       }
 
       & .content {
-        color: #CCCCCC;
+        color: #cccccc;
       }
     }
     // display: grid;
@@ -282,5 +273,4 @@ export default {
     // height: 317px;
   }
 }
-
 </style>

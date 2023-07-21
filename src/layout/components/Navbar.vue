@@ -1,35 +1,42 @@
 <template>
-  <b-navbar
-    class="navbar"
-  >
+  <b-navbar class="navbar">
     <b-container fluid="lg">
       <b-navbar-brand href="/">
-        <img class="logo" src="@/assets/img/logo@2x.png" alt="">
+        <img class="logo" src="@/assets/img/logo@2x.png" alt="" />
       </b-navbar-brand>
 
       <div class="divider divider-left"></div>
-      <b-navbar-toggle
-        @click="onToggleClick"
-        target="nav-collapse"
-      ></b-navbar-toggle>
+      <b-navbar-toggle @click="onToggleClick" target="nav-collapse"></b-navbar-toggle>
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="main-nav">
           <!-- <b-nav-item :active="$route.path === '/'" @click="$router.push('/')">Home</b-nav-item> -->
-          <b-nav-item :active="$route.path.startsWith('/dashboard')" @click="$router.push('/dashboard')">Dashboard</b-nav-item>
-          <b-nav-item :active="$route.path.startsWith('/vote')" @click="$router.push('/vote')">Vote</b-nav-item>
-          <b-nav-item :active="$route.path.startsWith('/delegate')" @click="$router.push('/delegate')">Delegate</b-nav-item>
+          <b-nav-item
+            :active="$route.path.startsWith('/dashboard')"
+            @click="$router.push('/dashboard')"
+            >Dashboard</b-nav-item
+          >
+          <b-nav-item :active="$route.path.startsWith('/vote')" @click="$router.push('/vote')"
+            >Vote</b-nav-item
+          >
+          <b-nav-item
+            :active="$route.path.startsWith('/delegate')"
+            @click="$router.push('/delegate')"
+            >Delegate</b-nav-item
+          >
+          <SearchBar></SearchBar>
+
           <!-- <b-nav-item :active="$route.path.startsWith('/bribe')" @click="$router.push('/bribe')">Bribe</b-nav-item> -->
           <!-- <b-nav-item :active="$route.path.startsWith('/lob')" @click="$router.push('/lob')">Earn</b-nav-item> -->
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
-        <div class="right-menu" >
+        <div class="right-menu">
           <div class="divider divider-middle"></div>
-            <b-navbar-nav >
-              <!-- <b-button variant="link"  class="history-btn"  @click.stop.prevent="$emit('history')">History</b-button> -->
-              <!-- <b-button class="lang-switch" variant="link">English</b-button> -->
-              <!-- <b-button
+          <b-navbar-nav>
+            <!-- <b-button variant="link"  class="history-btn"  @click.stop.prevent="$emit('history')">History</b-button> -->
+            <!-- <b-button class="lang-switch" variant="link">English</b-button> -->
+            <!-- <b-button
                 v-if="user.address"
                 class="reward-btn"
                 size="sm"
@@ -38,35 +45,21 @@
               >
                 Reward
               </b-button> -->
-              <b-dropdown
-               v-if="user.address"
-               variant="link" toggle-class="text-decoration-none"
-              >
-                <template #button-content>
-                  <span
-                    class="address-btn"
-                  >
-                    {{user.address | ellipsis}}
-                  </span>
-                </template>
-                <b-dropdown-item
-                  @click="$router.push('/profile')"
-                >My Profile</b-dropdown-item>
-                <b-dropdown-item
-                  @click="disconnect"
-                >Disconnect</b-dropdown-item>
-              </b-dropdown>
+            <b-dropdown v-if="user.address" variant="link" toggle-class="text-decoration-none">
+              <template #button-content>
+                <span class="address-btn">
+                  {{ user.address | ellipsis }}
+                </span>
+              </template>
+              <b-dropdown-item @click="$router.push('/profile')">My Profile</b-dropdown-item>
+              <b-dropdown-item @click="disconnect">Disconnect</b-dropdown-item>
+            </b-dropdown>
 
-              <b-button
-                  v-else
-                  size="sm"
-                  class="sign-btn"
-                  variant="link"
-                  @click="unlock"
-                >
-                Connect Wallet</b-button>
-            </b-navbar-nav>
-            <div class="divider divider-right"></div>
+            <b-button v-else size="sm" class="sign-btn" variant="link" @click="unlock">
+              Connect Wallet</b-button
+            >
+          </b-navbar-nav>
+          <div class="divider divider-right"></div>
         </div>
       </b-collapse>
     </b-container>
@@ -74,13 +67,14 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
-import { setLang, getLang } from '@/common/lang';
+import { mapActions, mapState } from "vuex";
+import { setLang, getLang } from "@/common/lang";
+import SearchBar from "./SearchBar.vue";
 
 export default {
   filters: {
     ellipsis(address) {
-      return address.replace(/^(.{6}).*(.{6})$/, '$1...$2');
+      return address.replace(/^(.{6}).*(.{6})$/, "$1...$2");
     },
   },
   data() {
@@ -88,27 +82,23 @@ export default {
       lang: getLang(),
       atTop: true,
       expand: false,
-
-      active: 'Home',
-
+      active: "Home",
     };
   },
   computed: {
-    ...mapState(['user']),
+    ...mapState(["user"]),
     isHome() {
-      return this.$route.path === '/';
+      return this.$route.path === "/";
     },
     langText() {
       const langMap = {
-        zh: '简体中文',
-        en: 'English',
+        zh: "简体中文",
+        en: "English",
       };
       return langMap[this.lang];
     },
   },
-  mounted() {
-  },
-
+  mounted() {},
   methods: {
     onToggleClick() {
       this.expand = !this.expand;
@@ -117,17 +107,15 @@ export default {
       setLang(lang);
       window.location.reload();
     },
-
-    ...mapActions(['showComingSoon']),
-
+    ...mapActions(["showComingSoon"]),
     unlock() {
-      this.$store.dispatch('unlock');
+      this.$store.dispatch("unlock");
     },
-
     disconnect() {
-      this.$store.dispatch('disconnect');
+      this.$store.dispatch("disconnect");
     },
   },
+  components: { SearchBar },
 };
 </script>
 
@@ -136,11 +124,11 @@ export default {
 
 .logo {
   margin-right: 40px;
-  height: 37px
+  height: 37px;
 }
 
 .divider {
-  height: 30px;
+  height: 40px;
   border-right: 1px solid #ccc;
 }
 
@@ -156,24 +144,25 @@ export default {
     font-size: 18px;
     line-height: 14px;
     .nav-link {
-      color: #CCCCCC;
+      color: #cccccc;
       font-size: 18px;
       padding: 0 0;
       display: inline-block;
       &:focus {
-        color: #CCCCCC;
+        color: #cccccc;
       }
       &:hover {
-        color: darken(#CCCCCC, 20);
+        color: darken(#cccccc, 20);
       }
       &.active {
-        color: #1DD186;
+        color: #1dd186;
       }
     }
   }
 }
 
 .navbar-nav {
+  align-items: center;
   .address-btn {
     // margin-right: 12px;
     // border: 2px solid #FFB600;
@@ -190,7 +179,7 @@ export default {
   justify-content: space-between;
 }
 
-.sign-btn{
+.sign-btn {
   height: 40px;
   font-weight: bold;
   margin-left: 46px;

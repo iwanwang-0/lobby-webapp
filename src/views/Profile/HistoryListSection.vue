@@ -1,11 +1,8 @@
 <template>
-   <b-container class="top-section" fluid="lg">
+  <b-container class="top-section" fluid="lg">
     <div class="header">
-      <span class="header-text">
-        Vote history
-      </span>
+      <span class="header-text"> Vote history </span>
       <div class="header-right">
-
         <CuSelect
           class="type-select"
           type="simple"
@@ -15,38 +12,29 @@
         >
         </CuSelect>
 
-        <RoundSelect
-          :options="roundOptions"
-          @change="selectChange"
-          v-model="round"
-        />
+        <RoundSelect :options="roundOptions" @change="selectChange" v-model="round" />
       </div>
     </div>
 
     <div class="content">
-      <TableList
-        :cols="cols"
-        :list="list"
-        :loading="loading"
-        :is-expand="false"
-
-      >
+      <TableList :cols="cols" :list="listFiltered" :loading="loading" :is-expand="false">
       </TableList>
     </div>
   </b-container>
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
-import moment from 'moment';
-import TableList from '@/components/TableList';
-import RoundSelect from '@/components/RoundSelect';
-import toFixed from '@/filters/toFixed';
+import { mapState, mapGetters } from "vuex";
+import moment from "moment";
+import TableList from "@/components/TableList";
+import RoundSelect from "@/components/RoundSelect";
+import toFixed from "@/filters/toFixed";
 
-import { getCvxVotes } from '@/api/snapshot';
-import { getCrvHistory } from '@/api/thegraph';
-import { WEEK_SECONDS, CRV_START_SECONDS, CVX_START_SECONDS } from '@/constants/time';
-import CuSelect from '@/components/CuSelect';
+import { getCvxVotes } from "@/api/snapshot";
+import { getCrvHistory } from "@/api/thegraph";
+import { fetchVoteHistory } from "@/api/common";
+import { WEEK_SECONDS, CRV_START_SECONDS, CVX_START_SECONDS } from "@/constants/time";
+import CuSelect from "@/components/CuSelect";
 
 export default {
   components: {
@@ -55,78 +43,97 @@ export default {
     CuSelect,
   },
 
-  props: {
-  },
+  props: {},
 
   data() {
     return {
-      round: 'all',
-
+      round: "all",
       list: [],
 
-      market: 'All',
+      market: "All",
 
       submitting: false,
       loading: false,
 
       typeOptions: [
         {
-          label: 'VeCRV',
-          value: 'VeCRV',
+          label: "VeCRV",
+          value: "VeCRV",
         },
         {
-          label: 'VlCVX',
-          value: 'VlCVX',
+          label: "VlCVX",
+          value: "VlCVX",
         },
       ],
-      voteType: 'VeCRV',
+      voteType: "VeCRV",
     };
   },
 
   computed: {
-    ...mapState(['user', 'guageNameMap']),
-    ...mapGetters(['cvxRoundOptions', 'crvRoundOptions']),
+    currentAddress() {
+      return this.$route.params.tokenOwner;
+    },
+    ...mapState(["user", "guageNameMap"]),
+    ...mapGetters(["cvxRoundOptions", "crvRoundOptions"]),
     roundOptions() {
-      if (this.voteType === 'VeCRV') {
+      console.log(this.crvRoundOptions, this.cvxRoundOptions);
+      if (this.voteType === "VeCRV") {
         return [
           {
-            value: 'all',
-            label: 'All',
+            value: "all",
+            label: "All",
           },
           ...this.crvRoundOptions,
         ];
       }
       return [
         {
-          value: 'all',
-          label: 'All',
+          value: "all",
+          label: "All",
         },
         ...this.cvxRoundOptions,
       ];
     },
-    ...mapState(['proposal']),
+    ...mapState(["proposal"]),
     cols() {
       return [
         {
-          title: 'Round',
-          prop: 'round',
+          title: "Round",
+          prop: "round",
         },
         {
-          title: 'Pool',
-          prop: 'pool',
+          title: "Pool",
+          prop: "pool",
         },
         {
-          title: this.voteType === 'VeCRV' ? 'Quantity VeCRV' : 'Quantity VlCVX',
-          prop: 'quantity',
+          title: "Score",
+          prop: "score",
         },
         {
-          title: 'Time',
-          prop: 'time',
+          title: "Is Delegated",
+          prop: "is_delegate",
+        },
+        {
+          title: "Time",
+          prop: "created",
           render(text) {
-            return moment(text * 1000).format('yyyy-MM-DD HH:mm');
+            return moment(text * 1000).format("yyyy-MM-DD HH:mm");
           },
         },
       ];
+    },
+    listFiltered() {
+      if (this.round === "all") return this.list;
+      if (this.voteType !== "VeCRV") {
+        const cvxStartRound = Math.floor(CVX_START_SECONDS / WEEK_SECONDS) - 1;
+        return this.list.filter((vote) => vote.round * 2 - 1 === this.round - cvxStartRound);
+      }
+      if (this.voteType === "VeCRV") {
+        const crvStartRound = Math.floor(CRV_START_SECONDS / WEEK_SECONDS) - 1;
+
+        return this.list.filter((vote) => vote.round === this.round - crvStartRound);
+      }
+      return this.list;
     },
   },
 
@@ -139,6 +146,15 @@ export default {
     },
 
     round() {
+      console.log(this.round);
+      // this.list = [];
+      if (this.list.length === 0) this.getVotes();
+    },
+    voteType() {
+      this.list = [];
+      this.getVotes();
+    },
+    currentAddress() {
       this.list = [];
       this.getVotes();
     },
@@ -157,21 +173,19 @@ export default {
       this.voteType = value;
     },
 
-    async getVotes() {
-      if (this.voteType === 'VeCRV') {
-        this.getCrvHistory();
-      } else {
-        this.getCvxVotes();
-      }
-    },
+    // async getVotes() {
+    // if (this.voteType === "VeCRV") {
+    //   this.getCrvHistory();
+    // } else {
+    //   this.getCvxVotes();
+    // }
+    // },
 
     async getCrvHistory() {
       this.loading = true;
       const data = await getCrvHistory({
         round: this.round,
-        user: this.user.address,
-        // user: '0xb9Da169Dc7145B3C04FfD26D428b188A35963F5A',
-
+        user: this.$route.params.tokenOwner || this.user.address,
       });
 
       this.loading = false;
@@ -184,7 +198,7 @@ export default {
           list.push({
             round: this.round - crvStartRound,
             pool: this.guageNameMap[item.gauge]?.name || item.gauge,
-            quantity: toFixed((item.veCRV / 10 ** 18) * item.weight / 10000, 2),
+            quantity: toFixed(((item.veCRV / 10 ** 18) * item.weight) / 10000, 2),
             weight: item.weight,
             time: item.time,
           });
@@ -199,7 +213,7 @@ export default {
 
       const res = await getCvxVotes({
         // voter: '0xb9Da169Dc7145B3C04FfD26D428b188A35963F5A',
-        voter: this.user.address,
+        voter: this.$route.params.tokenOwner || this.user.address,
         start: this.round * WEEK_SECONDS,
         end: this.round * WEEK_SECONDS + WEEK_SECONDS * 2,
       });
@@ -221,13 +235,25 @@ export default {
             list.push({
               round: Math.ceil((this.round - cvxStartRound) / 2),
               pool: proposal.choices[keyItem - 1],
-              quantity: item.vp * choice[keyItem] / sumPower,
+              quantity: (item.vp * choice[keyItem]) / sumPower,
               time: item.created,
             });
           });
         });
       }
       this.list = list;
+    },
+    async getVotes() {
+      const token = this.voteType === "VeCRV" ? "vecrv" : "vlcvx";
+      try {
+        const res = await fetchVoteHistory({
+          token,
+          voter: this.$route.params.tokenOwner || this.user.address,
+        });
+        this.list = res.data;
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };
@@ -255,7 +281,7 @@ export default {
     padding-left: 10px;
     padding-right: 10px;
     .header-text {
-      background: linear-gradient(218deg, #FF460E 0%, #ECA13F 44%, #00DD59 100%);
+      background: linear-gradient(218deg, #ff460e 0%, #eca13f 44%, #00dd59 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -270,7 +296,6 @@ export default {
         height: 50px;
       }
     }
-
   }
   .content {
     font-family: "ChillPixels Maximal";
@@ -285,7 +310,7 @@ export default {
         margin-right: 40px;
       }
       em {
-        color: #1DD186;
+        color: #1dd186;
         font-style: normal;
       }
       & .claim-btn {
@@ -307,7 +332,7 @@ export default {
       }
 
       & .content {
-        color: #CCCCCC;
+        color: #cccccc;
       }
     }
     // display: grid;
@@ -315,5 +340,4 @@ export default {
     // height: 317px;
   }
 }
-
 </style>
