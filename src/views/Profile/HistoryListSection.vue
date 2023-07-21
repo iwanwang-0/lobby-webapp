@@ -108,6 +108,9 @@ export default {
         {
           title: "Score",
           prop: "score",
+          render(text) {
+            return Number(text).toFixed(2);
+          },
         },
         {
           title: "Is Delegated",

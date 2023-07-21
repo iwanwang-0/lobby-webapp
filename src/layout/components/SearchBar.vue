@@ -6,7 +6,7 @@
       </b-form-input>
     </b-input-group>
     <div v-if="address.length && showResult" class="search-result">
-      <div class="address" v-if="isAddress" @click="click(address)">{{ address }}</div>
+      <div class="address" v-if="isAddress" @mousedown="click(address)">{{ address }}</div>
       <div v-if="!isAddress">no match</div>
     </div>
   </div>
