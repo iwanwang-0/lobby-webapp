@@ -11,19 +11,21 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="main-nav">
           <!-- <b-nav-item :active="$route.path === '/'" @click="$router.push('/')">Home</b-nav-item> -->
-          <b-nav-item
-            :active="$route.path.startsWith('/dashboard')"
-            @click="$router.push('/dashboard')"
-            >Dashboard</b-nav-item
-          >
-          <b-nav-item :active="$route.path.startsWith('/vote')" @click="$router.push('/vote')"
-            >Vote</b-nav-item
-          >
-          <b-nav-item
-            :active="$route.path.startsWith('/delegate')"
-            @click="$router.push('/delegate')"
-            >Delegate</b-nav-item
-          >
+          <div class="nav-items">
+            <b-nav-item
+              :active="$route.path.startsWith('/dashboard')"
+              @click="$router.push('/dashboard')"
+              >Dashboard</b-nav-item
+            >
+            <b-nav-item :active="$route.path.startsWith('/vote')" @click="$router.push('/vote')"
+              >Vote</b-nav-item
+            >
+            <b-nav-item
+              :active="$route.path.startsWith('/delegate')"
+              @click="$router.push('/delegate')"
+              >Delegate</b-nav-item
+            >
+          </div>
           <SearchBar></SearchBar>
 
           <!-- <b-nav-item :active="$route.path.startsWith('/bribe')" @click="$router.push('/bribe')">Bribe</b-nav-item> -->
@@ -123,7 +125,7 @@ export default {
 @import "@/styles/vars.scss";
 
 .logo {
-  margin-right: 40px;
+  margin-right: 20px;
   height: 37px;
 }
 
@@ -136,11 +138,15 @@ export default {
   border-bottom: 1px solid $border-color;
 }
 .main-nav {
-  margin-left: 40px;
-
+  flex: 1 0 auto;
+  justify-content: space-between;
+  margin-left: 18px;
+  .nav-items {
+    display: flex;
+  }
   & .nav-item {
     // margin-right: 50px;
-    margin-right: 18px;
+    margin-right: 32px;
     font-size: 18px;
     line-height: 14px;
     .nav-link {

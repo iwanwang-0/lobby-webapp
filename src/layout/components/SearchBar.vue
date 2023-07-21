@@ -2,7 +2,13 @@
   <div id="search-bar">
     <img class="search-icon" style="width: 18px" src="~@/assets/img/search-line.svg" alt="" />
     <b-input-group>
-      <b-form-input @keydown.native="keyDown" @focus="Focus" @blur="Blur" v-model="address">
+      <b-form-input
+        placeholder="Search address"
+        @keydown.native="keyDown"
+        @focus="Focus"
+        @blur="Blur"
+        v-model="address"
+      >
       </b-form-input>
     </b-input-group>
     <div v-if="address.length && showResult" class="search-result">
@@ -89,7 +95,7 @@ export default {
   } */
   .form-control {
     padding-left: 30px;
-    width: 180px;
+    width: 200px;
     border-radius: 16px;
     border-color: #80edc0;
     color: #fff !important;
