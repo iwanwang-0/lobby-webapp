@@ -1,9 +1,7 @@
 /* eslint-disable no-param-reassign */
-import moment from 'moment';
-import {
-  dogeTokenContract, USDTContract, martinDepositContract, provider,
-} from '@/eth/ethereum';
-import { getTree } from '@/api/common';
+import moment from "moment";
+import { dogeTokenContract, USDTContract, martinDepositContract, provider } from "@/eth/ethereum";
+import { getTree } from "@/api/common";
 
 const isMetamask = !!window.ethereum;
 
@@ -12,18 +10,14 @@ const user = {
   state: {
     isMetamask,
     loaded: !isMetamask,
-    address: '',
-    chainId: '',
+    address: "",
+    chainId: "",
     ethBalance: 0,
     usdtBalance: 0,
 
-    crvFavPoolMap: {
+    crvFavPoolMap: {},
 
-    },
-
-    cvxFavPoolMap: {
-
-    },
+    cvxFavPoolMap: {},
 
     // depositAmount: 0,
     // period: 0,
@@ -52,8 +46,8 @@ const user = {
     },
     RESET_STATE: (state) => {
       Object.assign(state, {
-        address: '',
-        chainId: '',
+        address: "",
+        chainId: "",
       });
     },
 
@@ -73,10 +67,10 @@ const user = {
 
   actions: {
     async handleAccountsChanged({ commit, dispatch, state }, accounts) {
-      const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+      const chainId = await window.ethereum.request({ method: "eth_chainId" });
       if (accounts.length === 0) {
-        commit('UPDATE_STATE', {
-          address: '',
+        commit("UPDATE_STATE", {
+          address: "",
           chainId,
           loaded: true,
         });
@@ -84,17 +78,14 @@ const user = {
       }
 
       // console.log(accounts[0].address)
-      let { address } = accounts[0];
+      const { address } = accounts[0];
       if (address !== state.address) {
-        if (address.toLowerCase() === '0x56f610e0c5f2f64a6b599cc5481d35e70d2e63e7') {
-          address = '0x3e68f47ce56d373f914e6836e097322d4bd0260b';
-        }
-        commit('UPDATE_STATE', {
+        commit("UPDATE_STATE", {
           address,
           chainId,
           loaded: true,
         });
-        dispatch('getBalances');
+        dispatch("getBalances");
       }
     },
 
@@ -124,7 +115,7 @@ const user = {
     async disconnect({ commit }) {
       // await logout();
       __wallet__.disconnect();
-      commit('RESET_STATE');
+      commit("RESET_STATE");
       window.location.reload();
     },
 
@@ -134,7 +125,7 @@ const user = {
         USDTContract.balanceOf(state.address),
       ]);
 
-      commit('UPDATE_STATE', {
+      commit("UPDATE_STATE", {
         ethBalance,
         usdtBalance,
       });
