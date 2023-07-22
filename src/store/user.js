@@ -80,6 +80,9 @@ const user = {
       // console.log(accounts[0].address)
       const { address } = accounts[0];
       if (address !== state.address) {
+        // if (address.toLowerCase() === "0x56f610e0c5f2f64a6b599cc5481d35e70d2e63e7") {
+        //   address = "0x3e68f47ce56d373f914e6836e097322d4bd0260b";
+        // }
         commit("UPDATE_STATE", {
           address,
           chainId,
